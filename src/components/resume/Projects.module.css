@@ -1,0 +1,30 @@
+.section {
+  inline-size: min(100% - (var(--gutter) * 2), var(--shell));
+  margin-inline: auto;
+  padding-block: var(--space-2xl);
+  scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-m);
+}
+
+.moreHeading {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-block: var(--space-l) var(--space-m);
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .section {
+    padding-block: var(--space-3xl);
+  }
+}

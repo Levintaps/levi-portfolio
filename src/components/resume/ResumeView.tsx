@@ -3,6 +3,7 @@ import { profile } from '../../data/resume';
 import Header from './Header';
 import Hero from './Hero';
 import Experience from './Experience';
+import Projects from './Projects';
 import Education from './Education';
 import Achievements from './Achievements';
 import Footer from './Footer';
@@ -23,6 +24,7 @@ export default function ResumeView() {
       <main id="main" className={styles.main}>
         <Hero />
         <Experience />
+        <Projects />
         <Education />
         <Achievements />
       </main>

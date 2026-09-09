@@ -1,0 +1,113 @@
+.card {
+  display: grid;
+  gap: var(--space-m);
+  padding: var(--space-m);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  transition: border-color var(--motion-fast) var(--ease),
+    transform var(--motion-fast) var(--ease);
+}
+
+.card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+.shot {
+  inline-size: 100%;
+  block-size: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--line);
+}
+
+.body {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.name {
+  font-size: var(--step-1);
+}
+
+.period,
+.kind {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-faint);
+}
+
+.summary {
+  color: var(--ink-muted);
+}
+
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+}
+
+.chip {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  padding: 0.15rem var(--space-xs);
+  border-radius: var(--radius-s);
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+.highlights {
+  display: grid;
+  gap: var(--space-xs);
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
+.highlights li {
+  position: relative;
+  padding-inline-start: var(--space-m);
+}
+
+.highlights li::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0.65em;
+  inset-inline-start: 0;
+  inline-size: var(--space-xs);
+  block-size: 1px;
+  background: var(--line-strong);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-m);
+  margin-block-start: var(--space-2xs);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-weight: 600;
+  font-size: var(--step--1);
+  color: var(--accent);
+  text-decoration: none;
+  min-block-size: 2.75rem;
+}
+
+.link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
