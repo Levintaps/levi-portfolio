@@ -1,0 +1,88 @@
+:root {
+  --font-display: 'Space Grotesk Variable', 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter Tight Variable', 'Inter Tight', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+
+  --step--1: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem);
+  --step-0: clamp(0.95rem, 0.92rem + 0.15vw, 1.05rem);
+  --step-1: clamp(1.15rem, 1.08rem + 0.35vw, 1.35rem);
+  --step-2: clamp(1.45rem, 1.3rem + 0.75vw, 1.9rem);
+  --step-3: clamp(1.9rem, 1.6rem + 1.5vw, 2.9rem);
+  --step-4: clamp(2.4rem, 1.9rem + 2.6vw, 4.2rem);
+
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-s: 0.75rem;
+  --space-m: 1.25rem;
+  --space-l: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 7rem;
+
+  --radius-s: 4px;
+  --radius-m: 10px;
+  --radius-l: 18px;
+
+  --measure: 68ch;
+  --shell: 68rem;
+
+  --motion-fast: 140ms;
+  --motion-base: 260ms;
+  --motion-slow: 520ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+:root[data-scheme='light'] {
+  --ground: #f7f6f3;
+  --surface: #ffffff;
+  --surface-sunken: #efeee9;
+  --ink: #14161a;
+  --ink-muted: #5b6069;
+  --ink-faint: #8b9099;
+  --line: #e0dfd9;
+  --line-strong: #c9c8c1;
+  --accent: #1b3fae;
+  --accent-ink: #ffffff;
+  --accent-wash: #e8ecfa;
+  --positive: #1c7a4a;
+  --danger: #c0392b;
+  --accent-glow: rgb(27 63 174 / 0.35);
+}
+
+:root[data-scheme='dark'] {
+  --ground: #0e1013;
+  --surface: #16191e;
+  --surface-sunken: #101317;
+  --ink: #eceef1;
+  --ink-muted: #a0a6b0;
+  --ink-faint: #6d747f;
+  --line: #262b33;
+  --line-strong: #39404a;
+  --accent: #7aa2ff;
+  --accent-ink: #0e1013;
+  --accent-wash: #1a2236;
+  --positive: #4cc38a;
+  --danger: #f85149;
+  --accent-glow: rgb(122 162 255 / 0.35);
+}
+
+:root[data-view='cyber'] {
+  --ground: #07070d;
+  --surface: #0d0d17;
+  --surface-sunken: #05050a;
+  --ink: #e8f7ff;
+  --ink-muted: #8fa6b8;
+  --ink-faint: #56697a;
+  --line: rgb(0 243 255 / 0.22);
+  --line-strong: rgb(0 243 255 / 0.5);
+  --accent: #00f3ff;
+  --accent-ink: #05050a;
+  --accent-wash: rgb(0 243 255 / 0.08);
+  --violet: #9d00ff;
+  --lime: #00ff9d;
+  --danger: #ff6b6b;
+  --accent-glow: rgb(0 243 255 / 0.35);
+  --font-display: 'Rajdhani', 'Space Grotesk Variable', sans-serif;
+  --font-body: 'Rajdhani', system-ui, sans-serif;
+  --font-mono: 'Share Tech Mono', ui-monospace, monospace;
+}
