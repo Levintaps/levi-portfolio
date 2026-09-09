@@ -1,0 +1,56 @@
+.panel {
+  inline-size: min(100% - (var(--gutter) * 2), var(--shell));
+  margin-inline: auto;
+  margin-block-end: var(--space-2xl);
+  display: grid;
+  gap: var(--space-m);
+  padding: var(--space-l);
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--accent);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.title {
+  font-size: var(--step-2);
+}
+
+.body {
+  color: var(--ink-muted);
+}
+
+.action {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-s) var(--space-m);
+  min-block-size: 2.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color var(--motion-fast) var(--ease),
+    color var(--motion-fast) var(--ease);
+}
+
+.action:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (min-width: 48rem) {
+  .panel {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--space-xl);
+  }
+}
