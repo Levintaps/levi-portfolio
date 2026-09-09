@@ -4,6 +4,7 @@ import Header from './Header';
 import Hero from './Hero';
 import Experience from './Experience';
 import Projects from './Projects';
+import Skills from './Skills';
 import Education from './Education';
 import Achievements from './Achievements';
 import Footer from './Footer';
@@ -25,6 +26,9 @@ export default function ResumeView() {
         <Hero />
         <Experience />
         <Projects />
+        <div className={styles.bleed}>
+          <Skills />
+        </div>
         <Education />
         <Achievements />
       </main>
