@@ -3,7 +3,7 @@
   --font-body: 'Inter Tight Variable', 'Inter Tight', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
 
-  --step--1: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem);
+  --step--1: clamp(0.875rem, 0.85rem + 0.1vw, 0.9rem);
   --step-0: clamp(0.95rem, 0.92rem + 0.15vw, 1.05rem);
   --step-1: clamp(1.15rem, 1.08rem + 0.35vw, 1.35rem);
   --step-2: clamp(1.45rem, 1.3rem + 0.75vw, 1.9rem);
@@ -41,7 +41,7 @@
   --surface-sunken: #efeee9;
   --ink: #14161a;
   --ink-muted: #5b6069;
-  --ink-faint: #8b9099;
+  --ink-faint: #646972;
   --line: #e0dfd9;
   --line-strong: #c9c8c1;
   --accent: #1b3fae;
@@ -58,7 +58,7 @@
   --surface-sunken: #101317;
   --ink: #eceef1;
   --ink-muted: #a0a6b0;
-  --ink-faint: #6d747f;
+  --ink-faint: #808691;
   --line: #262b33;
   --line-strong: #39404a;
   --accent: #7aa2ff;
@@ -75,7 +75,7 @@
   --surface-sunken: #05050a;
   --ink: #e8f7ff;
   --ink-muted: #8fa6b8;
-  --ink-faint: #56697a;
+  --ink-faint: #6e8192;
   --line: rgb(0 243 255 / 0.22);
   --line-strong: rgb(0 243 255 / 0.5);
   --accent: #00f3ff;

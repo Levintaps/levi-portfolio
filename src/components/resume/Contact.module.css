@@ -31,6 +31,12 @@
   overflow-wrap: anywhere;
 }
 
+a.detailValue {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+}
+
 a.detailValue:hover {
   color: var(--accent);
 }

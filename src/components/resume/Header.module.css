@@ -18,6 +18,9 @@
 }
 
 .mark {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: 0.06em;

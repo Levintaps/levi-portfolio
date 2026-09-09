@@ -8,7 +8,10 @@
   inset-block-start: var(--space-xs);
   inset-inline-start: var(--space-xs);
   z-index: 50;
-  padding: var(--space-xs) var(--space-s);
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-s);
   background: var(--accent);
   color: var(--accent-ink);
   border-radius: var(--radius-s);
