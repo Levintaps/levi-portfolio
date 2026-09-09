@@ -1,0 +1,128 @@
+.section {
+  inline-size: min(100% - (var(--gutter) * 2), var(--shell));
+  margin-inline: auto;
+  padding-block: var(--space-2xl);
+  position: relative;
+  z-index: 2;
+  scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
+}
+
+.header {
+  display: grid;
+  gap: var(--space-2xs);
+  margin-block-end: var(--space-m);
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  text-transform: uppercase;
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-m);
+}
+
+.card {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-m);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  opacity: 0;
+  transform: translateY(var(--space-s));
+  transition: opacity var(--motion-slow) var(--ease),
+    transform var(--motion-slow) var(--ease),
+    border-color var(--motion-fast) var(--ease);
+}
+
+.section[data-revealed='true'] .card {
+  opacity: 1;
+  transform: none;
+}
+
+.card:hover {
+  border-color: var(--accent);
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-faint);
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.index {
+  color: var(--accent);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  text-transform: uppercase;
+}
+
+.summary {
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--accent);
+}
+
+.stack li::after {
+  content: ' /';
+  color: var(--ink-faint);
+}
+
+.stack li:last-child::after {
+  content: '';
+}
+
+.link {
+  justify-self: start;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  text-decoration: none;
+  border-block-end: 1px solid currentColor;
+  min-block-size: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.private {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-faint);
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 72rem) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

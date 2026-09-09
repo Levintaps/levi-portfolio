@@ -6,6 +6,10 @@ import PageMeta from '../common/PageMeta';
 import { profile } from '../../data/resume';
 import CyberNav from './CyberNav';
 import CyberHero from './CyberHero';
+import CyberSkills from './CyberSkills';
+import CyberProjects from './CyberProjects';
+import CyberFeedback from './CyberFeedback';
+import CyberFooter from './CyberFooter';
 import ParticleField from './ParticleField';
 import styles from './CyberView.module.css';
 
@@ -22,7 +26,11 @@ export default function CyberView() {
       <CyberNav />
       <main className={styles.main}>
         <CyberHero />
+        <CyberSkills />
+        <CyberProjects />
+        <CyberFeedback />
       </main>
+      <CyberFooter />
     </div>
   );
 }

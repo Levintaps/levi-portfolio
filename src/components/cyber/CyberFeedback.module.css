@@ -1,0 +1,122 @@
+.section {
+  inline-size: min(100% - (var(--gutter) * 2), var(--shell));
+  margin-inline: auto;
+  padding-block: var(--space-2xl);
+  position: relative;
+  z-index: 2;
+  scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
+}
+
+.header {
+  display: grid;
+  gap: var(--space-2xs);
+  margin-block-end: var(--space-m);
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.bubbles {
+  display: grid;
+  gap: var(--space-xs);
+  max-block-size: 22rem;
+  overflow-y: auto;
+  padding: var(--space-s);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+}
+
+.bubble {
+  justify-self: start;
+  max-inline-size: min(100%, 34ch);
+  padding: var(--space-xs) var(--space-s);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-l) var(--radius-l) var(--radius-l) 2px;
+  background: var(--accent-wash);
+  font-size: var(--step--1);
+  animation: rise var(--motion-slow) var(--ease) both;
+}
+
+.bubble[data-lane='1'] {
+  justify-self: center;
+  border-color: var(--violet);
+}
+
+.bubble[data-lane='2'] {
+  justify-self: end;
+  border-radius: var(--radius-l) var(--radius-l) 2px var(--radius-l);
+  border-color: var(--lime);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-xs));
+  }
+}
+
+.form {
+  display: grid;
+  gap: var(--space-2xs);
+  margin-block-start: var(--space-m);
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-muted);
+}
+
+.row {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.input {
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-s);
+  border: 1px solid var(--line-strong);
+  background: var(--surface-sunken);
+  color: var(--ink);
+  font-family: var(--font-mono);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.send {
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-m);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.send:disabled {
+  opacity: 0.5;
+}
+
+.error {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--danger);
+}
