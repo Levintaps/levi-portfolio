@@ -1,10 +1,13 @@
 import {
   achievements,
+  achievementsLead,
   certifications,
   education,
   experience,
   profile,
   projects,
+  projectsLead,
+  roles,
   skillGroups,
 } from './resume';
 
@@ -50,5 +53,27 @@ describe('resume data', () => {
     expect(education.length).toBeGreaterThan(0);
     expect(certifications.length).toBeGreaterThan(0);
     expect(achievements.length).toBeGreaterThan(0);
+  });
+
+  it('exposes the rotating hero roles the cyber view reads, grounded in the CV headline', () => {
+    expect(roles.length).toBeGreaterThanOrEqual(3);
+    expect(roles).toContain('Full Stack Developer');
+    expect(roles).not.toContain('Security Minded Engineer');
+  });
+
+  it('does not claim a course as a certification', () => {
+    expect(certifications.some((cert) => cert.name === 'Cloud Practitioner Essentials')).toBe(
+      false,
+    );
+  });
+
+  it('does not link a project demo behind a login wall', () => {
+    const vanima = projects.find((project) => project.id === 'vanima-atelier');
+    expect(vanima?.demoUrl).toBeUndefined();
+  });
+
+  it('exposes editable leads for the projects and achievements sections', () => {
+    expect(projectsLead.length).toBeGreaterThan(0);
+    expect(achievementsLead.length).toBeGreaterThan(0);
   });
 });

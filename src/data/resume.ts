@@ -10,6 +10,19 @@ import type {
 
 export const siteUrl = 'https://levintaps.vercel.app';
 
+// The cyber view's hero rotates through these in place of a single job
+// title. Grounded in the CV headline: "Software Developer | Information
+// Technology | System Administrator | Cyber Sec Enthusiast".
+export const roles = [
+  'Full Stack Developer',
+  'Systems and Infrastructure',
+  'Cybersecurity Enthusiast',
+];
+
+export const projectsLead = 'Client platforms, a capstone project, and things I built on my own to learn.';
+
+export const achievementsLead = "A short list of results I'm proud of, on and off the board.";
+
 export const profile: Profile = {
   name: 'Jayson Levin Tapia',
   initials: 'JLT',
@@ -138,7 +151,6 @@ export const projects: Project[] = [
       'Order intake and fulfilment tracking with inventory levels kept in sync.',
       'Sales analytics for the owner, installable and usable on a phone in the shop.',
     ],
-    demoUrl: 'https://vanima-atelier.vercel.app',
     featured: true,
   },
   {
@@ -224,7 +236,6 @@ export const education: EducationEntry[] = [
 
 export const certifications: Certification[] = [
   { name: 'Java Programming NC III', issuer: 'TESDA Manila' },
-  { name: 'Cloud Practitioner Essentials', issuer: 'AWS' },
 ];
 
 export const achievements: Achievement[] = [
