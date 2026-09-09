@@ -1,4 +1,5 @@
 import PageMeta from '../common/PageMeta';
+import StructuredData from '../common/StructuredData';
 import { profile } from '../../data/resume';
 import Header from './Header';
 import Hero from './Hero';
@@ -21,6 +22,7 @@ export default function ResumeView() {
         description={profile.summary}
         view="resume"
       />
+      <StructuredData />
       <a className={styles.skip} href="#main">
         Skip to content
       </a>

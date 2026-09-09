@@ -8,6 +8,8 @@ import type {
   SkillGroup,
 } from './types';
 
+export const siteUrl = 'https://levintaps.vercel.app';
+
 export const profile: Profile = {
   name: 'Jayson Levin Tapia',
   initials: 'JLT',
