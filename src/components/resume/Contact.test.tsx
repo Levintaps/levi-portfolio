@@ -48,4 +48,35 @@ describe('Contact', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/levintapia\.work@gmail\.com/i);
   });
+
+  it('marks invalid fields with aria-invalid and aria-describedby after validation fails', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+    await user.click(screen.getByRole('button', { name: /send message/i }));
+
+    const nameInput = screen.getByLabelText(/name/i) as HTMLInputElement;
+    const emailInput = screen.getByLabelText(/email/i) as HTMLInputElement;
+
+    expect(nameInput).toHaveAttribute('aria-invalid', 'true');
+    expect(nameInput).toHaveAttribute('aria-describedby', 'contact-name-error');
+
+    expect(emailInput).toHaveAttribute('aria-invalid', 'true');
+    expect(emailInput).toHaveAttribute('aria-describedby', 'contact-email-error');
+  });
+
+  it('clears the error banner when editing a field after a failed submission', async () => {
+    sendContact.mockRejectedValue(new Error('network'));
+    const user = userEvent.setup();
+    render(<Contact />);
+    await fillValidForm(user);
+    await user.click(screen.getByRole('button', { name: /send message/i }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+
+    const nameInput = screen.getByLabelText(/name/i);
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Updated Name');
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });

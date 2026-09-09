@@ -14,10 +14,13 @@ export default function Contact() {
 
   function update(field: keyof ContactPayload, value: string) {
     setPayload((current) => ({ ...current, [field]: value }));
+    setStatus('idle');
+    setErrors({});
   }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    setStatus('idle');
     const found = validateContact(payload);
     setErrors(found);
     if (Object.keys(found).length > 0) return;
@@ -135,7 +138,11 @@ export default function Contact() {
             </p>
           ) : null}
 
-          {status === 'sent' ? <p className={styles.sent}>Message sent. Thank you.</p> : null}
+          {status === 'sent' ? (
+            <p className={styles.sent} role="status">
+              Message sent. Thank you.
+            </p>
+          ) : null}
 
           <button className={styles.submit} type="submit" disabled={status === 'sending'}>
             {status === 'sending' ? 'Sending' : 'Send message'}
