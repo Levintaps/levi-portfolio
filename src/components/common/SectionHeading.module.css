@@ -1,0 +1,21 @@
+.heading {
+  display: grid;
+  gap: var(--space-xs);
+  margin-block-end: var(--space-l);
+}
+
+.index {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.title {
+  font-size: var(--step-2);
+}
+
+.lead {
+  color: var(--ink-muted);
+}

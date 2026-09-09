@@ -1,0 +1,95 @@
+.header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-block-end: 1px solid var(--line);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-m);
+  inline-size: min(100% - 2rem, var(--shell));
+  margin-inline: auto;
+  block-size: 3.75rem;
+}
+
+.mark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+.desktopNav {
+  display: flex;
+  gap: var(--space-m);
+}
+
+@media not all and (min-width: 48rem) {
+  .desktopNav {
+    display: none;
+  }
+}
+
+.navLink {
+  font-size: var(--step--1);
+  color: var(--ink-muted);
+  text-decoration: none;
+  padding-block: var(--space-2xs);
+  border-block-end: 1px solid transparent;
+  transition: color var(--motion-fast) var(--ease),
+    border-color var(--motion-fast) var(--ease);
+}
+
+.navLink:hover {
+  color: var(--ink);
+  border-block-end-color: var(--accent);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.iconButton {
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--radius-m);
+  color: var(--ink-muted);
+  transition: color var(--motion-fast) var(--ease),
+    background-color var(--motion-fast) var(--ease);
+}
+
+.iconButton:hover {
+  color: var(--ink);
+  background: var(--surface-sunken);
+}
+
+.sheet {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-m) 1rem var(--space-l);
+  border-block-start: 1px solid var(--line);
+  background: var(--ground);
+}
+
+.sheetLink {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  text-decoration: none;
+  padding-block: var(--space-xs);
+  border-block-end: 1px solid var(--line);
+}
+
+@media (min-width: 48rem) {
+  .menuButton,
+  .sheet {
+    display: none;
+  }
+}
