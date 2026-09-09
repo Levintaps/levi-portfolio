@@ -16,7 +16,7 @@ export default function Education() {
           </article>
         ))}
         <article className={styles.card}>
-          <p className={styles.period}>Certifications</p>
+          <h3 className={styles.period}>Certifications</h3>
           <ul className={styles.certs}>
             {certifications.map((certification) => (
               <li key={certification.name}>
