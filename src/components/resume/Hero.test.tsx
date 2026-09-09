@@ -23,9 +23,15 @@ describe('Hero', () => {
   });
 
   it('serves the portrait with modern formats and explicit dimensions', () => {
-    render(<Hero />);
+    const { container } = render(<Hero />);
     const image = screen.getByAltText(profile.portrait.alt);
     expect(image).toHaveAttribute('width', String(profile.portrait.width));
     expect(image).toHaveAttribute('height', String(profile.portrait.height));
+    const sources = container.querySelectorAll('picture source');
+    expect(sources).toHaveLength(2);
+    expect(sources[0]).toHaveAttribute('type', 'image/avif');
+    expect(sources[0]).toHaveAttribute('srcset', profile.portrait.avif);
+    expect(sources[1]).toHaveAttribute('type', 'image/webp');
+    expect(sources[1]).toHaveAttribute('srcset', profile.portrait.webp);
   });
 });

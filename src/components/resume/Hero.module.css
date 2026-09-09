@@ -24,8 +24,8 @@
 }
 
 .dot {
-  inline-size: 0.5rem;
-  block-size: 0.5rem;
+  inline-size: var(--space-xs);
+  block-size: var(--space-xs);
   border-radius: 50%;
   background: var(--positive);
 }
