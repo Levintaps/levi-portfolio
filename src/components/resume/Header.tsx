@@ -23,6 +23,32 @@ export default function Header() {
     };
   }, [open]);
 
+  // The sheet and its trigger are both `display: none` from 48rem up (see
+  // Header.module.css), so a visitor who opens the menu on a phone and then
+  // widens the viewport past that breakpoint would otherwise be left with
+  // no control that can close it, while the effect above keeps the page
+  // permanently unscrollable. Closing on the breakpoint crossing, and on
+  // Escape, guarantees a way out either way.
+  useEffect(() => {
+    if (!open) return;
+
+    const query = window.matchMedia('(min-width: 48rem)');
+    const handleBreakpointChange = (event: MediaQueryListEvent) => {
+      if (event.matches) setOpen(false);
+    };
+    query.addEventListener('change', handleBreakpointChange);
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', handleKeydown);
+
+    return () => {
+      query.removeEventListener('change', handleBreakpointChange);
+      window.removeEventListener('keydown', handleKeydown);
+    };
+  }, [open]);
+
   return (
     <header className={styles.header}>
       <div className={styles.inner}>

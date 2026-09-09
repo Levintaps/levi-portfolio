@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '../../theme/ThemeProvider';
 import Header from './Header';
@@ -43,5 +43,84 @@ describe('Header', () => {
       'aria-expanded',
       'true',
     );
+  });
+
+  it('locks page scroll while open and releases it on close', async () => {
+    const user = userEvent.setup();
+    renderHeader();
+    await user.click(screen.getByRole('button', { name: /open menu/i }));
+    expect(document.body.style.overflow).toBe('hidden');
+    await user.click(screen.getByRole('button', { name: /close menu/i }));
+    expect(document.body.style.overflow).toBe('');
+  });
+
+  it('releases the scroll lock on unmount, even while the menu is open', async () => {
+    const user = userEvent.setup();
+    const { unmount } = renderHeader();
+    await user.click(screen.getByRole('button', { name: /open menu/i }));
+    expect(document.body.style.overflow).toBe('hidden');
+    unmount();
+    expect(document.body.style.overflow).toBe('');
+  });
+
+  it('closes the menu on Escape', async () => {
+    const user = userEvent.setup();
+    renderHeader();
+    await user.click(screen.getByRole('button', { name: /open menu/i }));
+    expect(screen.getByRole('button', { name: /close menu/i })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+
+    await user.keyboard('{Escape}');
+
+    expect(screen.getByRole('button', { name: /open menu/i })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    expect(document.body.style.overflow).toBe('');
+  });
+
+  it('closes the menu, and releases the scroll lock, when the viewport crosses to desktop width', async () => {
+    // Simulate a real `window.matchMedia('(min-width: 48rem)')` whose
+    // `matches` flips and fires a `change` event, standing in for a phone
+    // rotating to landscape or the window being widened past the
+    // breakpoint where Header.module.css hides the sheet and its trigger.
+    let changeHandler: ((event: MediaQueryListEvent) => void) | undefined;
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: (_event: string, handler: (event: MediaQueryListEvent) => void) => {
+        changeHandler = handler;
+      },
+      removeEventListener: () => {
+        changeHandler = undefined;
+      },
+      dispatchEvent: () => false,
+    })) as unknown as typeof window.matchMedia;
+
+    try {
+      const user = userEvent.setup();
+      renderHeader();
+      await user.click(screen.getByRole('button', { name: /open menu/i }));
+      expect(document.body.style.overflow).toBe('hidden');
+      expect(changeHandler).toBeDefined();
+
+      act(() => {
+        changeHandler!({ matches: true } as MediaQueryListEvent);
+      });
+
+      expect(screen.getByRole('button', { name: /open menu/i })).toHaveAttribute(
+        'aria-expanded',
+        'false',
+      );
+      expect(document.body.style.overflow).toBe('');
+    } finally {
+      window.matchMedia = originalMatchMedia;
+    }
   });
 });
