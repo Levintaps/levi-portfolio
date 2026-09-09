@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import App from './App';
 
 function renderAt(path: string) {
@@ -30,10 +31,34 @@ describe('App routing', () => {
     );
   });
 
+  it('marks the root element for /cyber immediately, before the lazy chunk resolves', () => {
+    // Regression check for the theme flash: the Suspense fallback shown
+    // while CyberView's chunk is still loading must already carry
+    // data-view="cyber", not the previous route's "resume".
+    renderAt('/cyber');
+    expect(document.documentElement.getAttribute('data-view')).toBe('cyber');
+  });
+
   it('sends an unknown path back to the resume view', () => {
     renderAt('/does-not-exist');
     expect(
       screen.getByRole('heading', { name: /jayson levin tapia/i, level: 1 }),
     ).toBeInTheDocument();
+  });
+
+  it('resets scroll position on a route change', async () => {
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    const user = userEvent.setup();
+    renderAt('/');
+
+    await user.click(screen.getByRole('link', { name: /enter the lab/i }));
+
+    await waitFor(() =>
+      expect(scrollTo).toHaveBeenCalledWith(
+        expect.objectContaining({ top: 0, left: 0 }),
+      ),
+    );
+
+    scrollTo.mockRestore();
   });
 });
