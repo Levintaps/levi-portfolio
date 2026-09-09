@@ -17,8 +17,16 @@ describe('App routing', () => {
 
   it('renders the cyber view at /cyber and marks the root element', async () => {
     renderAt('/cyber');
-    await waitFor(() =>
-      expect(document.documentElement.getAttribute('data-view')).toBe('cyber'),
+    // The /cyber route is code-split (`lazy(() => import(...))`) and its
+    // chunk pulls in six components, canvas/particle logic, and the Firebase
+    // SDK. Vitest/Vite has to transform and evaluate all of that on this,
+    // its first ever import in the test run, which reproducibly takes
+    // 750-950ms locally -- right at (and, with the suite's added overhead,
+    // past) the default waitFor timeout of 1000ms. That is a transform-cost
+    // floor, not flakiness, so give it real headroom instead of retrying.
+    await waitFor(
+      () => expect(document.documentElement.getAttribute('data-view')).toBe('cyber'),
+      { timeout: 5000 },
     );
   });
 
