@@ -25,14 +25,8 @@
 }
 
 .desktopNav {
-  display: flex;
+  display: none;
   gap: var(--space-m);
-}
-
-@media not all and (min-width: 48rem) {
-  .desktopNav {
-    display: none;
-  }
 }
 
 .navLink {
@@ -88,6 +82,10 @@
 }
 
 @media (min-width: 48rem) {
+  .desktopNav {
+    display: flex;
+  }
+
   .menuButton,
   .sheet {
     display: none;

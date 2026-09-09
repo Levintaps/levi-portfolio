@@ -15,10 +15,13 @@ describe('Header', () => {
   beforeEach(() => localStorage.clear());
 
   it('exposes the section links as navigation', () => {
-    renderHeader();
-    const nav = screen.getByRole('navigation', { name: /sections/i });
-    expect(nav).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /projects/i })).toHaveAttribute('href', '#projects');
+    const { container } = renderHeader();
+    // jsdom does not evaluate media queries, so the desktop nav is display:none here
+    // and invisible to a role query. Assert its structure instead.
+    const nav = container.querySelector('nav[aria-label="Sections"]');
+    expect(nav).not.toBeNull();
+    expect(nav?.querySelector('a[href="#projects"]')).not.toBeNull();
+    expect(nav?.querySelectorAll('a')).toHaveLength(5);
   });
 
   it('toggles the scheme and records the choice', async () => {
