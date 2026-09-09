@@ -1,6 +1,7 @@
 import PageMeta from '../common/PageMeta';
 import { profile } from '../../data/resume';
 import Header from './Header';
+import Hero from './Hero';
 import Footer from './Footer';
 import styles from './ResumeView.module.css';
 
@@ -17,7 +18,7 @@ export default function ResumeView() {
       </a>
       <Header />
       <main id="main" className={styles.main}>
-        <h1>{profile.name}</h1>
+        <Hero />
       </main>
       <Footer />
     </>

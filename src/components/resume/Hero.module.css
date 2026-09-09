@@ -1,0 +1,133 @@
+.hero {
+  inline-size: min(100% - (var(--gutter) * 2), var(--shell));
+  margin-inline: auto;
+  padding-block: var(--space-xl) var(--space-2xl);
+  display: grid;
+  gap: var(--space-l);
+}
+
+.text {
+  display: grid;
+  gap: var(--space-s);
+  align-content: start;
+}
+
+.availability {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.dot {
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  border-radius: 50%;
+  background: var(--positive);
+}
+
+.name {
+  font-size: var(--step-4);
+  letter-spacing: -0.035em;
+}
+
+.title {
+  font-family: var(--font-mono);
+  font-size: var(--step-0);
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  line-height: 1.35;
+}
+
+.summary {
+  color: var(--ink-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-block-start: var(--space-xs);
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-s) var(--space-m);
+  border-radius: var(--radius-m);
+  text-decoration: none;
+  font-weight: 600;
+  min-block-size: 2.75rem;
+  transition: transform var(--motion-fast) var(--ease),
+    background-color var(--motion-fast) var(--ease),
+    border-color var(--motion-fast) var(--ease);
+}
+
+.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.primary:hover {
+  transform: translateY(-2px);
+}
+
+.secondary {
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+}
+
+.secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.meta {
+  display: grid;
+  gap: var(--space-s);
+  margin-block-start: var(--space-m);
+}
+
+.location {
+  font-size: var(--step--1);
+  color: var(--ink-faint);
+}
+
+.socials {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.portrait img {
+  inline-size: 100%;
+  max-inline-size: 20rem;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--radius-l);
+  border: 1px solid var(--line);
+}
+
+@media (min-width: 48rem) {
+  .hero {
+    grid-template-columns: 1.5fr 1fr;
+    align-items: center;
+    gap: var(--space-xl);
+    padding-block: var(--space-2xl) var(--space-3xl);
+  }
+
+  .portrait img {
+    max-inline-size: none;
+    margin-inline-start: auto;
+  }
+}
