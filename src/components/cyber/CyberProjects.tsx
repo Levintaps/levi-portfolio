@@ -24,6 +24,7 @@ export default function CyberProjects() {
               {project.period}
             </p>
             <h3 className={styles.name}>{project.name}</h3>
+            <p className={styles.kind}>{project.kind}</p>
             <p className={styles.summary}>{project.summary}</p>
             <ul className={styles.stack}>
               {project.stack.map((item) => (
@@ -40,7 +41,11 @@ export default function CyberProjects() {
                 Open demo
               </a>
             ) : (
-              <span className={styles.private}>Client system, access restricted</span>
+              <span className={styles.private}>
+                {project.kind === 'Client project'
+                  ? 'Client system, access restricted'
+                  : 'No public demo available'}
+              </span>
             )}
           </article>
         ))}
