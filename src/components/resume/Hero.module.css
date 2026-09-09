@@ -111,6 +111,7 @@
 
 .portrait img {
   inline-size: 100%;
+  block-size: auto;
   max-inline-size: 20rem;
   aspect-ratio: 4 / 5;
   object-fit: cover;

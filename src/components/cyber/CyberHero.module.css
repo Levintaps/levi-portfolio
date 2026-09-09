@@ -132,6 +132,7 @@
 
 .frame img {
   inline-size: 100%;
+  block-size: auto;
   max-inline-size: 18rem;
   aspect-ratio: 4 / 5;
   object-fit: cover;

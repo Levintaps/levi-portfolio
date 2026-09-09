@@ -151,6 +151,14 @@ export const projects: Project[] = [
       'Map pinning for destinations, served from a Spring Boot backend.',
     ],
     demoUrl: 'https://levi-lookwhatchera.vercel.app',
+    screenshot: {
+      avif: '/images/lookwhatchera.avif',
+      webp: '/images/lookwhatchera.webp',
+      fallback: '/images/lookwhatchera.jpg',
+      width: 960,
+      height: 600,
+      alt: 'Lookwhatchera landing page showing a limestone-cliff cove in the Philippines with a "Discover the Philippines" headline and a Begin Your Journey button',
+    },
     featured: true,
   },
   {
@@ -165,6 +173,14 @@ export const projects: Project[] = [
       'Built as a serverless application with no infrastructure to maintain.',
     ],
     demoUrl: 'https://harana-hub.vercel.app',
+    screenshot: {
+      avif: '/images/harana-hub.avif',
+      webp: '/images/harana-hub.webp',
+      fallback: '/images/harana-hub.jpg',
+      width: 960,
+      height: 600,
+      alt: 'Harana Hub karaoke screen with a YouTube video player, a backing track volume slider, a Start Singing panel and an empty playlist and leaderboard',
+    },
     featured: true,
   },
 ];
