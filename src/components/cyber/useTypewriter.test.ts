@@ -25,10 +25,18 @@ describe('useTypewriter', () => {
       useTypewriter(['AB', 'CD'], { typeMs: 10, holdMs: 50 }),
     );
 
+    // Type "AB" (2 ticks * 10ms), then one more typeMs tick where the hook
+    // notices the phrase is fully typed and starts the hold (50ms). After
+    // the hold, erasing runs at typeMs / 2, so both characters come off in
+    // 2 * 5ms; the moment the text empties, the hook flips to "CD" and
+    // types its first character in the same tick — no extra delay needed.
+    // Total: 10 + 10 + 10 + 50 + 5 + 5 = 90ms.
     act(() => {
-      vi.advanceTimersByTime(20 + 50 + 20 + 10);
+      vi.advanceTimersByTime(90);
     });
+
     expect(result.current.length).toBeGreaterThan(0);
-    expect('CD'.startsWith(result.current) || result.current === 'AB').toBe(true);
+    expect('CD'.startsWith(result.current)).toBe(true);
+    expect(result.current).not.toBe('AB');
   });
 });

@@ -45,7 +45,7 @@
 
 .link:hover {
   color: var(--accent);
-  text-shadow: 0 0 12px var(--accent);
+  text-shadow: 0 0 12px var(--accent-glow);
 }
 
 .index {
