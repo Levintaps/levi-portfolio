@@ -1,0 +1,29 @@
+.shell {
+  position: relative;
+  min-block-size: 100dvh;
+  isolation: isolate;
+}
+
+.scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.35;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 2px,
+    rgb(0 0 0 / 0.35) 2px 3px
+  );
+}
+
+.main {
+  position: relative;
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scanlines {
+    display: none;
+  }
+}
