@@ -1,13 +1,7 @@
-import { profile } from '../../data/resume';
+import { profile, roles } from '../../data/resume';
 import IconLink from '../common/IconLink';
 import { useTypewriter } from './useTypewriter';
 import styles from './CyberHero.module.css';
-
-const roles = [
-  'Full Stack Developer',
-  'Systems and Infrastructure',
-  'Security Minded Engineer',
-];
 
 export default function CyberHero() {
   const typed = useTypewriter(roles);
