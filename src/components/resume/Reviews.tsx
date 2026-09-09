@@ -3,8 +3,11 @@ import type { FormEvent } from 'react';
 import {
   fetchMessages,
   fetchRatings,
+  submitMessage,
   submitRating,
   summarise,
+  validateMessage,
+  MAX_MESSAGE_LENGTH,
   MAX_NAME_LENGTH,
   type FeedbackMessage,
   type RatingSummary,
@@ -31,8 +34,14 @@ export default function Reviews() {
   const [notes, setNotes] = useState<FeedbackMessage[]>([]);
   const [name, setName] = useState('');
   const [value, setValue] = useState(0);
+  const [note, setNote] = useState('');
   const [error, setError] = useState('');
   const [done, setDone] = useState(() => hasSubmitted('rating'));
+  // The rating and the note write to separate collections behind separate
+  // one-submission-per-visitor guards (see submissionGuard.ts), so a
+  // visitor who already left a note on this view or the cyber one gets a
+  // disabled field here rather than a second, silently-dropped write.
+  const [noteLocked, setNoteLocked] = useState(() => hasSubmitted('message'));
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
@@ -69,6 +78,18 @@ export default function Reviews() {
       return;
     }
 
+    // The note is optional: only validate it, and only ever write it, when
+    // the visitor actually typed something. An empty note must never reach
+    // submitMessage.
+    const trimmedNote = note.trim();
+    if (trimmedNote) {
+      const problem = validateMessage(trimmedNote);
+      if (problem) {
+        setError(problem);
+        return;
+      }
+    }
+
     setSending(true);
     setError('');
     let succeeded = false;
@@ -83,6 +104,20 @@ export default function Reviews() {
       setError('That did not go through. Please try again later.');
     } finally {
       setSending(false);
+    }
+
+    // Write the note as a message, independently guarded so a visitor who
+    // already left one (here or on the cyber view) never gets a second
+    // write recorded.
+    if (succeeded && trimmedNote && !hasSubmitted('message')) {
+      try {
+        await submitMessage(trimmedNote);
+        markSubmitted('message');
+        setNoteLocked(true);
+      } catch {
+        // The rating already succeeded; losing the note is not worth
+        // surfacing as an error on top of that.
+      }
     }
 
     // Refresh the ratings if the write succeeded (best-effort)
@@ -101,7 +136,7 @@ export default function Reviews() {
       <SectionHeading
         index="06 / Feedback"
         title="What visitors think"
-        lead="Ratings are stored permanently and cannot be edited or removed."
+        lead="Every rating submitted here is saved and folded into the average below."
       />
 
       <div className={styles.layout}>
@@ -149,6 +184,19 @@ export default function Reviews() {
 
               <StarInput value={value} onChange={setValue} disabled={sending} />
 
+              <label className={styles.label} htmlFor="review-note">
+                Your note (optional)
+              </label>
+              <input
+                id="review-note"
+                className={styles.input}
+                value={note}
+                maxLength={MAX_MESSAGE_LENGTH}
+                onChange={(event) => setNote(event.target.value)}
+                placeholder={noteLocked ? 'You already left a note' : 'Optional'}
+                disabled={sending || noteLocked}
+              />
+
               {error ? (
                 <p className={styles.error} role="alert">
                   {error}
@@ -165,9 +213,9 @@ export default function Reviews() {
             <div className={styles.notes}>
               <h3 className={styles.notesTitle}>Recent notes</h3>
               <ul className={styles.notesList}>
-                {notes.map((note) => (
-                  <li key={note.id} className={styles.note}>
-                    {note.message}
+                {notes.map((entry) => (
+                  <li key={entry.id} className={styles.note}>
+                    {entry.message}
                   </li>
                 ))}
               </ul>

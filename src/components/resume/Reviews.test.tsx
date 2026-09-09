@@ -10,12 +10,14 @@ vi.mock('../../lib/feedback', async () => {
     fetchRatings: vi.fn(),
     fetchMessages: vi.fn(),
     submitRating: vi.fn(),
+    submitMessage: vi.fn(),
   };
 });
 
 const fetchRatings = vi.mocked(feedback.fetchRatings);
 const fetchMessages = vi.mocked(feedback.fetchMessages);
 const submitRating = vi.mocked(feedback.submitRating);
+const submitMessage = vi.mocked(feedback.submitMessage);
 
 describe('Reviews', () => {
   beforeEach(() => {
@@ -30,6 +32,7 @@ describe('Reviews', () => {
       { id: 'm2', message: 'Strong project write-ups.', createdAt: new Date('2026-01-02') },
     ]);
     submitRating.mockResolvedValue(undefined);
+    submitMessage.mockResolvedValue(undefined);
   });
 
   it('shows the average and the count once loaded', async () => {
@@ -62,6 +65,46 @@ describe('Reviews', () => {
 
     await waitFor(() => expect(submitRating).toHaveBeenCalledWith('Recruiter', 5));
     expect(await screen.findByText(/thank you/i)).toBeInTheDocument();
+  });
+
+  it('submits the note as a message alongside the rating', async () => {
+    const user = userEvent.setup();
+    render(<Reviews />);
+    await screen.findByText('4.5');
+
+    await user.type(screen.getByLabelText(/your note/i), 'Great case studies.');
+    await user.click(screen.getByRole('radio', { name: /5 stars/i }));
+    await user.click(screen.getByRole('button', { name: /submit rating/i }));
+
+    await waitFor(() => expect(submitMessage).toHaveBeenCalledWith('Great case studies.'));
+    expect(localStorage.getItem('portfolio-submitted-message')).toBe('true');
+  });
+
+  it('does not write an empty message when the note is left blank', async () => {
+    const user = userEvent.setup();
+    render(<Reviews />);
+    await screen.findByText('4.5');
+
+    await user.click(screen.getByRole('radio', { name: /5 stars/i }));
+    await user.click(screen.getByRole('button', { name: /submit rating/i }));
+
+    await waitFor(() => expect(submitRating).toHaveBeenCalled());
+    expect(submitMessage).not.toHaveBeenCalled();
+  });
+
+  it('disables the note field, and writes no second message, for a visitor who already left one', async () => {
+    localStorage.setItem('portfolio-submitted-message', 'true');
+    const user = userEvent.setup();
+    render(<Reviews />);
+    await screen.findByText('4.5');
+
+    expect(screen.getByLabelText(/your note/i)).toBeDisabled();
+
+    await user.click(screen.getByRole('radio', { name: /5 stars/i }));
+    await user.click(screen.getByRole('button', { name: /submit rating/i }));
+
+    await waitFor(() => expect(submitRating).toHaveBeenCalled());
+    expect(submitMessage).not.toHaveBeenCalled();
   });
 
   it('refuses to submit without a star selected', async () => {
