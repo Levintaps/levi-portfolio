@@ -8,7 +8,11 @@ service cloud.firestore {
       allow create: if request.resource.data.keys().hasOnly(['message', 'timestamp'])
         && request.resource.data.message is string
         && request.resource.data.message.size() > 0
-        && request.resource.data.message.size() <= 280
+        // 1120 = 4 x the client's 280-character cap. size() on a string may count
+        // UTF-8 bytes rather than characters, and a single character can take up to
+        // 4 bytes in UTF-8, so this is the largest a client-accepted message could
+        // ever measure as here, whichever unit size() actually uses.
+        && request.resource.data.message.size() <= 1120
         && request.resource.data.timestamp == request.time;
       allow update, delete: if false;
     }
@@ -18,7 +22,11 @@ service cloud.firestore {
       allow create: if request.resource.data.keys().hasOnly(['name', 'rating', 'timestamp'])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
-        && request.resource.data.name.size() <= 60
+        // 240 = 4 x the client's 60-character cap, for the same reason as the
+        // messages cap above: the worst-case UTF-8 bytes-per-character is 4, so no
+        // name the form accepts can ever be rejected here regardless of what unit
+        // size() counts in.
+        && request.resource.data.name.size() <= 240
         && request.resource.data.rating is int
         && request.resource.data.rating >= 1
         && request.resource.data.rating <= 5

@@ -32,7 +32,7 @@ export interface RatingSummary {
   distribution: Record<1 | 2 | 3 | 4 | 5, number>;
 }
 
-function toDate(value: unknown): Date | null {
+export function toDate(value: unknown): Date | null {
   return value instanceof Timestamp ? value.toDate() : null;
 }
 

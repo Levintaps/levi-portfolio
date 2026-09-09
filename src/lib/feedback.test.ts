@@ -1,4 +1,5 @@
-import { MAX_MESSAGE_LENGTH, summarise, validateMessage } from './feedback';
+import { Timestamp } from 'firebase/firestore';
+import { MAX_MESSAGE_LENGTH, summarise, toDate, validateMessage } from './feedback';
 import type { Rating } from './feedback';
 
 function rating(value: number, id = String(value)): Rating {
@@ -45,5 +46,35 @@ describe('validateMessage', () => {
 
   it('rejects a message over the length limit', () => {
     expect(validateMessage('x'.repeat(MAX_MESSAGE_LENGTH + 1))).toMatch(/too long/i);
+  });
+});
+
+describe('toDate', () => {
+  it('converts a real Firestore Timestamp to a Date with the right time', () => {
+    const source = new Date('2026-01-01T00:00:00Z');
+    const timestamp = Timestamp.fromDate(source);
+    const result = toDate(timestamp);
+    expect(result).toBeInstanceOf(Date);
+    expect(result?.getTime()).toBe(source.getTime());
+  });
+
+  it('returns null for a plain Date, as written by the old site', () => {
+    expect(toDate(new Date('2026-01-01T00:00:00Z'))).toBeNull();
+  });
+
+  it('returns null for a string', () => {
+    expect(toDate('2026-01-01T00:00:00Z')).toBeNull();
+  });
+
+  it('returns null for a number', () => {
+    expect(toDate(1735689600000)).toBeNull();
+  });
+
+  it('returns null for null', () => {
+    expect(toDate(null)).toBeNull();
+  });
+
+  it('returns null for undefined', () => {
+    expect(toDate(undefined)).toBeNull();
   });
 });
