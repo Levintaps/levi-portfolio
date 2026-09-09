@@ -1,0 +1,38 @@
+.section {
+  inline-size: min(100% - (var(--gutter) * 2), var(--shell));
+  margin-inline: auto;
+  padding-block: var(--space-2xl);
+  scroll-margin-block-start: 4.5rem;
+}
+
+.list {
+  display: grid;
+  gap: var(--space-m);
+}
+
+.item {
+  display: grid;
+  gap: var(--space-2xs);
+  padding-inline-start: var(--space-m);
+  border-inline-start: 2px solid var(--accent);
+}
+
+.title {
+  font-size: var(--step-0);
+  font-weight: 600;
+}
+
+.detail {
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
+@media (min-width: 48rem) {
+  .list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .section {
+    padding-block: var(--space-3xl);
+  }
+}

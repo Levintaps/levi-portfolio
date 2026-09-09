@@ -1,0 +1,58 @@
+.section {
+  inline-size: min(100% - (var(--gutter) * 2), var(--shell));
+  margin-inline: auto;
+  padding-block: var(--space-2xl);
+  scroll-margin-block-start: 4.5rem;
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-m);
+}
+
+.card {
+  display: grid;
+  gap: var(--space-2xs);
+  padding: var(--space-m);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+}
+
+.period {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-faint);
+}
+
+.qualification {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 600;
+  display: block;
+}
+
+.institution {
+  color: var(--ink-muted);
+  display: block;
+}
+
+.detail {
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
+.certs {
+  display: grid;
+  gap: var(--space-s);
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .section {
+    padding-block: var(--space-3xl);
+  }
+}
