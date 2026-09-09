@@ -29,4 +29,45 @@ describe('scheme storage', () => {
   it('returns null when nothing has been stored', () => {
     expect(readStoredScheme()).toBeNull();
   });
+
+  it('returns null when localStorage.getItem throws', () => {
+    const spy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('Storage unavailable');
+    });
+    try {
+      expect(readStoredScheme()).toBeNull();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('does not throw when localStorage.setItem throws', () => {
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('Storage unavailable');
+    });
+    try {
+      expect(() => storeScheme('dark')).not.toThrow();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('resolves from system preference after storeScheme fails', () => {
+    const setSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('Storage unavailable');
+    });
+    const getSpy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('Storage unavailable');
+    });
+    try {
+      storeScheme('dark');
+      const stored = readStoredScheme();
+      expect(stored).toBeNull();
+      expect(resolveScheme(stored, true)).toBe('dark');
+      expect(resolveScheme(stored, false)).toBe('light');
+    } finally {
+      setSpy.mockRestore();
+      getSpy.mockRestore();
+    }
+  });
 });
