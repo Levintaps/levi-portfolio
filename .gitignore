@@ -1,0 +1,17 @@
+node_modules
+dist
+dist-ssr
+.env
+.env.local
+.env.*.local
+*.local
+.DS_Store
+*.log
+npm-debug.log*
+.vercel
+coverage
+
+# large media never belongs in git
+*.gif
+*.mp4
+*.mov

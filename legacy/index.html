@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Jayson Levin Tapia — Full Stack Developer, Game Developer & UI/UX Designer based in Antipolo, Philippines.">
+    <title>Jayson Levin Tapia | Full Stack Developer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="feedback-style.css">
+    <link rel="stylesheet" href="new-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+</head>
+<body>
+    <canvas id="canvas-container"></canvas>
+
+    <!-- SCAN LINE OVERLAY -->
+    <div class="scanlines"></div>
+
+    <!-- NAV -->
+    <nav id="main-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-bracket">[</span>JLT<span class="logo-bracket">]</span>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link"><span class="nav-num">01.</span>Home</a>
+                <a href="#skills" class="nav-link"><span class="nav-num">02.</span>Skills</a>
+                <a href="#projects" class="nav-link"><span class="nav-num">03.</span>Projects</a>
+                <a href="#feedback" class="nav-link"><span class="nav-num">04.</span>Feedback</a>
+                <button class="nav-contact-btn" id="open-contact-modal"><span class="nav-num">05.</span>Contact</button>
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-menu">
+        <a href="#home" class="nav-link">Home</a>
+        <a href="#skills" class="nav-link">Skills</a>
+        <a href="#projects" class="nav-link">Projects</a>
+        <a href="#feedback" class="nav-link">Feedback</a>
+        <button class="nav-link mobile-contact-btn" id="open-contact-modal-mobile">Contact</button>
+    </div>
+
+    <!-- ===== HERO ===== -->
+    <section id="home">
+        <div class="hero-grid">
+            <!-- LEFT: text -->
+            <div class="hero-left">
+                <p class="hero-greeting"><span class="terminal-prompt">▸</span> Hello, World. I'm</p>
+                <h1 class="hero-name">Jayson<br><span class="name-accent">Levin</span><br>Tapia</h1>
+                <div class="hero-role-line">
+                    <span class="role-bracket">//</span>
+                    <span class="title"></span>
+                </div>
+                <p class="hero-desc">Crafting secure code, immersive games, and dynamic web solutions. Turning ideas into production-ready digital experiences.</p>
+                <div class="hero-cta">
+                    <button class="cta-primary see-more-btn">About Me</button>
+                    <button class="cta-secondary" id="view-cv-btn">Request CV</button>
+                    <button class="cta-ghost" id="open-contact-modal-hero">Let's Connect</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-num">5+</span>
+                        <span class="stat-label">Years Coding</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-num">6+</span>
+                        <span class="stat-label">Projects</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-num">2155</span>
+                        <span class="stat-label">FIDE ELO</span>
+                    </div>
+                </div>
+            </div>
+            <!-- RIGHT: profile -->
+            <div class="hero-right">
+                <div class="profile-frame">
+                    <div class="frame-corner tl"></div>
+                    <div class="frame-corner tr"></div>
+                    <div class="frame-corner bl"></div>
+                    <div class="frame-corner br"></div>
+                    <div class="profile-scan"></div>
+                    <img src="images/profile.png" alt="Jayson Levin Tapia" class="profile-image">
+                    <div class="profile-badge">
+                        <span class="badge-dot"></span> Available for hire
+                    </div>
+                </div>
+                <div class="hero-socials">
+                    <a href="https://github.com/Levintaps" target="_blank" class="social-pill"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/levintaps" target="_blank" class="social-pill"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.facebook.com/jaysonlevin.tapia" target="_blank" class="social-pill"><i class="fab fa-facebook"></i></a>
+                    <a href="https://discordapp.com/users/1301537425247703062" target="_blank" class="social-pill"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span class="scroll-text">SCROLL</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- CV Request Modal -->
+    <div class="modal" id="cv-request-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-cv-modal" aria-label="Close">×</span>
+            <h2 class="modal-title">CV Access Request</h2>
+            <div class="modal-body">
+                <p>Submit your details below. Upon review, I'll send you access to my CV as soon as possible.</p>
+                <form id="cv-request-form" class="cv-request-form">
+                    <div class="form-group">
+                        <label for="cv-name">Name</label>
+                        <input type="text" id="cv-name" name="name" class="form-input" placeholder="Your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cv-email">Email</label>
+                        <input type="email" id="cv-email" name="email" class="form-input" placeholder="Your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cv-message">Message (Optional)</label>
+                        <textarea id="cv-message" name="message" class="form-input form-textarea" placeholder="Why do you want my CV?"></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">Submit Request</button>
+                </form>
+                <div class="form-message" id="cv-form-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Me Modal -->
+    <div class="modal" id="about-modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 class="modal-title">About Me</h2>
+            <div class="modal-body">
+                <p>I'm Jayson Levin Tapia, a passionate Full Stack Developer, UI/UX Designer, and chess enthusiast. With over 5 years of experience in software development, I specialize in creating responsive, high-performance applications using modern technologies like React, Python, and Unity.</p>
+                <p>Beyond coding, I have a deep passion for chess, where I've competed in various tournaments. I also enjoy designing cyberpunk-inspired art and exploring the latest tech trends.</p>
+                <div class="modal-buttons">
+                    <button class="chess-career-btn">Chess Career</button>
+                    <button class="ingame-profile-btn">In-Game Profiles</button>
+                </div>
+                <div class="chess-career" style="display:none;">
+                    <h3 class="chess-title">Chess Details</h3>
+                    <div class="chess-details">
+                        <div class="chess-id">
+                            <p><strong>Professional Chess Player ID:</strong></p>
+                            <img src="images/chess-id.jpg" alt="Chess Player ID" class="chess-id-image">
+                        </div>
+                        <p><strong>Chess.com:</strong> <a href="https://www.chess.com/member/jaysonlevintapia" target="_blank" class="chess-link">View Profile</a> | <span>Elo: 2500+</span></p>
+                        <p><strong>Lichess:</strong> <a href="https://lichess.org/@/WeakButWeakness" target="_blank" class="chess-link">View Profile</a> | <span>Elo: 2800+</span></p>
+                        <p><strong>Local Elo:</strong> <a href="https://chessportalph.org/ratings" target="_blank" class="chess-link">Elo: 2189</a></p>
+                        <p><strong>FIDE Rating:</strong> <a href="https://ratings.fide.com/profile/5230411" target="_blank" class="chess-link">Elo: 2155</a></p>
+                    </div>
+                </div>
+                <div class="ingame-profiles" style="display:none;">
+                    <h3 class="ingame-title">My In-Game Profiles</h3>
+                    <div class="ingame-details">
+                        <div class="game-profile">
+                            <h4 class="game-name">Mobile Legends</h4>
+                            <p><strong>Username:</strong> Levi | <strong>ID:</strong> 236699016 | <strong>Rank:</strong> Mythic Immortal</p>
+                        </div>
+                        <div class="game-profile">
+                            <h4 class="game-name">Call of Duty Mobile</h4>
+                            <p><strong>Username:</strong> Levi | <strong>Rank:</strong> Legendary</p>
+                        </div>
+                        <div class="game-profile">
+                            <h4 class="game-name">Dota 2</h4>
+                            <p><strong>Username:</strong> Levi | <strong>MMR:</strong> Uncalibrated</p>
+                        </div>
+                        <div class="game-profile">
+                            <h4 class="game-name">Clash of Clans</h4>
+                            <p><strong>Username:</strong> Levi | <strong>Town Hall:</strong> 15</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SKILLS ===== -->
+    <section id="skills">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">02 / SKILLS</span>
+                <h2 class="section-title">Tech Arsenal</h2>
+                <p class="section-sub">Technologies & tools I work with daily</p>
+            </div>
+
+            <div class="skills-grid">
+                <div class="skill-card" data-index="0">
+                    <div class="skill-card-icon"><i class="fas fa-code"></i></div>
+                    <h3 class="skill-card-title">Full Stack Dev</h3>
+                    <div class="skill-tags">
+                        <span class="stag">JavaScript</span>
+                        <span class="stag">HTML/CSS</span>
+                        <span class="stag">React</span>
+                        <span class="stag">Spring Boot</span>
+                        <span class="stag">MySQL</span>
+                        <span class="stag">PostgreSQL</span>
+                    </div>
+                </div>
+                <div class="skill-card" data-index="1">
+                    <div class="skill-card-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h3 class="skill-card-title">Mobile Dev</h3>
+                    <div class="skill-tags">
+                        <span class="stag">React Native</span>
+                        <span class="stag">Flutter</span>
+                        <span class="stag">Firebase</span>
+                        <span class="stag">Kotlin</span>
+                    </div>
+                </div>
+                <div class="skill-card" data-index="2">
+                    <div class="skill-card-icon"><i class="fas fa-gamepad"></i></div>
+                    <h3 class="skill-card-title">Game Dev</h3>
+                    <div class="skill-tags">
+                        <span class="stag">Unity</span>
+                        <span class="stag">C#</span>
+                        <span class="stag">2D Modeling</span>
+                        <span class="stag">3D Modeling</span>
+                        <span class="stag">Game Design</span>
+                    </div>
+                </div>
+                <div class="skill-card" data-index="3">
+                    <div class="skill-card-icon"><i class="fas fa-network-wired"></i></div>
+                    <h3 class="skill-card-title">Sys Admin</h3>
+                    <div class="skill-tags">
+                        <span class="stag">Linux</span>
+                        <span class="stag">Windows Server</span>
+                        <span class="stag">CLI</span>
+                        <span class="stag">Virtual Machine</span>
+                    </div>
+                </div>
+                <div class="skill-card skill-card--wide" data-index="4">
+                    <div class="skill-card-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3 class="skill-card-title">Security & Others</h3>
+                    <div class="skill-tags">
+                        <span class="stag">Secure Coding</span>
+                        <span class="stag">API Security</span>
+                        <span class="stag">Chess (FIDE 2155)</span>
+                        <span class="stag">UI/UX Design</span>
+                        <span class="stag">Technical Writing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== PROJECTS ===== -->
+    <section id="projects">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">03 / PROJECTS</span>
+                <h2 class="section-title">My Work</h2>
+                <p class="section-sub">A selection of things I've built</p>
+            </div>
+
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="html/css">HTML/CSS</button>
+                <button class="filter-btn" data-filter="javascript">JavaScript</button>
+                <button class="filter-btn" data-filter="python">Python</button>
+                <button class="filter-btn" data-filter="java">Java</button>
+                <button class="filter-btn" data-filter="springboot">Spring Boot</button>
+                <button class="filter-btn" data-filter="csharp">C#</button>
+                <button class="filter-btn" data-filter="mobile">Mobile</button>
+                <button class="filter-btn" data-filter="game">Game Dev</button>
+                <button class="filter-btn" data-filter="api">API</button>
+            </div>
+
+            <!-- Featured project -->
+            <div class="project-featured" data-tech="javascript,react,html/css,springboot">
+                <div class="project-featured-media">
+                    <img src="gif/Lookwhatchera.gif" alt="Lookwhatchera" class="project-featured-img">
+                    <div class="project-featured-overlay">
+                        <div class="project-featured-links">
+                            <a href="https://levi-lookwhatchera.vercel.app/" target="_blank" class="project-link live"><i class="fas fa-external-link-alt"></i> Live Demo</a>
+                            <a href="#" class="project-link code"><i class="fab fa-github"></i> View Code</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-featured-info">
+                    <span class="featured-label">⚡ Featured Project</span>
+                    <h3 class="project-featured-title">Lookwhatchera</h3>
+                    <div class="project-featured-desc">
+                        <p>A modern smart navigation platform with an AI-powered assistant. Meet GabAI — your personal travel companion that provides real-time recommendations and assistance as you explore.</p>
+                    </div>
+                    <div class="project-tech-row">
+                        <span class="tech-tag">JavaScript</span>
+                        <span class="tech-tag">HTML5/CSS</span>
+                        <span class="tech-tag">Java</span>
+                        <span class="tech-tag">Spring Boot</span>
+                        <span class="tech-tag">MySQL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project grid -->
+            <div class="projects-grid">
+                <div class="project-card" data-tech="java">
+                    <div class="project-card-top">
+                        <i class="fas fa-folder-open project-folder"></i>
+                        <div class="project-links">
+                            <a href="#" class="project-icon-link"><i class="fab fa-github"></i></a>
+                            <a href="#" class="project-icon-link"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+                    <img src="images/profile.jpg" alt="Hardware Management System" class="project-image">
+                    <h3 class="project-title">Hardware Management System</h3>
+                    <p class="project-description">Offline desktop application for seamless hardware management. Built using Java JFrame with MySQL backend for efficient resource tracking.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Java</span>
+                        <span class="tech-tag">JFrames</span>
+                        <span class="tech-tag">MySQL</span>
+                    </div>
+                </div>
+
+                <div class="project-card" data-tech="java,springboot,api">
+                    <div class="project-card-top">
+                        <i class="fas fa-folder-open project-folder"></i>
+                        <div class="project-links">
+                            <a href="#" class="project-icon-link"><i class="fab fa-github"></i></a>
+                            <a href="#" class="project-icon-link"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+                    <img src="images/profile.jpg" alt="Real-time Chatbot" class="project-image">
+                    <h3 class="project-title">Real-time Chatbot</h3>
+                    <p class="project-description">Intelligent chatbot powered by the Gemini API. Delivers real-time responses with an engaging conversational experience via Spring Boot backend.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Java</span>
+                        <span class="tech-tag">Spring Boot</span>
+                        <span class="tech-tag">Gemini API</span>
+                    </div>
+                </div>
+
+                <div class="project-card" data-tech="csharp,game,unity">
+                    <div class="project-card-top">
+                        <i class="fas fa-folder-open project-folder"></i>
+                        <div class="project-links">
+                            <a href="#" class="project-icon-link"><i class="fab fa-github"></i></a>
+                            <a href="#" class="project-icon-link"><i class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+                    <img src="images/profile.jpg" alt="Maze Master" class="project-image">
+                    <h3 class="project-title">Maze Master</h3>
+                    <p class="project-description">Navigate intricate mazes in this Unity 3D game. Features challenging puzzles, dynamic gameplay, and immersive 3D environments built with C#.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">C#</span>
+                        <span class="tech-tag">Unity</span>
+                        <span class="tech-tag">3D</span>
+                    </div>
+                </div>
+
+                <div class="project-card" data-tech="csharp,game,unity">
+                    <div class="project-card-top">
+                        <i class="fas fa-folder-open project-folder"></i>
+                        <div class="project-links">
+                            <a href="#" class="project-icon-link"><i class="fab fa-github"></i></a>
+                            <a href="#" class="project-icon-link"><i class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+                    <img src="images/profile.jpg" alt="Flying Frog" class="project-image">
+                    <h3 class="project-title">Flying Frog</h3>
+                    <p class="project-description">Guide a daring frog through obstacles in this Unity 2D Flappy Bird-style game. Addictive gameplay with a fun, quirky twist built with C#.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">C#</span>
+                        <span class="tech-tag">Unity</span>
+                        <span class="tech-tag">2D</span>
+                    </div>
+                </div>
+
+                <div class="project-card" data-tech="javascript,html/css">
+                    <div class="project-card-top">
+                        <i class="fas fa-folder-open project-folder"></i>
+                        <div class="project-links">
+                            <a href="#" class="project-icon-link"><i class="fab fa-github"></i></a>
+                            <a href="https://margaux-valentine.vercel.app/" target="_blank" class="project-icon-link"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+                    <img src="images/profile.jpg" alt="Valentine Website" class="project-image">
+                    <h3 class="project-title">Valentine Website</h3>
+                    <p class="project-description">A visually stunning interactive platform to celebrate love. Built with HTML, CSS, and JavaScript with personalized messaging and smooth animations.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">JavaScript</span>
+                        <span class="tech-tag">HTML5</span>
+                        <span class="tech-tag">CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FEEDBACK ===== -->
+    <section id="feedback">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">04 / FEEDBACK</span>
+                <h2 class="section-title">Leave a Review</h2>
+                <p class="section-sub">Messages float as bubbles · Ratings are saved permanently</p>
+            </div>
+
+            <div class="feedback-layout">
+                <div class="chatbox-container">
+                    <div class="chatbox-header">
+                        <span class="chatbox-dot red"></span>
+                        <span class="chatbox-dot yellow"></span>
+                        <span class="chatbox-dot green"></span>
+                        <span class="chatbox-title">feedback_terminal.exe</span>
+                    </div>
+                    <div class="bubble-container" id="bubbleContainer1"></div>
+                    <div class="chat-input-row">
+                        <input type="text" id="messageInput" placeholder="Type your message..." class="chat-input">
+                        <button class="btn" id="sendMessageBtn"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+
+                <div class="rating-panel">
+                    <h3 class="rating-title">Rate This Portfolio</h3>
+                    <div class="input-group">
+                        <input type="text" id="nameInput" placeholder="Your name or nickname" class="form-input">
+                    </div>
+                    <div class="star-rating" id="starRating">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                    <button class="btn" id="submitRatingBtn">Submit Rating</button>
+                    <div class="ratings-display">
+                        <div class="average-rating">
+                            Average: <span class="rating-number" id="averageRating">0.0</span> ★ <span id="totalRatings">(0 ratings)</span>
+                        </div>
+                        <div class="ratings-list" id="ratingsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer id="footer">
+        <div class="footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">[JLT]</div>
+                <p class="footer-tagline">Building the future of tech —<br>one line at a time.</p>
+                <div class="footer-socials">
+                    <a href="https://github.com/Levintaps" target="_blank" class="social-pill"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/levintaps" target="_blank" class="social-pill"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.facebook.com/jaysonlevin.tapia" target="_blank" class="social-pill"><i class="fab fa-facebook"></i></a>
+                    <a href="https://discordapp.com/users/1301537425247703062" target="_blank" class="social-pill"><i class="fab fa-discord"></i></a>
+                    <a href="#" target="_blank" class="social-pill"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-right">
+                <p class="footer-cta-label">Got a project in mind?</p>
+                <button class="cta-primary footer-cta-btn" id="open-contact-modal-footer">Start a Conversation</button>
+                <div class="footer-contact-quick">
+                    <a href="mailto:levintaps@gmail.com" class="footer-quick-link"><i class="fas fa-envelope"></i> levintaps@gmail.com</a>
+                    <a href="tel:+639214805230" class="footer-quick-link"><i class="fas fa-phone"></i> +63 921 480 5230</a>
+                    <span class="footer-quick-link"><i class="fas fa-map-marker-alt"></i> Antipolo City, Rizal, Philippines</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 Jayson Levin Tapia. All rights reserved.</span>
+            <span class="footer-built">Built with <span class="heart">♥</span> & lots of coffee</span>
+        </div>
+    </footer>
+
+    <!-- ===== CONTACT MODAL ===== -->
+    <div class="modal" id="contact-modal">
+        <div class="modal-content modal-content--wide">
+            <span class="close-btn" id="close-contact-modal">×</span>
+            <h2 class="modal-title">Get In Touch</h2>
+            <div class="modal-body contact-modal-body">
+                <div class="contact-modal-info">
+                    <p>I'm open to new projects, creative ideas, and opportunities. Let's build something amazing together.</p>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <span class="contact-icon">📧</span>
+                            <a href="mailto:levintaps@gmail.com" class="contact-link glitch" data-text="levintaps@gmail.com">levintaps@gmail.com</a>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📞</span>
+                            <a href="tel:+639214805230" class="contact-link glitch" data-text="+63 921 480 5230">+63 921 480 5230</a>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📍</span>
+                            <a href="https://maps.app.goo.gl/rPAZmVSmKRoxRW3AA" target="_blank" class="contact-link">Antipolo City, Rizal, PH</a>
+                        </div>
+                    </div>
+                </div>
+                <form id="contactForm" class="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="contactName" name="from_name" class="form-input" placeholder="Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="contactEmail" name="from_email" class="form-input" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="contactSubject" name="subject" class="form-input" placeholder="Subject" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="contactMessage" name="message" class="form-input form-textarea" placeholder="Message" required></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">Send Message</button>
+                </form>
+            </div>
+            <div id="formMessage" class="form-message"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="feedback-script.js"></script>
+    <script>
+    // Contact modal open/close
+    const contactModal = document.getElementById('contact-modal');
+    const closeContactModal = document.getElementById('close-contact-modal');
+    const contactOpeners = [
+        document.getElementById('open-contact-modal'),
+        document.getElementById('open-contact-modal-mobile'),
+        document.getElementById('open-contact-modal-hero'),
+        document.getElementById('open-contact-modal-footer')
+    ];
+    contactOpeners.forEach(btn => {
+        if (btn) btn.addEventListener('click', () => { contactModal.style.display = 'block'; });
+    });
+    if (closeContactModal) closeContactModal.addEventListener('click', () => { contactModal.style.display = 'none'; });
+    window.addEventListener('click', e => { if (e.target === contactModal) contactModal.style.display = 'none'; });
+    </script>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+    const firebaseConfig = {
+        apiKey: "",
+        authDomain: "levi-portfolio.firebaseapp.com",
+        projectId: "levi-portfolio",
+        storageBucket: "levi-portfolio.firebasestorage.app",
+        messagingSenderId: "274044710536",
+        appId: "1:274044710536:web:4fc67307f2d6b668bbb93d"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db;
+    window.firestoreModules = { collection, addDoc, getDocs, query, orderBy };
+    </script>
+</body>
+</html>
