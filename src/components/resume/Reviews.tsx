@@ -62,16 +62,28 @@ export default function Reviews() {
 
     setSending(true);
     setError('');
+    let succeeded = false;
+
+    // Write the rating
     try {
       await submitRating(name, value);
       markSubmitted('rating');
       setDone(true);
-      const ratings = await fetchRatings();
-      setSummary(summarise(ratings));
+      succeeded = true;
     } catch {
       setError('That did not go through. Please try again later.');
     } finally {
       setSending(false);
+    }
+
+    // Refresh the ratings if the write succeeded (best-effort)
+    if (succeeded) {
+      try {
+        const ratings = await fetchRatings();
+        setSummary(summarise(ratings));
+      } catch {
+        // Rating was saved; a stale average is better than a false error
+      }
     }
   }
 

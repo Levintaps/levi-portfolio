@@ -86,4 +86,28 @@ describe('Reviews', () => {
     render(<Reviews />);
     expect(await screen.findByText(/ratings are unavailable/i)).toBeInTheDocument();
   });
+
+  it('shows the thank you and no error when the refresh fails after a successful submit', async () => {
+    const user = userEvent.setup();
+
+    // First call (initial load) resolves, second call (refresh) rejects
+    fetchRatings.mockResolvedValueOnce([
+      { id: 'a', name: 'Ana', rating: 5, createdAt: new Date('2026-01-01') },
+      { id: 'b', name: 'Ben', rating: 4, createdAt: new Date('2026-01-02') },
+    ]);
+    fetchRatings.mockRejectedValueOnce(new Error('Network error'));
+
+    render(<Reviews />);
+    await screen.findByText('4.5');
+
+    await user.type(screen.getByLabelText(/your name/i), 'Recruiter');
+    await user.click(screen.getByRole('radio', { name: /5 stars/i }));
+    await user.click(screen.getByRole('button', { name: /submit rating/i }));
+
+    // The thank you should appear
+    expect(await screen.findByText(/thank you/i)).toBeInTheDocument();
+
+    // No alert should appear
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
 });
