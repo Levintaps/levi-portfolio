@@ -1,4 +1,4 @@
-import { projects } from '../../data/resume';
+import { projects, projectsLead } from '../../data/resume';
 import SectionHeading from '../common/SectionHeading';
 import ProjectCard from './ProjectCard';
 import styles from './Projects.module.css';
@@ -12,7 +12,7 @@ export default function Projects() {
       <SectionHeading
         index="02 / Projects"
         title="Selected work"
-        lead="Systems in production use, built end to end."
+        lead={projectsLead}
       />
 
       <div className={styles.grid}>

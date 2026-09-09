@@ -1,4 +1,4 @@
-import { achievements } from '../../data/resume';
+import { achievements, achievementsLead } from '../../data/resume';
 import SectionHeading from '../common/SectionHeading';
 import styles from './Achievements.module.css';
 
@@ -8,7 +8,7 @@ export default function Achievements() {
       <SectionHeading
         index="05 / Beyond work"
         title="Competitive record"
-        lead="Chess taught me to calculate under time pressure. It shows up in how I debug."
+        lead={achievementsLead}
       />
       <ul className={styles.list}>
         {achievements.map((achievement) => (
