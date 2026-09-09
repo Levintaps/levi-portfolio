@@ -10,14 +10,22 @@ import {
   type RatingSummary,
 } from '../../lib/feedback';
 import { hasSubmitted, markSubmitted } from '../../lib/submissionGuard';
+import { useReveal } from '../../hooks/useReveal';
 import SectionHeading from '../common/SectionHeading';
 import { Icon } from '../common/icons';
 import StarInput from './StarInput';
 import styles from './Reviews.module.css';
 
+// Ratings/notes live behind Firestore, which is loaded on demand (see
+// src/lib/firebase.ts and src/lib/feedback.ts). A generous root margin means
+// the fetch — and the SDK chunk it pulls in — starts well before the visitor
+// actually scrolls this section into view.
+const FETCH_ROOT_MARGIN = '600px 0px';
+
 type Status = 'loading' | 'ready' | 'unavailable';
 
 export default function Reviews() {
+  const { ref, revealed } = useReveal<HTMLElement>({ rootMargin: FETCH_ROOT_MARGIN });
   const [status, setStatus] = useState<Status>('loading');
   const [summary, setSummary] = useState<RatingSummary | null>(null);
   const [notes, setNotes] = useState<FeedbackMessage[]>([]);
@@ -28,6 +36,7 @@ export default function Reviews() {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
+    if (!revealed) return;
     let active = true;
 
     fetchRatings()
@@ -51,7 +60,7 @@ export default function Reviews() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [revealed]);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -88,7 +97,7 @@ export default function Reviews() {
   }
 
   return (
-    <section className={styles.section} id="reviews">
+    <section className={styles.section} id="reviews" ref={ref}>
       <SectionHeading
         index="06 / Feedback"
         title="What visitors think"

@@ -1,5 +1,5 @@
 import { skillGroups } from '../../data/resume';
-import { useReveal } from './useReveal';
+import { useReveal } from '../../hooks/useReveal';
 import styles from './CyberSkills.module.css';
 
 export default function CyberSkills() {

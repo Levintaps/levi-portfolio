@@ -1,6 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 
-export function useReveal<T extends HTMLElement>() {
+interface UseRevealOptions {
+  /**
+   * Passed straight through to IntersectionObserver. Defaults to a small
+   * negative bottom margin, which suits a scroll-reveal animation (the
+   * element must be substantially in view before it "reveals"). Pass a
+   * generous positive margin instead when the goal is to trigger something
+   * — like a data fetch — before the section is actually visible.
+   */
+  rootMargin?: string;
+}
+
+export function useReveal<T extends HTMLElement>({
+  rootMargin = '0px 0px -12% 0px',
+}: UseRevealOptions = {}) {
   const ref = useRef<T | null>(null);
   const [revealed, setRevealed] = useState(false);
 
@@ -20,12 +33,12 @@ export function useReveal<T extends HTMLElement>() {
           }
         }
       },
-      { rootMargin: '0px 0px -12% 0px' },
+      { rootMargin },
     );
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [rootMargin]);
 
   return { ref, revealed };
 }

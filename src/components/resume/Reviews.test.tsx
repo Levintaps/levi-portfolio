@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Reviews from './Reviews';
 import * as feedback from '../../lib/feedback';
@@ -79,6 +79,63 @@ describe('Reviews', () => {
     render(<Reviews />);
     expect(await screen.findByText(/thank you/i)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /submit rating/i })).toBeNull();
+  });
+
+  it('does not fetch until the section is revealed, then fetches once it is', async () => {
+    // jsdom has no IntersectionObserver at all, so every other test in this
+    // file exercises Reviews' fallback path (fetch immediately). This test
+    // stubs one in to exercise the actual deferred-until-revealed path: no
+    // fetch on mount, a fetch once the observer reports the section is near
+    // the viewport.
+    const originalIO = window.IntersectionObserver;
+    let deliver: IntersectionObserverCallback | undefined;
+    let observedTarget: Element | undefined;
+    const disconnect = vi.fn();
+
+    class StubIntersectionObserver {
+      constructor(callback: IntersectionObserverCallback) {
+        deliver = callback;
+      }
+      observe(target: Element) {
+        observedTarget = target;
+      }
+      disconnect = disconnect;
+      unobserve = vi.fn();
+      takeRecords = vi.fn(() => []);
+      root = null;
+      rootMargin = '';
+      thresholds: number[] = [];
+    }
+
+    window.IntersectionObserver =
+      StubIntersectionObserver as unknown as typeof IntersectionObserver;
+
+    try {
+      render(<Reviews />);
+
+      // Let effects settle. Nothing should have been fetched yet.
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(fetchRatings).not.toHaveBeenCalled();
+      expect(fetchMessages).not.toHaveBeenCalled();
+      expect(deliver).toBeDefined();
+      expect(observedTarget).toBeDefined();
+
+      // Simulate the section approaching the viewport.
+      act(() => {
+        deliver!(
+          [{ isIntersecting: true, target: observedTarget! } as IntersectionObserverEntry],
+          new StubIntersectionObserver(() => {}) as unknown as IntersectionObserver,
+        );
+      });
+
+      expect(await screen.findByText('4.5')).toBeInTheDocument();
+      expect(fetchRatings).toHaveBeenCalledTimes(1);
+      expect(fetchMessages).toHaveBeenCalledTimes(1);
+      expect(disconnect).toHaveBeenCalled();
+    } finally {
+      window.IntersectionObserver = originalIO;
+    }
   });
 
   it('survives a Firestore read failure without breaking the page', async () => {

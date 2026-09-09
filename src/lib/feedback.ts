@@ -1,13 +1,11 @@
-import {
-  addDoc,
-  collection,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  serverTimestamp,
-  Timestamp,
-} from 'firebase/firestore';
+// Every Firestore export is loaded with dynamic import() inside the async
+// functions below that actually need it, so none of the SDK is reachable
+// from a static import and Rollup can split it into an on-demand chunk. Even
+// a single real (non-type) static import of an export from 'firebase/firestore'
+// forces the whole module into the eager bundle, so `Timestamp` is imported
+// only as a type here (erased at build) and `toDate` checks its runtime
+// shape structurally instead of using `instanceof`.
+import type { Timestamp } from 'firebase/firestore';
 import { getDb } from './firebase';
 
 export const MAX_MESSAGE_LENGTH = 280;
@@ -32,8 +30,24 @@ export interface RatingSummary {
   distribution: Record<1 | 2 | 3 | 4 | 5, number>;
 }
 
+// Structural check for a Firestore Timestamp. This can't be `instanceof
+// Timestamp`, because that requires a real runtime import of the class,
+// which would defeat the dynamic import() above (see the comment at the top
+// of this file). `seconds`/`nanoseconds`/`toDate` together are specific
+// enough that nothing else this app hands to `toDate` (a plain `Date`,
+// string, number, null, undefined) can satisfy them by accident.
+function isTimestamp(value: unknown): value is Timestamp {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as Timestamp).toDate === 'function' &&
+    typeof (value as Timestamp).seconds === 'number' &&
+    typeof (value as Timestamp).nanoseconds === 'number'
+  );
+}
+
 export function toDate(value: unknown): Date | null {
-  return value instanceof Timestamp ? value.toDate() : null;
+  return isTimestamp(value) ? value.toDate() : null;
 }
 
 export function validateMessage(text: string): string | null {
@@ -61,8 +75,12 @@ export function summarise(ratings: Rating[]): RatingSummary {
 }
 
 export async function fetchMessages(): Promise<FeedbackMessage[]> {
+  const [{ collection, getDocs, limit, orderBy, query }, db] = await Promise.all([
+    import('firebase/firestore'),
+    getDb(),
+  ]);
   const snapshot = await getDocs(
-    query(collection(getDb(), 'messages'), orderBy('timestamp', 'desc'), limit(60)),
+    query(collection(db, 'messages'), orderBy('timestamp', 'desc'), limit(60)),
   );
 
   return snapshot.docs.map((document) => {
@@ -76,8 +94,12 @@ export async function fetchMessages(): Promise<FeedbackMessage[]> {
 }
 
 export async function fetchRatings(): Promise<Rating[]> {
+  const [{ collection, getDocs, limit, orderBy, query }, db] = await Promise.all([
+    import('firebase/firestore'),
+    getDb(),
+  ]);
   const snapshot = await getDocs(
-    query(collection(getDb(), 'ratings'), orderBy('timestamp', 'desc'), limit(100)),
+    query(collection(db, 'ratings'), orderBy('timestamp', 'desc'), limit(100)),
   );
 
   return snapshot.docs.map((document) => {
@@ -92,14 +114,22 @@ export async function fetchRatings(): Promise<Rating[]> {
 }
 
 export async function submitMessage(text: string): Promise<void> {
-  await addDoc(collection(getDb(), 'messages'), {
+  const [{ addDoc, collection, serverTimestamp }, db] = await Promise.all([
+    import('firebase/firestore'),
+    getDb(),
+  ]);
+  await addDoc(collection(db, 'messages'), {
     message: text.trim().slice(0, MAX_MESSAGE_LENGTH),
     timestamp: serverTimestamp(),
   });
 }
 
 export async function submitRating(name: string, rating: number): Promise<void> {
-  await addDoc(collection(getDb(), 'ratings'), {
+  const [{ addDoc, collection, serverTimestamp }, db] = await Promise.all([
+    import('firebase/firestore'),
+    getDb(),
+  ]);
+  await addDoc(collection(db, 'ratings'), {
     name: (name.trim() || 'Anonymous').slice(0, MAX_NAME_LENGTH),
     rating,
     timestamp: serverTimestamp(),

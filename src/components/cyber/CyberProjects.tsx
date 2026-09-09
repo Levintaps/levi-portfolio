@@ -1,5 +1,5 @@
 import { projects } from '../../data/resume';
-import { useReveal } from './useReveal';
+import { useReveal } from '../../hooks/useReveal';
 import styles from './CyberProjects.module.css';
 
 export default function CyberProjects() {
