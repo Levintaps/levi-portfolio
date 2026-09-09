@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" data-view="resume">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Jayson Levin Tapia — Software Developer</title>
+    <meta name="description" content="Software developer in Antipolo City, Philippines. Full-stack web, mobile and IoT systems in React, TypeScript, Java and Firebase." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('portfolio-scheme');
+          var scheme = stored === 'light' || stored === 'dark' ? stored
+            : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-scheme', scheme);
+        } catch (e) {
+          document.documentElement.setAttribute('data-scheme', 'light');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
