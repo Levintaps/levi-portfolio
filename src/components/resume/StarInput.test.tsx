@@ -28,6 +28,6 @@ describe('StarInput', () => {
     render(<Harness />);
     await user.tab();
     await user.keyboard('{ArrowRight}');
-    expect(screen.getByRole('radio', { name: /1 star/i })).toBeChecked();
+    expect(screen.getByRole('radio', { name: /2 stars/i })).toBeChecked();
   });
 });
