@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CyberFeedback from './CyberFeedback';
 import * as feedback from '../../lib/feedback';
+import type { FeedbackMessage } from '../../lib/feedback';
 
 vi.mock('../../lib/feedback', async () => {
   const actual = await vi.importActual<typeof feedback>('../../lib/feedback');
@@ -53,5 +54,35 @@ describe('CyberFeedback', () => {
     render(<CyberFeedback />);
     await screen.findByText('Clean work.');
     expect(screen.getByLabelText(/your message/i)).toBeDisabled();
+  });
+
+  it('keeps an optimistic message after a slow load resolves later', async () => {
+    const user = userEvent.setup();
+    let resolveLoad!: (messages: FeedbackMessage[]) => void;
+    fetchMessages.mockReturnValue(
+      new Promise<FeedbackMessage[]>((resolve) => {
+        resolveLoad = resolve;
+      }),
+    );
+
+    render(<CyberFeedback />);
+
+    await user.type(screen.getByLabelText(/your message/i), 'Nice portfolio');
+    await user.click(screen.getByRole('button', { name: /send/i }));
+    await waitFor(() => expect(submitMessage).toHaveBeenCalledWith('Nice portfolio'));
+    expect(await screen.findByText('Nice portfolio')).toBeInTheDocument();
+
+    resolveLoad([{ id: 'a', message: 'Clean work.', createdAt: new Date('2026-01-01') }]);
+
+    expect(await screen.findByText('Clean work.')).toBeInTheDocument();
+    expect(screen.getByText('Nice portfolio')).toBeInTheDocument();
+  });
+
+  it('exposes the message list as a focusable, labeled region', async () => {
+    render(<CyberFeedback />);
+    await screen.findByText('Clean work.');
+
+    const log = screen.getByRole('log', { name: /visitor messages/i });
+    expect(log).toHaveAttribute('tabindex', '0');
   });
 });

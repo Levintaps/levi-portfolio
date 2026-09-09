@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   fetchMessages,
   submitMessage,
@@ -15,12 +15,25 @@ export default function CyberFeedback() {
   const [error, setError] = useState('');
   const [locked, setLocked] = useState(() => hasSubmitted('message'));
   const [sending, setSending] = useState(false);
+  const mountedRef = useRef(true);
+
+  useEffect(
+    () => () => {
+      mountedRef.current = false;
+    },
+    [],
+  );
 
   useEffect(() => {
     let active = true;
     fetchMessages()
       .then((loaded) => {
-        if (active) setMessages(loaded);
+        if (!active) return;
+        setMessages((current) => {
+          const loadedIds = new Set(loaded.map((message) => message.id));
+          const localOnly = current.filter((message) => !loadedIds.has(message.id));
+          return [...localOnly, ...loaded];
+        });
       })
       .catch(() => {
         if (active) setError('Signal lost. Messages are unavailable right now.');
@@ -42,6 +55,7 @@ export default function CyberFeedback() {
     setError('');
     try {
       await submitMessage(draft);
+      if (!mountedRef.current) return;
       markSubmitted('message');
       setMessages((current) => [
         { id: `local-${Date.now()}`, message: draft.trim(), createdAt: new Date() },
@@ -50,9 +64,9 @@ export default function CyberFeedback() {
       setDraft('');
       setLocked(true);
     } catch {
-      setError('Transmission failed. Try again later.');
+      if (mountedRef.current) setError('Transmission failed. Try again later.');
     } finally {
-      setSending(false);
+      if (mountedRef.current) setSending(false);
     }
   }
 
@@ -63,7 +77,7 @@ export default function CyberFeedback() {
         <h2 className={styles.title}>Leave a signal</h2>
       </header>
 
-      <div className={styles.bubbles}>
+      <div className={styles.bubbles} tabIndex={0} role="log" aria-label="Visitor messages">
         {messages.map((message, index) => (
           <p key={message.id} className={styles.bubble} data-lane={index % 3}>
             {message.message}

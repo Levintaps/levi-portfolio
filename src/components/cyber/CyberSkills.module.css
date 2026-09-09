@@ -78,7 +78,7 @@
 .chip {
   font-family: var(--font-mono);
   font-size: var(--step--1);
-  padding: var(--space-2xs) var(--space-xs);
+  padding: 0.15rem var(--space-xs);
   border: 1px solid var(--line);
   color: var(--ink-muted);
 }
