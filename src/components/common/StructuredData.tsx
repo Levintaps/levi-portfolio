@@ -4,8 +4,10 @@ import { profile, siteUrl } from '../../data/resume';
 export default function StructuredData() {
   useEffect(() => {
     // profile.location is "City, Region, Country" — split rather than
-    // duplicating those three strings as separate literals here.
-    const [addressLocality, addressRegion, addressCountry] = profile.location
+    // duplicating locality/region as separate literals here. The country is
+    // emitted as its ISO 3166-1 alpha-2 code (search engines prefer that
+    // over the spelled-out name), so it is not taken from the split.
+    const [addressLocality, addressRegion] = profile.location
       .split(',')
       .map((part) => part.trim());
 
@@ -23,7 +25,7 @@ export default function StructuredData() {
         '@type': 'PostalAddress',
         addressLocality,
         addressRegion,
-        addressCountry,
+        addressCountry: 'PH',
       },
       sameAs: profile.socials.map((social) => social.href),
       description: profile.summary,
