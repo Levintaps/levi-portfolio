@@ -30,7 +30,7 @@ export default function ProjectCard({ project }: { project: Project }) {
         <p className={styles.kind}>{project.kind}</p>
         <p className={styles.summary}>{project.summary}</p>
 
-        <ul className={styles.stack}>
+        <ul className={styles.stack} aria-label="Technology stack">
           {project.stack.map((item) => (
             <li key={item} className={styles.chip}>
               {item}
@@ -38,7 +38,7 @@ export default function ProjectCard({ project }: { project: Project }) {
           ))}
         </ul>
 
-        <ul className={styles.highlights}>
+        <ul className={styles.highlights} aria-label="Highlights">
           {project.highlights.map((highlight) => (
             <li key={highlight}>{highlight}</li>
           ))}
@@ -54,6 +54,7 @@ export default function ProjectCard({ project }: { project: Project }) {
                 rel="noreferrer noopener"
               >
                 Visit demo
+                <span className={styles.srOnly}>{` for ${project.name}`}</span>
                 <Icon name="external" size={16} />
               </a>
             ) : null}
@@ -65,6 +66,7 @@ export default function ProjectCard({ project }: { project: Project }) {
                 rel="noreferrer noopener"
               >
                 Source code
+                <span className={styles.srOnly}>{` for ${project.name}`}</span>
                 <Icon name="github" size={16} />
               </a>
             ) : null}

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import ProjectCard from './ProjectCard';
 import type { Project } from '../../data/types';
 
@@ -19,7 +19,10 @@ describe('ProjectCard', () => {
     expect(screen.getByRole('heading', { name: 'Test Project' })).toBeInTheDocument();
     expect(screen.getByText('Jan 2026')).toBeInTheDocument();
     expect(screen.getByText('React')).toBeInTheDocument();
-    expect(screen.getAllByRole('listitem')).toHaveLength(base.highlights.length + base.stack.length);
+    const stack = screen.getByRole('list', { name: /technology stack/i });
+    const highlights = screen.getByRole('list', { name: /highlights/i });
+    expect(within(stack).getAllByRole('listitem')).toHaveLength(base.stack.length);
+    expect(within(highlights).getAllByRole('listitem')).toHaveLength(base.highlights.length);
   });
 
   it('renders no image and no links when the project has neither', () => {
@@ -34,6 +37,7 @@ describe('ProjectCard', () => {
     expect(link).toHaveAttribute('href', 'https://example.com');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', expect.stringContaining('noreferrer'));
+    expect(link).toHaveAccessibleName('Visit demo for Test Project');
   });
 
   it('renders the screenshot with explicit dimensions and lazy loading', () => {
