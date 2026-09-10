@@ -39,15 +39,26 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
+  margin-block-start: var(--space-2xs);
 }
 
 .name {
   font-size: var(--step-1);
+  line-height: 1.2;
 }
 
 .client {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2xs);
   font-size: var(--step--1);
   color: var(--ink-faint);
+  overflow-wrap: anywhere;
+}
+
+.divider {
+  color: var(--line-strong);
 }
 
 .client a {
@@ -59,6 +70,7 @@
 }
 
 .summary {
+  margin-block-start: var(--space-xs);
   color: var(--ink-muted);
   font-size: var(--step--1);
 }

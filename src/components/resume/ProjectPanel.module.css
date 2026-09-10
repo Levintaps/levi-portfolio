@@ -8,6 +8,7 @@
   padding: var(--gutter);
   background: color-mix(in srgb, var(--ground) 78%, transparent);
   backdrop-filter: blur(6px);
+  animation: fade var(--motion-base) var(--ease) both;
 }
 
 .panel {
@@ -22,6 +23,20 @@
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-l);
   background: var(--surface);
+  animation: rise var(--motion-slow) var(--ease) both;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-xl));
+  }
 }
 
 .close {

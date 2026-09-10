@@ -28,6 +28,41 @@ describe('ProjectCard', () => {
     expect(screen.queryByRole('list')).toBeNull();
   });
 
+  it('leads with the name, then the kind, the client, the summary and the control', () => {
+    render(
+      <ProjectCard
+        project={{ ...base, client: 'Vanima Atelier', clientEmail: 'owner@example.com' }}
+        onOpen={() => {}}
+      />,
+    );
+
+    const order = [
+      screen.getByRole('heading', { name: 'Test Project' }),
+      screen.getByText('Client project'),
+      screen.getByText('Vanima Atelier'),
+      screen.getByText('A short summary.'),
+      screen.getByRole('button', { name: /see full details/i }),
+    ];
+
+    for (let i = 0; i < order.length - 1; i += 1) {
+      const relation = order[i].compareDocumentPosition(order[i + 1]);
+      expect(relation & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    }
+  });
+
+  it('offers the client contact beside the client name', () => {
+    render(
+      <ProjectCard
+        project={{ ...base, client: 'Vanima Atelier', clientEmail: 'owner@example.com' }}
+        onOpen={() => {}}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'owner@example.com' })).toHaveAttribute(
+      'href',
+      'mailto:owner@example.com',
+    );
+  });
+
   it('names the client when the project has one', () => {
     render(<ProjectCard project={{ ...base, client: 'Vanima Atelier' }} onOpen={() => {}} />);
     expect(screen.getByText('Vanima Atelier')).toBeInTheDocument();

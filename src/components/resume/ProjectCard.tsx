@@ -21,8 +21,8 @@ export default function ProjectCard({ project, onOpen, decorative = false }: Pro
           <span className={styles.blurBlock} />
         </div>
         <div className={styles.body}>
-          <p className={styles.kind}>{project.kind}</p>
           <h3 className={styles.name}>{project.name}</h3>
+          <p className={styles.kind}>{project.kind}</p>
           <p className={styles.summary}>{confidentialNote}</p>
         </div>
       </article>
@@ -48,19 +48,31 @@ export default function ProjectCard({ project, onOpen, decorative = false }: Pro
       ) : null}
 
       <div className={styles.body}>
-        <p className={styles.kind}>{project.kind}</p>
         <h3 className={styles.name}>{project.name}</h3>
-        {project.client ? (
+        <p className={styles.kind}>{project.kind}</p>
+
+        {project.client || project.clientEmail ? (
           <p className={styles.client} data-client>
-            {project.clientUrl ? (
-              <a href={project.clientUrl} target="_blank" rel="noreferrer noopener">
-                {project.client}
-              </a>
-            ) : (
-              project.client
-            )}
+            {project.client ? (
+              project.clientUrl ? (
+                <a href={project.clientUrl} target="_blank" rel="noreferrer noopener">
+                  {project.client}
+                </a>
+              ) : (
+                <span>{project.client}</span>
+              )
+            ) : null}
+            {project.client && project.clientEmail ? (
+              <span className={styles.divider} aria-hidden="true">
+                |
+              </span>
+            ) : null}
+            {project.clientEmail ? (
+              <a href={`mailto:${project.clientEmail}`}>{project.clientEmail}</a>
+            ) : null}
           </p>
         ) : null}
+
         <p className={styles.summary}>{project.summary}</p>
 
         <button

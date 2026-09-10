@@ -1,4 +1,5 @@
 .carousel {
+  --fade: var(--space-l);
   display: grid;
   gap: var(--space-s);
   min-inline-size: 0;
@@ -7,6 +8,21 @@
 .track {
   display: grid;
   min-inline-size: 0;
+  /* Cards dissolve at the two edges rather than being cut off mid-slide. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade),
+    #000 calc(100% - var(--fade)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade),
+    #000 calc(100% - var(--fade)),
+    transparent
+  );
   grid-auto-flow: column;
   grid-auto-columns: 100%;
   gap: var(--space-m);
@@ -68,6 +84,10 @@
 }
 
 @media (min-width: 64rem) {
+  .carousel {
+    --fade: var(--space-2xl);
+  }
+
   .track {
     grid-auto-columns: calc((100% - var(--space-m) * 2) / 3);
   }
