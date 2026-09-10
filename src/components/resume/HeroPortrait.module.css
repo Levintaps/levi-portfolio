@@ -8,9 +8,19 @@
   border: 1px solid var(--line);
 }
 
-.stage {
-  --lanyard-height: 26rem;
+.spacer {
   inline-size: 22rem;
   block-size: 26rem;
-  cursor: grab;
+}
+
+/* The canvas is centred on the portrait column but reaches well past it, so
+   a thrown badge travels over the text instead of vanishing at an edge. The
+   camera always looks at the origin, so the canvas is what gets positioned. */
+.overlay {
+  --lanyard-height: 100%;
+  position: absolute;
+  inset-block: -18rem -2rem;
+  inset-inline-start: -12rem;
+  inline-size: 46rem;
+  z-index: 2;
 }

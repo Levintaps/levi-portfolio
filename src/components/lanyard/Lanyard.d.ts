@@ -10,6 +10,7 @@ export interface LanyardProps {
   imageFit?: 'cover' | 'contain';
   lanyardImage?: string | null;
   lanyardWidth?: number;
+  eventSource?: { current: HTMLElement | null } | HTMLElement | null;
 }
 
 declare const Lanyard: ComponentType<LanyardProps>;

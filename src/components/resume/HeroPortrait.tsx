@@ -29,11 +29,10 @@ function canRunLanyard() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
 
   // Several megabytes of model and physics is not a fair thing to spend on a
-  // metered or slow connection.
-  const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } })
-    .connection;
+  // metered connection. Only the explicit data-saver signal is trusted here;
+  // the browser's own speed estimate reports slow-2g on a local network.
+  const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
   if (connection?.saveData) return false;
-  if (connection?.effectiveType && /2g|slow/.test(connection.effectiveType)) return false;
 
   try {
     const canvas = document.createElement('canvas');
@@ -49,15 +48,19 @@ export default function HeroPortrait() {
   useEffect(() => {
     if (!canRunLanyard()) return;
 
+    // Idle time is the polite moment to start, but some browsers withhold it
+    // from a background tab indefinitely, so a plain timer backs it up.
     const start = () => setInteractive(true);
-    const idle = window.requestIdleCallback;
-    if (typeof idle === 'function') {
-      const handle = idle(start, { timeout: 2000 });
-      return () => window.cancelIdleCallback?.(handle);
-    }
+    const timer = window.setTimeout(start, 1500);
+    const handle =
+      typeof window.requestIdleCallback === 'function'
+        ? window.requestIdleCallback(start, { timeout: 1500 })
+        : null;
 
-    const timer = window.setTimeout(start, 600);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      if (handle !== null) window.cancelIdleCallback?.(handle);
+    };
   }, []);
 
   // The canvas is inserted after first paint, and the renderer only measures
@@ -78,16 +81,21 @@ export default function HeroPortrait() {
   if (!interactive) return <StaticPortrait />;
 
   return (
-    <div className={styles.stage}>
-      <Suspense fallback={<StaticPortrait />}>
-        <Lanyard
-          position={[0, -2.3, 9]}
-          gravity={[0, -40, 0]}
-          fov={22}
-          frontImage="/images/id-card.jpg"
-          imageFit="cover"
-        />
-      </Suspense>
-    </div>
+    <>
+      {/* Holds the column's height while the card floats above the whole
+          hero, so a thrown badge is never clipped by a box. */}
+      <div className={styles.spacer} aria-hidden="true" />
+      <div className={styles.overlay}>
+        <Suspense fallback={null}>
+          <Lanyard
+            position={[0, -0.3, 15]}
+            gravity={[0, -40, 0]}
+            fov={22}
+            frontImage="/images/id-card.jpg"
+            imageFit="cover"
+          />
+        </Suspense>
+      </div>
+    </>
   );
 }
