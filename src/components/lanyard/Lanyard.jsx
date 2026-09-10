@@ -31,7 +31,8 @@ export default function Lanyard({
   imageFit = 'cover',
   lanyardImage = null,
   lanyardWidth = 1,
-  eventSource = null
+  eventSource = null,
+  maxDpr = 2
 }) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
@@ -45,7 +46,7 @@ export default function Lanyard({
     <div className="lanyard-wrapper">
       <Canvas
         camera={{ position: position, fov: fov }}
-        dpr={[1, isMobile ? 1.5 : 2]}
+        dpr={[1, isMobile ? 1.5 : maxDpr]}
         gl={{ alpha: transparent }}
         {...(eventSource ? { eventSource, eventPrefix: 'client' } : {})}
         onCreated={({ gl }) => gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)}

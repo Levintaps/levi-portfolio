@@ -10,6 +10,7 @@ export interface LanyardProps {
   imageFit?: 'cover' | 'contain';
   lanyardImage?: string | null;
   lanyardWidth?: number;
+  maxDpr?: number;
   eventSource?: { current: HTMLElement | null } | HTMLElement | null;
 }
 

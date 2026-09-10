@@ -13,13 +13,14 @@
   block-size: 27.5rem;
 }
 
-/* The canvas is centred on the portrait column and reaches far past it on
-   both sides, so the badge rests over its own column at any width and still
-   travels over the text when it is thrown. */
+/* Centred on the portrait column so the badge always rests over its own
+   column, and far wider than the page on both sides so a thrown badge is
+   never clipped by the canvas edge. The extra width is off-screen, which is
+   why the pixel density is capped where the canvas is used. */
 .overlay {
   --lanyard-height: 54rem;
   position: absolute;
-  inset-inline: -16rem;
+  inset-inline: -58rem;
   inset-block-start: -8rem;
   block-size: 54rem;
   z-index: 2;

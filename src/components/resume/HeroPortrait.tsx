@@ -93,6 +93,7 @@ export default function HeroPortrait() {
             fov={22}
             frontImage="/images/id-card.jpg"
             imageFit="cover"
+            maxDpr={1.5}
           />
         </Suspense>
       </div>
