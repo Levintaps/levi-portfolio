@@ -24,11 +24,23 @@ describe('resume data', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('gives every project renderable content', () => {
-    for (const project of projects) {
+  it('gives every disclosed project renderable content', () => {
+    for (const project of projects.filter((entry) => !entry.confidential)) {
       expect(project.name.length).toBeGreaterThan(0);
       expect(project.stack.length).toBeGreaterThan(0);
       expect(project.highlights.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('leaks nothing about a confidential project', () => {
+    for (const project of projects.filter((entry) => entry.confidential)) {
+      expect(project.summary).toBe('');
+      expect(project.stack).toHaveLength(0);
+      expect(project.highlights).toHaveLength(0);
+      expect(project.demoUrl).toBeUndefined();
+      expect(project.repoUrl).toBeUndefined();
+      expect(project.screenshot).toBeUndefined();
+      expect(project.client).toBeUndefined();
     }
   });
 
@@ -43,8 +55,9 @@ describe('resume data', () => {
     }
   });
 
-  it('features at least three projects', () => {
-    expect(projects.filter((project) => project.featured).length).toBeGreaterThanOrEqual(3);
+  it('opens with the client work, since the carousel takes the first five in order', () => {
+    expect(projects.length).toBeGreaterThanOrEqual(5);
+    expect(projects.slice(0, 4).every((project) => project.kind === 'Client project')).toBe(true);
   });
 
   it('carries the supporting resume sections', () => {

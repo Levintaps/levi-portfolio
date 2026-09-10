@@ -35,7 +35,12 @@ export interface ExperienceEntry {
   highlights: string[];
 }
 
-export type ProjectKind = 'Client project' | 'Capstone project' | 'Personal project';
+export type ProjectKind =
+  | 'Client project'
+  | 'Capstone project'
+  | 'Personal project'
+  | 'Game project'
+  | 'Startup project';
 
 export interface Project {
   id: string;
@@ -45,8 +50,13 @@ export interface Project {
   summary: string;
   stack: string[];
   highlights: string[];
+  client?: string;
+  clientUrl?: string;
   demoUrl?: string;
   repoUrl?: string;
+  demoNote?: string;
+  repoNote?: string;
+  confidential?: boolean;
   screenshot?: {
     avif: string;
     webp: string;
@@ -55,7 +65,6 @@ export interface Project {
     height: number;
     alt: string;
   };
-  featured: boolean;
 }
 
 export interface SkillGroup {

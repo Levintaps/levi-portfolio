@@ -1,4 +1,5 @@
-import { projects } from '../../data/resume';
+import { confidentialNote, projects } from '../../data/resume';
+import { demoNoteFor } from '../common/projectNotes';
 import { useReveal } from '../../hooks/useReveal';
 import styles from './CyberProjects.module.css';
 
@@ -25,27 +26,33 @@ export default function CyberProjects() {
             </p>
             <h3 className={styles.name}>{project.name}</h3>
             <p className={styles.kind}>{project.kind}</p>
-            <p className={styles.summary}>{project.summary}</p>
-            <ul className={styles.stack}>
-              {project.stack.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-            {project.demoUrl ? (
-              <a
-                className={styles.link}
-                href={project.demoUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                Open demo
-              </a>
+
+            {project.confidential ? (
+              <p className={styles.summary}>{confidentialNote}</p>
             ) : (
-              <span className={styles.private}>
-                {project.kind === 'Client project'
-                  ? 'Client system, access restricted'
-                  : 'No public demo available'}
-              </span>
+              <>
+                {project.client ? <p className={styles.client}>{project.client}</p> : null}
+                <p className={styles.summary}>{project.summary}</p>
+                <ul className={styles.stack}>
+                  {project.stack.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+                {project.demoUrl ? (
+                  <a
+                    className={styles.link}
+                    href={project.demoUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    Open demo
+                  </a>
+                ) : (
+                  <span className={styles.private}>
+                    {demoNoteFor(project)}
+                  </span>
+                )}
+              </>
             )}
           </article>
         ))}

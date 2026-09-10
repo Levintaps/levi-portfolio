@@ -1,10 +1,13 @@
 .card {
   display: grid;
+  grid-template-rows: auto;
+  align-content: start;
   gap: var(--space-m);
   padding: var(--space-m);
   border: 1px solid var(--line);
   border-radius: var(--radius-m);
   background: var(--surface);
+  block-size: 100%;
   transition: border-color var(--motion-fast) var(--ease),
     transform var(--motion-fast) var(--ease);
 }
@@ -18,98 +21,98 @@
   inline-size: 100%;
   block-size: auto;
   aspect-ratio: 16 / 10;
-  object-fit: cover;
-  object-position: top center;
   border-radius: var(--radius-s);
   border: 1px solid var(--line);
+  object-fit: cover;
+  object-position: top center;
 }
 
 .body {
   display: grid;
-  gap: var(--space-xs);
+  gap: var(--space-2xs);
+  align-content: start;
 }
 
-.top {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-xs);
+.kind {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
 
 .name {
   font-size: var(--step-1);
 }
 
-.period,
-.kind {
-  font-family: var(--font-mono);
+.client {
   font-size: var(--step--1);
   color: var(--ink-faint);
 }
 
-.summary {
-  color: var(--ink-muted);
+.client a {
+  color: inherit;
 }
 
-.stack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2xs);
-}
-
-.chip {
-  font-family: var(--font-mono);
-  font-size: var(--step--1);
-  padding: 0.15rem var(--space-xs);
-  border-radius: var(--radius-s);
-  background: var(--accent-wash);
+.client a:hover {
   color: var(--accent);
 }
 
-.highlights {
-  display: grid;
-  gap: var(--space-xs);
+.summary {
   color: var(--ink-muted);
   font-size: var(--step--1);
 }
 
-.highlights li {
-  position: relative;
-  padding-inline-start: var(--space-m);
-}
-
-.highlights li::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 0.65em;
-  inset-inline-start: 0;
-  inline-size: var(--space-xs);
-  block-size: 1px;
-  background: var(--line-strong);
-}
-
-.links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-m);
-  margin-block-start: var(--space-2xs);
-}
-
-.link {
+.more {
+  justify-self: start;
   display: inline-flex;
   align-items: center;
   gap: var(--space-2xs);
-  font-weight: 600;
-  font-size: var(--step--1);
-  color: var(--accent);
-  text-decoration: none;
+  margin-block-start: var(--space-xs);
   min-block-size: 2.75rem;
+  padding-inline: var(--space-s);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--ink);
+  transition: border-color var(--motion-fast) var(--ease),
+    color var(--motion-fast) var(--ease);
 }
 
-.link:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
+.more:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sealed {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(150deg, var(--surface), var(--accent-wash));
+}
+
+.blur {
+  display: grid;
+  gap: var(--space-xs);
+  padding-block-end: var(--space-2xs);
+  filter: blur(5px);
+  opacity: 0.5;
+}
+
+.blurLine {
+  block-size: var(--space-s);
+  border-radius: var(--radius-s);
+  background: var(--line-strong);
+}
+
+.blurLine:nth-child(2) {
+  inline-size: 80%;
+}
+
+.blurBlock {
+  block-size: var(--space-l);
+  border-radius: var(--radius-s);
+  background: linear-gradient(120deg, var(--accent), var(--line-strong));
 }
 
 .srOnly {

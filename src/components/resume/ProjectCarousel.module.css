@@ -1,0 +1,99 @@
+.carousel {
+  display: grid;
+  gap: var(--space-m);
+  min-inline-size: 0;
+}
+
+.track {
+  display: grid;
+  min-inline-size: 0;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  gap: var(--space-m);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-block-end: var(--space-2xs);
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.track:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: var(--space-2xs);
+  border-radius: var(--radius-m);
+}
+
+.slide {
+  scroll-snap-align: start;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-m);
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--ink-muted);
+  transition: color var(--motion-fast) var(--ease),
+    border-color var(--motion-fast) var(--ease);
+}
+
+.arrow:first-child svg {
+  transform: rotate(180deg);
+}
+
+.arrow:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.dot {
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  display: grid;
+  place-items: center;
+}
+
+.dot::before {
+  content: '';
+  inline-size: var(--space-xs);
+  block-size: var(--space-xs);
+  border-radius: 50%;
+  background: var(--line-strong);
+  transition: background-color var(--motion-fast) var(--ease),
+    transform var(--motion-fast) var(--ease);
+}
+
+.dot[aria-current]::before {
+  background: var(--accent);
+  transform: scale(1.4);
+}
+
+@media (min-width: 48rem) {
+  .track {
+    grid-auto-columns: calc((100% - var(--space-m)) / 2);
+  }
+}
+
+@media (min-width: 72rem) {
+  .track {
+    grid-auto-columns: calc((100% - var(--space-m) * 2) / 3);
+  }
+}

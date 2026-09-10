@@ -68,11 +68,35 @@ export const experience: ExperienceEntry[] = [
   },
 ];
 
+export const projectLinkNotes = {
+  clientDemo: 'This project is not ready for others to see yet.',
+  demo: 'No public demo for this one yet.',
+  repo: 'Oops, the code is not available at this time.',
+};
+
+export const confidentialNote =
+  'Something new is in progress. Not public yet, and worth the wait.';
+
 export const projects: Project[] = [
+  {
+    id: 'recordlog',
+    name: 'RecordLog',
+    kind: 'Client project',
+    client: '',
+    period: 'Jun 2026',
+    summary: 'An internal document-tracking system that replaced a paper and spreadsheet workflow.',
+    stack: ['React', 'Firebase', 'Recharts', 'Vite', 'PWA'],
+    highlights: [
+      'Logs incoming and outgoing records with file attachments, an in-app viewer, autocomplete-assisted entry and an audit log of every change.',
+      'Internal messaging between staff accounts, plus a dashboard with volume and trend charts, one-click print and export.',
+      'Offline support with network-status awareness and light and dark theming, iterated across several production releases from direct user feedback.',
+    ],
+  },
   {
     id: 'illuminance-aesthetica',
     name: 'Illuminance Aesthetica',
     kind: 'Client project',
+    client: '',
     period: 'Jul 2026 — Present',
     summary: 'A multi-role salon and spa management platform running a real business day to day.',
     stack: ['React 19', 'Firebase', 'Firestore Rules', 'Tailwind CSS', 'Vite', 'Recharts'],
@@ -82,12 +106,12 @@ export const projects: Project[] = [
       'Owner analytics with financial reports, payroll computation and revenue trends backed by real-time Firestore listeners.',
       'Automated security-rule verification and seeding scripts on a Firebase emulator workflow, so access control is tested before every deployment.',
     ],
-    featured: true,
   },
   {
     id: 'apartment-management',
     name: 'Apartment Management System',
     kind: 'Client project',
+    client: '',
     period: 'Aug 2026',
     summary: 'A fully typed rental-property system for a multi-building portfolio.',
     stack: ['React 19', 'TypeScript', 'Firebase', 'Vercel Serverless', 'Cloudinary', 'Vitest', 'PWA'],
@@ -96,21 +120,29 @@ export const projects: Project[] = [
       'A strict owner and viewer role model enforced entirely in Firestore rules, with no client-writable role documents, covered by an automated rules test suite against the emulator.',
       'Signed Cloudinary uploads through Vercel serverless functions for receipts, plus PDF statement generation and installable offline support.',
     ],
-    featured: true,
   },
   {
-    id: 'recordlog',
-    name: 'RecordLog',
+    id: 'vanima-atelier',
+    name: 'Vanima Atelier',
     kind: 'Client project',
-    period: 'Jun 2026',
-    summary: 'An internal document-tracking system that replaced a paper and spreadsheet workflow.',
-    stack: ['React', 'Firebase', 'Recharts', 'Vite', 'PWA'],
+    client: '',
+    period: '2025',
+    summary: 'An installable progressive web app running orders, inventory and sales analytics for a printing business.',
+    stack: ['React', 'Firebase', 'Vite', 'PWA'],
     highlights: [
-      'Logs incoming and outgoing records with file attachments, an in-app viewer, autocomplete-assisted entry and an audit log of every change.',
-      'Internal messaging between staff accounts, plus a dashboard with volume and trend charts, one-click print and export.',
-      'Offline support with network-status awareness and light and dark theming, iterated across several production releases from direct user feedback.',
+      'Order intake and fulfilment tracking with inventory levels kept in sync.',
+      'Sales analytics for the owner, installable and usable on a phone in the shop.',
     ],
-    featured: true,
+  },
+  {
+    id: 'startup-stealth',
+    name: 'In stealth',
+    kind: 'Startup project',
+    period: 'Ongoing',
+    summary: '',
+    stack: [],
+    highlights: [],
+    confidential: true,
   },
   {
     id: 'smart-parking',
@@ -124,12 +156,12 @@ export const projects: Project[] = [
       'Real-time sales and revenue dashboard, live vehicle-entry tracking and e-wallet balance management, with role-based access for admin and staff.',
       'Automatic fare computation from live parking duration against configurable rate rules.',
     ],
-    featured: true,
   },
   {
     id: 'ojt-attendance',
     name: 'OJT Attendance Management System',
     kind: 'Personal project',
+    client: 'Concentrix',
     period: 'Sep 2025 — Nov 2025',
     summary: 'A full-stack replacement for manual intern attendance tracking, now used by real interns and IT staff.',
     stack: ['Java', 'Spring Boot', 'MySQL', 'REST API'],
@@ -138,20 +170,6 @@ export const projects: Project[] = [
       'Intern portal for badge-based time in and time out with account registration, plus a chatbot answering scheduling and badge questions.',
       'Admin dashboard with real-time attendance statistics and trend charts, with role-based separation of admin and intern permissions.',
     ],
-    featured: false,
-  },
-  {
-    id: 'vanima-atelier',
-    name: 'Vanima Atelier',
-    kind: 'Personal project',
-    period: '2025',
-    summary: 'An installable progressive web app running orders, inventory and sales analytics for a printing business.',
-    stack: ['React', 'Firebase', 'Vite', 'PWA'],
-    highlights: [
-      'Order intake and fulfilment tracking with inventory levels kept in sync.',
-      'Sales analytics for the owner, installable and usable on a phone in the shop.',
-    ],
-    featured: true,
   },
   {
     id: 'lookwhatchera',
@@ -173,7 +191,6 @@ export const projects: Project[] = [
       height: 600,
       alt: 'Lookwhatchera landing page showing a limestone-cliff cove in the Philippines with a "Discover the Philippines" headline and a Begin Your Journey button',
     },
-    featured: true,
   },
   {
     id: 'harana-hub',
@@ -195,9 +212,9 @@ export const projects: Project[] = [
       height: 600,
       alt: 'Harana Hub karaoke screen with a YouTube video player, a backing track volume slider, a Start Singing panel and an empty playlist and leaderboard',
     },
-    featured: true,
   },
 ];
+
 
 export const skillGroups: SkillGroup[] = [
   {

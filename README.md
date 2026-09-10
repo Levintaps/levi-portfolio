@@ -26,6 +26,30 @@ Everything on both pages comes from `src/data/resume.ts`. Change it there and
 both views update. Replace the CV by overwriting
 `public/cv/Jayson_Levin_Tapia_Resume.pdf` with the same filename.
 
+### Projects
+
+The carousel shows the first five entries of the `projects` array, in file
+order, so reordering that array is how the running order is set. Everything
+else appears under Show all.
+
+Each entry supports these optional fields:
+
+- `client` and `clientUrl` name the owner or company, and link to them. Leave
+  `client` empty and no line is rendered.
+- `demoUrl` and `repoUrl` turn the panel's two actions into real links. Without
+  them the action stays and explains itself when clicked.
+- `demoNote` and `repoNote` override that explanation for one project. The
+  defaults live in `projectLinkNotes` in the same file.
+- `confidential: true` hides everything about the project. The card shows the
+  kind, the name, a blurred placeholder and the shared teaser in
+  `confidentialNote`, and nothing else. Use it for startup work that is not
+  public yet, and add one entry per project you want counted.
+- `screenshot` needs the three image files to exist under `public/images/`, at
+  the width and height the entry declares.
+
+`kind` is one of `Client project`, `Capstone project`, `Personal project`,
+`Game project` or `Startup project`.
+
 ## Data
 
 Feedback messages and ratings are stored in Firestore under `messages` and

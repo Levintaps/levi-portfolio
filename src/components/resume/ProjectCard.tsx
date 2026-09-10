@@ -1,8 +1,31 @@
+import { confidentialNote } from '../../data/resume';
 import type { Project } from '../../data/types';
 import { Icon } from '../common/icons';
 import styles from './ProjectCard.module.css';
 
-export default function ProjectCard({ project }: { project: Project }) {
+interface ProjectCardProps {
+  project: Project;
+  onOpen: (project: Project) => void;
+}
+
+export default function ProjectCard({ project, onOpen }: ProjectCardProps) {
+  if (project.confidential) {
+    return (
+      <article className={`${styles.card} ${styles.sealed}`}>
+        <div className={styles.blur} data-blurred aria-hidden="true">
+          <span className={styles.blurLine} />
+          <span className={styles.blurLine} />
+          <span className={styles.blurBlock} />
+        </div>
+        <div className={styles.body}>
+          <p className={styles.kind}>{project.kind}</p>
+          <h3 className={styles.name}>{project.name}</h3>
+          <p className={styles.summary}>{confidentialNote}</p>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <article className={styles.card}>
       {project.screenshot ? (
@@ -22,56 +45,26 @@ export default function ProjectCard({ project }: { project: Project }) {
       ) : null}
 
       <div className={styles.body}>
-        <div className={styles.top}>
-          <h3 className={styles.name}>{project.name}</h3>
-          <p className={styles.period}>{project.period}</p>
-        </div>
-
         <p className={styles.kind}>{project.kind}</p>
+        <h3 className={styles.name}>{project.name}</h3>
+        {project.client ? (
+          <p className={styles.client} data-client>
+            {project.clientUrl ? (
+              <a href={project.clientUrl} target="_blank" rel="noreferrer noopener">
+                {project.client}
+              </a>
+            ) : (
+              project.client
+            )}
+          </p>
+        ) : null}
         <p className={styles.summary}>{project.summary}</p>
 
-        <ul className={styles.stack} aria-label="Technology stack">
-          {project.stack.map((item) => (
-            <li key={item} className={styles.chip}>
-              {item}
-            </li>
-          ))}
-        </ul>
-
-        <ul className={styles.highlights} aria-label="Highlights">
-          {project.highlights.map((highlight) => (
-            <li key={highlight}>{highlight}</li>
-          ))}
-        </ul>
-
-        {project.demoUrl || project.repoUrl ? (
-          <div className={styles.links}>
-            {project.demoUrl ? (
-              <a
-                className={styles.link}
-                href={project.demoUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                Visit demo
-                <span className={styles.srOnly}>{` for ${project.name}`}</span>
-                <Icon name="external" size={16} />
-              </a>
-            ) : null}
-            {project.repoUrl ? (
-              <a
-                className={styles.link}
-                href={project.repoUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                Source code
-                <span className={styles.srOnly}>{` for ${project.name}`}</span>
-                <Icon name="github" size={16} />
-              </a>
-            ) : null}
-          </div>
-        ) : null}
+        <button className={styles.more} type="button" onClick={() => onOpen(project)}>
+          View more
+          <span className={styles.srOnly}>{` about ${project.name}`}</span>
+          <Icon name="arrow" size={16} />
+        </button>
       </div>
     </article>
   );

@@ -1,4 +1,6 @@
 .section {
+  display: grid;
+  justify-items: stretch;
   inline-size: min(100% - (var(--gutter) * 2), var(--shell));
   margin-inline: auto;
   padding-block: var(--space-2xl);
@@ -8,15 +10,28 @@
 .grid {
   display: grid;
   gap: var(--space-m);
+  margin-block-start: var(--space-l);
 }
 
-.moreHeading {
-  font-family: var(--font-mono);
+.toggle {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin-block-start: var(--space-l);
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-l);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
   font-size: var(--step--1);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-block: var(--space-l) var(--space-m);
+  font-weight: 600;
+  transition: border-color var(--motion-fast) var(--ease),
+    color var(--motion-fast) var(--ease);
+}
+
+.toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 @media (min-width: 48rem) {
