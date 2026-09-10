@@ -2,7 +2,7 @@
 // Vendored from React Bits (reactbits.dev), JavaScript + CSS variant.
 'use client';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { Canvas, extend, useFrame } from '@react-three/fiber';
+import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, useTexture, Environment, Lightformer } from '@react-three/drei';
 import { BallCollider, CuboidCollider, Physics, RigidBody, useRopeJoint, useSphericalJoint } from '@react-three/rapier';
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
@@ -102,6 +102,50 @@ export default function Lanyard({
   );
 }
 
+// The canvas spans the page so a thrown badge is never clipped, which would
+// normally block every link underneath it. It therefore ignores the pointer
+// unless the pointer is actually over the badge.
+function usePointerGate(target, dragged) {
+  const gl = useThree((state) => state.gl);
+  const camera = useThree((state) => state.camera);
+  const raycaster = useThree((state) => state.raycaster);
+
+  useEffect(() => {
+    const canvas = gl.domElement;
+    if (dragged) {
+      canvas.style.pointerEvents = 'auto';
+      return;
+    }
+
+    const pointer = new THREE.Vector2();
+    let over = false;
+
+    const onMove = (event) => {
+      const object = target.current;
+      if (!object) return;
+
+      const rect = canvas.getBoundingClientRect();
+      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+
+      const hit = raycaster.intersectObject(object, true).length > 0;
+      if (hit !== over) {
+        over = hit;
+        canvas.style.pointerEvents = hit ? 'auto' : 'none';
+      }
+    };
+
+    canvas.style.pointerEvents = 'none';
+    window.addEventListener('pointermove', onMove, { passive: true });
+
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      canvas.style.pointerEvents = '';
+    };
+  }, [gl, camera, raycaster, target, dragged]);
+}
+
 function Band({
   maxSpeed = 50,
   minSpeed = 0,
@@ -124,6 +168,7 @@ function Band({
     dir = new THREE.Vector3();
   const segmentProps = { type: 'dynamic', canSleep: true, colliders: false, angularDamping: 4, linearDamping: 4 };
   const { nodes, materials } = useGLTF(cardGLB);
+  const size = useThree((state) => state.size);
   const texture = useTexture(lanyardImage || lanyard);
   const frontTex = useTexture(frontImage || BLANK_PIXEL);
   const backTex = useTexture(backImage || BLANK_PIXEL);
@@ -178,6 +223,9 @@ function Band({
   );
   const [dragged, drag] = useState(false);
   const [hovered, hover] = useState(false);
+  const badge = useRef();
+
+  usePointerGate(badge, dragged);
 
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 0.75]);
   useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 0.75]);
@@ -241,6 +289,7 @@ function Band({
         <RigidBody position={[2, 0, 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
           <CuboidCollider args={[0.8, 1.125, 0.01]} />
           <group
+            ref={badge}
             scale={2.25}
             position={[0, -1.2, -0.05]}
             onPointerOver={() => hover(true)}
@@ -271,7 +320,7 @@ function Band({
         <meshLineMaterial
           color="white"
           depthTest={false}
-          resolution={isMobile ? [1000, 2000] : [1000, 1000]}
+          resolution={[size.width, size.height]}
           useMap
           map={texture}
           repeat={[-4, 1]}

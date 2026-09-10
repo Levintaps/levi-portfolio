@@ -26,8 +26,6 @@
 }
 
 .details {
-  position: relative;
-  z-index: 3;
   display: grid;
   gap: var(--space-2xs);
   max-inline-size: 17rem;
@@ -91,8 +89,6 @@
 }
 
 .actions {
-  position: relative;
-  z-index: 3;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -119,8 +115,6 @@
 }
 
 .socials {
-  position: relative;
-  z-index: 3;
   display: flex;
   gap: var(--space-xs);
 }

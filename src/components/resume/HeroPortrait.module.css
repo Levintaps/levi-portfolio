@@ -23,5 +23,14 @@
   inset-inline: -58rem;
   inset-block-start: -8rem;
   block-size: 54rem;
-  z-index: 2;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* The renderer writes pointer-events: auto inline on its own containers,
+   which would block every link under the canvas, so those are overridden
+   outright. The canvas is left out of the rule because it opts itself back
+   in through an inline style while the pointer is over the badge. */
+.overlay *:not(canvas) {
+  pointer-events: none !important;
 }
