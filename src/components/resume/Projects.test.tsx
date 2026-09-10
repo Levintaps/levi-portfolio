@@ -8,37 +8,62 @@ describe('Projects', () => {
     render(<Projects />);
     const track = screen.getByRole('group', { name: /projects/i });
     expect(within(track).getAllByRole('article')).toHaveLength(CAROUSEL_SIZE);
+    expect(within(track).getByRole('heading', { name: projects[0].name })).toBeInTheDocument();
+  });
+
+  it('shows nothing of the rest until the listing is opened', () => {
+    render(<Projects />);
+    const laterProject = projects[projects.length - 1].name;
+    expect(screen.queryByRole('heading', { name: laterProject })).toBeNull();
+  });
+
+  it('opens the full list in a dialog rather than below the carousel', async () => {
+    const user = userEvent.setup();
+    render(<Projects />);
+
+    await user.click(screen.getByRole('button', { name: /show all/i }));
+
+    const dialog = await screen.findByRole('dialog', { name: /all projects/i });
+    expect(within(dialog).getAllByRole('article')).toHaveLength(projects.length);
     expect(
-      within(track).getByRole('heading', { name: projects[0].name }),
+      within(dialog).getByRole('heading', { name: projects[projects.length - 1].name }),
     ).toBeInTheDocument();
   });
 
-  it('keeps the rest behind a control until asked', async () => {
+  it('closes the listing on Escape and gives focus back', async () => {
     const user = userEvent.setup();
     render(<Projects />);
 
-    const laterProject = projects[projects.length - 1].name;
-    expect(screen.queryByRole('heading', { name: laterProject })).toBeNull();
+    const opener = screen.getByRole('button', { name: /show all/i });
+    await user.click(opener);
+    await screen.findByRole('dialog', { name: /all projects/i });
 
-    await user.click(screen.getByRole('button', { name: /show all/i }));
-    expect(screen.getByRole('heading', { name: laterProject })).toBeInTheDocument();
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog', { name: /all projects/i })).toBeNull();
+    expect(document.activeElement).toBe(opener);
   });
 
-  it('collapses the full list again', async () => {
+  it('swaps the listing for the detail when a project is chosen there', async () => {
     const user = userEvent.setup();
     render(<Projects />);
-    const laterProject = projects[projects.length - 1].name;
 
     await user.click(screen.getByRole('button', { name: /show all/i }));
-    await user.click(screen.getByRole('button', { name: /show less/i }));
-    expect(screen.queryByRole('heading', { name: laterProject })).toBeNull();
+    const listing = await screen.findByRole('dialog', { name: /all projects/i });
+    const last = projects[projects.length - 1];
+
+    await user.click(
+      within(listing).getByRole('button', { name: new RegExp(`see full details about ${last.name}`, 'i') }),
+    );
+
+    expect(screen.queryByRole('dialog', { name: /all projects/i })).toBeNull();
+    expect(await screen.findByRole('dialog', { name: last.name })).toBeInTheDocument();
   });
 
   it('opens the detail panel from a card and closes it again', async () => {
     const user = userEvent.setup();
     render(<Projects />);
 
-    const opener = screen.getAllByRole('button', { name: /view more/i })[0];
+    const opener = screen.getAllByRole('button', { name: /see full details/i })[0];
     await user.click(opener);
 
     const dialog = await screen.findByRole('dialog');
@@ -46,16 +71,6 @@ describe('Projects', () => {
 
     await user.click(within(dialog).getByRole('button', { name: /close/i }));
     expect(screen.queryByRole('dialog')).toBeNull();
-  });
-
-  it('returns focus to the card that opened the panel', async () => {
-    const user = userEvent.setup();
-    render(<Projects />);
-
-    const opener = screen.getAllByRole('button', { name: /view more/i })[0];
-    await user.click(opener);
-    await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: /close/i }));
-
     expect(document.activeElement).toBe(opener);
   });
 });

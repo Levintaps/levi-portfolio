@@ -34,6 +34,19 @@ describe('ProjectPanel', () => {
     expect(screen.getByText('Vanima Atelier')).toBeInTheDocument();
   });
 
+  it('offers the client contact when the project carries one', () => {
+    render(
+      <ProjectPanel
+        project={{ ...base, client: 'Vanima Atelier', clientEmail: 'owner@example.com' }}
+        onClose={() => {}}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'owner@example.com' })).toHaveAttribute(
+      'href',
+      'mailto:owner@example.com',
+    );
+  });
+
   it('links the demo and the source when both exist', () => {
     render(
       <ProjectPanel

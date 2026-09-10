@@ -43,10 +43,15 @@ describe('ProjectCard', () => {
     const onOpen = vi.fn();
     render(<ProjectCard project={base} onOpen={onOpen} />);
 
-    const control = screen.getByRole('button', { name: /view more/i });
-    expect(control).toHaveAccessibleName('View more about Test Project');
+    const control = screen.getByRole('button', { name: /see full details/i });
+    expect(control).toHaveAccessibleName('See full details about Test Project');
     await user.click(control);
     expect(onOpen).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a duplicated card out of the tab order', () => {
+    render(<ProjectCard project={base} onOpen={() => {}} decorative />);
+    expect(screen.getByRole('button', { name: /see full details/i }).tabIndex).toBe(-1);
   });
 
   it('renders the screenshot with explicit dimensions and lazy loading', () => {
@@ -90,7 +95,7 @@ describe('ProjectCard, confidential', () => {
     expect(screen.getByRole('heading', { name: 'In stealth' })).toBeInTheDocument();
     expect(screen.getByText('Startup project')).toBeInTheDocument();
     expect(screen.getByText(/in progress/i)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /view more/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /see full details/i })).toBeNull();
   });
 
   it('hides its placeholder content from assistive technology', () => {

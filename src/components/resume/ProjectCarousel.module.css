@@ -1,6 +1,6 @@
 .carousel {
   display: grid;
-  gap: var(--space-m);
+  gap: var(--space-s);
   min-inline-size: 0;
 }
 
@@ -11,7 +11,6 @@
   grid-auto-columns: 100%;
   gap: var(--space-m);
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
   scrollbar-width: none;
   padding-block-end: var(--space-2xs);
 }
@@ -27,14 +26,18 @@
 }
 
 .slide {
-  scroll-snap-align: start;
+  display: flex;
+}
+
+.slide > * {
+  inline-size: 100%;
 }
 
 .controls {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-m);
+  gap: var(--space-s);
 }
 
 .arrow {
@@ -58,41 +61,13 @@
   border-color: var(--accent);
 }
 
-.dots {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2xs);
-}
-
-.dot {
-  inline-size: 2.75rem;
-  block-size: 2.75rem;
-  display: grid;
-  place-items: center;
-}
-
-.dot::before {
-  content: '';
-  inline-size: var(--space-xs);
-  block-size: var(--space-xs);
-  border-radius: 50%;
-  background: var(--line-strong);
-  transition: background-color var(--motion-fast) var(--ease),
-    transform var(--motion-fast) var(--ease);
-}
-
-.dot[aria-current]::before {
-  background: var(--accent);
-  transform: scale(1.4);
-}
-
-@media (min-width: 48rem) {
+@media (min-width: 40rem) {
   .track {
     grid-auto-columns: calc((100% - var(--space-m)) / 2);
   }
 }
 
-@media (min-width: 72rem) {
+@media (min-width: 64rem) {
   .track {
     grid-auto-columns: calc((100% - var(--space-m) * 2) / 3);
   }

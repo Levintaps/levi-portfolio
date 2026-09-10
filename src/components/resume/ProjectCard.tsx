@@ -6,9 +6,12 @@ import styles from './ProjectCard.module.css';
 interface ProjectCardProps {
   project: Project;
   onOpen: (project: Project) => void;
+  // A duplicated slide exists only to keep the loop seamless, so its control
+  // stays out of the tab order.
+  decorative?: boolean;
 }
 
-export default function ProjectCard({ project, onOpen }: ProjectCardProps) {
+export default function ProjectCard({ project, onOpen, decorative = false }: ProjectCardProps) {
   if (project.confidential) {
     return (
       <article className={`${styles.card} ${styles.sealed}`}>
@@ -60,10 +63,15 @@ export default function ProjectCard({ project, onOpen }: ProjectCardProps) {
         ) : null}
         <p className={styles.summary}>{project.summary}</p>
 
-        <button className={styles.more} type="button" onClick={() => onOpen(project)}>
-          View more
+        <button
+          className={styles.more}
+          type="button"
+          onClick={() => onOpen(project)}
+          tabIndex={decorative ? -1 : undefined}
+        >
+          See full details
           <span className={styles.srOnly}>{` about ${project.name}`}</span>
-          <Icon name="arrow" size={16} />
+          <Icon name="arrow" size={14} />
         </button>
       </div>
     </article>

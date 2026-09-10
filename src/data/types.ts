@@ -52,6 +52,7 @@ export interface Project {
   highlights: string[];
   client?: string;
   clientUrl?: string;
+  clientEmail?: string;
   demoUrl?: string;
   repoUrl?: string;
   demoNote?: string;

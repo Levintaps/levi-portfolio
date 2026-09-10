@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Project } from '../../data/types';
 import { Icon } from '../common/icons';
 import ProjectCard from './ProjectCard';
@@ -9,75 +9,100 @@ interface ProjectCarouselProps {
   onOpen: (project: Project) => void;
 }
 
+const PIXELS_PER_SECOND = 26;
+
 export default function ProjectCarousel({ projects, onOpen }: ProjectCarouselProps) {
-  const [active, setActive] = useState(0);
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const [paused, setPaused] = useState(false);
 
-  function show(index: number) {
-    const next = (index + projects.length) % projects.length;
-    setActive(next);
-
-    const track = trackRef.current;
-    const card = track?.children[next];
-    if (!track || !(card instanceof HTMLElement)) return;
-
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    track.scrollTo?.({
-      left: card.offsetLeft - track.offsetLeft,
-      behavior: reduced ? 'auto' : 'smooth',
-    });
-  }
-
-  // A swipe or a trackpad scroll moves the track without going through show(),
-  // so the dots have to follow the scroll position rather than lead it.
-  function onScroll() {
+  useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
 
-    const slides = Array.from(track.children).filter(
-      (child): child is HTMLElement => child instanceof HTMLElement,
-    );
-    if (slides.length === 0) return;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (paused || still.matches) return;
 
-    let nearest = 0;
-    let shortest = Infinity;
-    slides.forEach((slide, index) => {
-      const distance = Math.abs(slide.offsetLeft - track.offsetLeft - track.scrollLeft);
-      if (distance < shortest) {
-        shortest = distance;
-        nearest = index;
-      }
-    });
+    let frame = 0;
+    let last = performance.now();
+    // scrollLeft reports whole pixels, so a sub-pixel step would round away to
+    // nothing every frame. The position is carried here instead.
+    let position = track.scrollLeft;
+    let applied = position;
 
-    setActive((current) => (current === nearest ? current : nearest));
+    const step = (now: number) => {
+      const elapsed = now - last;
+      last = now;
+
+      if (Math.abs(track.scrollLeft - applied) > 2) position = track.scrollLeft;
+
+      // The slides are rendered twice, so rewinding by half the scrollable
+      // width lands on the identical card and the loop never shows a seam.
+      const half = track.scrollWidth / 2;
+      position += (PIXELS_PER_SECOND * elapsed) / 1000;
+      if (half > 0 && position >= half) position -= half;
+
+      track.scrollLeft = position;
+      applied = track.scrollLeft;
+
+      frame = requestAnimationFrame(step);
+    };
+
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [paused, projects.length]);
+
+  function nudge(direction: 1 | -1) {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const slide = track.firstElementChild;
+    const width = slide instanceof HTMLElement ? slide.offsetWidth : track.clientWidth;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    track.scrollBy?.({ left: width * direction, behavior: reduced ? 'auto' : 'smooth' });
   }
 
   function onKeyDown(event: React.KeyboardEvent) {
     if (event.key === 'ArrowRight') {
       event.preventDefault();
-      show(active + 1);
+      nudge(1);
     } else if (event.key === 'ArrowLeft') {
       event.preventDefault();
-      show(active - 1);
+      nudge(-1);
     }
   }
 
+  const loop = [...projects, ...projects];
+
   return (
-    <div className={styles.carousel}>
+    <div
+      className={styles.carousel}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
+    >
       <div
         className={styles.track}
         role="group"
         aria-label="Selected projects"
         tabIndex={0}
         ref={trackRef}
+        data-paused={paused}
         onKeyDown={onKeyDown}
-        onScroll={onScroll}
       >
-        {projects.map((project) => (
-          <div className={styles.slide} key={project.id}>
-            <ProjectCard project={project} onOpen={onOpen} />
-          </div>
-        ))}
+        {loop.map((project, index) => {
+          const duplicate = index >= projects.length;
+          return (
+            <div
+              className={styles.slide}
+              key={`${project.id}-${index}`}
+              aria-hidden={duplicate || undefined}
+            >
+              <ProjectCard project={project} onOpen={onOpen} decorative={duplicate} />
+            </div>
+          );
+        })}
       </div>
 
       <div className={styles.controls}>
@@ -85,29 +110,15 @@ export default function ProjectCarousel({ projects, onOpen }: ProjectCarouselPro
           className={styles.arrow}
           type="button"
           aria-label="Previous project"
-          onClick={() => show(active - 1)}
+          onClick={() => nudge(-1)}
         >
           <Icon name="arrow" size={18} />
         </button>
-
-        <div className={styles.dots}>
-          {projects.map((project, index) => (
-            <button
-              key={project.id}
-              className={styles.dot}
-              type="button"
-              aria-label={`Go to ${project.name}`}
-              aria-current={index === active ? true : undefined}
-              onClick={() => show(index)}
-            />
-          ))}
-        </div>
-
         <button
           className={styles.arrow}
           type="button"
           aria-label="Next project"
-          onClick={() => show(active + 1)}
+          onClick={() => nudge(1)}
         >
           <Icon name="arrow" size={18} />
         </button>

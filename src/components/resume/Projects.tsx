@@ -3,7 +3,7 @@ import { projects, projectsLead } from '../../data/resume';
 import type { Project } from '../../data/types';
 import SectionHeading from '../common/SectionHeading';
 import { Icon } from '../common/icons';
-import ProjectCard from './ProjectCard';
+import AllProjectsModal from './AllProjectsModal';
 import ProjectCarousel from './ProjectCarousel';
 import ProjectPanel from './ProjectPanel';
 import styles from './Projects.module.css';
@@ -12,16 +12,27 @@ export const CAROUSEL_SIZE = 5;
 
 export default function Projects() {
   const [open, setOpen] = useState<Project | null>(null);
-  const [showAll, setShowAll] = useState(false);
+  const [listing, setListing] = useState(false);
   const openerRef = useRef<HTMLElement | null>(null);
 
   function openProject(project: Project) {
     openerRef.current = document.activeElement as HTMLElement | null;
+    setListing(false);
     setOpen(project);
   }
 
   function closeProject() {
     setOpen(null);
+    openerRef.current?.focus();
+  }
+
+  function openListing() {
+    openerRef.current = document.activeElement as HTMLElement | null;
+    setListing(true);
+  }
+
+  function closeListing() {
+    setListing(false);
     openerRef.current?.focus();
   }
 
@@ -31,21 +42,13 @@ export default function Projects() {
 
       <ProjectCarousel projects={projects.slice(0, CAROUSEL_SIZE)} onOpen={openProject} />
 
-      <button
-        className={styles.toggle}
-        type="button"
-        onClick={() => setShowAll((current) => !current)}
-      >
-        {showAll ? 'Show less' : `Show all ${projects.length} projects`}
+      <button className={styles.toggle} type="button" onClick={openListing}>
+        {`Show all ${projects.length} projects`}
         <Icon name="arrow" size={16} />
       </button>
 
-      {showAll ? (
-        <div className={styles.grid}>
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} onOpen={openProject} />
-          ))}
-        </div>
+      {listing ? (
+        <AllProjectsModal projects={projects} onOpen={openProject} onClose={closeListing} />
       ) : null}
 
       {open ? <ProjectPanel project={open} onClose={closeProject} /> : null}

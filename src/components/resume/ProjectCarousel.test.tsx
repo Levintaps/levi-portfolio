@@ -17,63 +17,58 @@ function make(id: string, name: string): Project {
 
 const three = [make('a', 'Alpha'), make('b', 'Beta'), make('c', 'Gamma')];
 
-function activeDot() {
-  return screen.getByRole('button', { current: true });
+function track() {
+  return screen.getByRole('group', { name: /projects/i });
 }
 
 describe('ProjectCarousel', () => {
-  it('renders every project it is given', () => {
-    render(<ProjectCarousel projects={three} onOpen={() => {}} />);
-    expect(screen.getByRole('heading', { name: 'Alpha' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Gamma' })).toBeInTheDocument();
-  });
-
   it('exposes the track as a labelled, keyboard reachable region', () => {
     render(<ProjectCarousel projects={three} onOpen={() => {}} />);
-    const track = screen.getByRole('group', { name: /projects/i });
-    expect(track).toHaveAttribute('tabindex', '0');
+    expect(track()).toHaveAttribute('tabindex', '0');
   });
 
-  it('starts on the first project', () => {
+  it('renders each project twice so the loop has no seam', () => {
     render(<ProjectCarousel projects={three} onOpen={() => {}} />);
-    expect(activeDot()).toHaveAccessibleName(/alpha/i);
+    const cards = within(track()).getAllByRole('article', { hidden: true });
+    expect(cards).toHaveLength(three.length * 2);
   });
 
-  it('advances with the next control', async () => {
+  it('keeps the duplicated half out of the accessibility tree', () => {
+    render(<ProjectCarousel projects={three} onOpen={() => {}} />);
+    expect(within(track()).getAllByRole('article')).toHaveLength(three.length);
+    expect(within(track()).getAllByRole('heading', { name: 'Alpha' })).toHaveLength(1);
+  });
+
+  it('keeps the duplicated controls out of the tab order', () => {
+    render(<ProjectCarousel projects={three} onOpen={() => {}} />);
+    const controls = within(track()).getAllByRole('button', { name: /see full details/i, hidden: true });
+    expect(controls).toHaveLength(three.length * 2);
+    expect(controls.slice(three.length).every((button) => button.tabIndex === -1)).toBe(true);
+  });
+
+  it('runs on its own and pauses while the pointer is over it', async () => {
     const user = userEvent.setup();
     render(<ProjectCarousel projects={three} onOpen={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /next project/i }));
-    expect(activeDot()).toHaveAccessibleName(/beta/i);
+    expect(track()).toHaveAttribute('data-paused', 'false');
+    await user.hover(track());
+    expect(track()).toHaveAttribute('data-paused', 'true');
+    await user.unhover(track());
+    expect(track()).toHaveAttribute('data-paused', 'false');
   });
 
-  it('wraps from the last project back to the first', async () => {
-    const user = userEvent.setup();
-    render(<ProjectCarousel projects={three} onOpen={() => {}} />);
-    const next = screen.getByRole('button', { name: /next project/i });
-
-    await user.click(next);
-    await user.click(next);
-    expect(activeDot()).toHaveAccessibleName(/gamma/i);
-
-    await user.click(next);
-    expect(activeDot()).toHaveAccessibleName(/alpha/i);
-  });
-
-  it('wraps backwards from the first project to the last', async () => {
+  it('pauses while something inside it holds focus', async () => {
     const user = userEvent.setup();
     render(<ProjectCarousel projects={three} onOpen={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /previous project/i }));
-    expect(activeDot()).toHaveAccessibleName(/gamma/i);
+    await user.tab();
+    expect(track()).toHaveAttribute('data-paused', 'true');
   });
 
-  it('jumps straight to a project from its dot', async () => {
-    const user = userEvent.setup();
+  it('offers manual controls in both directions', () => {
     render(<ProjectCarousel projects={three} onOpen={() => {}} />);
-
-    await user.click(screen.getByRole('button', { name: /go to gamma/i }));
-    expect(activeDot()).toHaveAccessibleName(/gamma/i);
+    expect(screen.getByRole('button', { name: /previous project/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /next project/i })).toBeInTheDocument();
   });
 
   it('passes a card through to the open handler', async () => {
@@ -81,8 +76,7 @@ describe('ProjectCarousel', () => {
     const onOpen = vi.fn();
     render(<ProjectCarousel projects={three} onOpen={onOpen} />);
 
-    const track = screen.getByRole('group', { name: /projects/i });
-    await user.click(within(track).getAllByRole('button', { name: /view more/i })[0]);
+    await user.click(within(track()).getAllByRole('button', { name: /see full details/i })[0]);
     expect(onOpen).toHaveBeenCalledWith(three[0]);
   });
 });

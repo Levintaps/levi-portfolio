@@ -90,6 +90,11 @@ export default function ProjectPanel({ project, onClose }: ProjectPanelProps) {
             <p className={styles.meta}>
               {project.period}
               {project.client ? <span className={styles.client}>{project.client}</span> : null}
+              {project.clientEmail ? (
+                <a className={styles.client} href={`mailto:${project.clientEmail}`}>
+                  {project.clientEmail}
+                </a>
+              ) : null}
             </p>
 
             <p className={styles.summary}>{project.summary}</p>
