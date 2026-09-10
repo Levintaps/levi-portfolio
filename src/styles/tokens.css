@@ -3,6 +3,7 @@
   --font-body: 'Inter Tight Variable', 'Inter Tight', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
 
+  --step--2: clamp(0.8125rem, 0.79rem + 0.08vw, 0.85rem);
   --step--1: clamp(0.875rem, 0.85rem + 0.1vw, 0.9rem);
   --step-0: clamp(0.95rem, 0.92rem + 0.15vw, 1.05rem);
   --step-1: clamp(1.15rem, 1.08rem + 0.35vw, 1.35rem);
