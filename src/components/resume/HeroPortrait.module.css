@@ -1,6 +1,6 @@
 .portrait {
   inline-size: 100%;
-  max-inline-size: 15.5rem;
+  max-inline-size: 14rem;
   block-size: auto;
   aspect-ratio: 4 / 5;
   object-fit: cover;
@@ -9,8 +9,8 @@
 }
 
 .spacer {
-  inline-size: 15.5rem;
-  block-size: 22rem;
+  inline-size: 14rem;
+  block-size: 27.5rem;
 }
 
 /* The canvas is centred on the portrait column and reaches far past it on
@@ -20,7 +20,7 @@
   --lanyard-height: 54rem;
   position: absolute;
   inset-inline: -16rem;
-  inset-block-start: -21rem;
+  inset-block-start: -8rem;
   block-size: 54rem;
   z-index: 2;
 }
