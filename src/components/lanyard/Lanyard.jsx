@@ -102,48 +102,65 @@ export default function Lanyard({
   );
 }
 
-// The canvas spans the page so a thrown badge is never clipped, which would
-// normally block every link underneath it. It therefore ignores the pointer
-// unless the pointer is actually over the badge.
-function usePointerGate(target, dragged) {
+// The canvas covers the page so a thrown badge is never clipped, which would
+// normally block every link underneath it. The canvas therefore never takes
+// the pointer at all: the badge is picked up from window events instead, so
+// a press only reaches the badge when the ray actually hits it, and every
+// press anywhere else lands on the page as usual.
+function usePointerControls({ badge, card, pointer, drag, dragged, hover }) {
   const gl = useThree((state) => state.gl);
   const camera = useThree((state) => state.camera);
   const raycaster = useThree((state) => state.raycaster);
 
   useEffect(() => {
     const canvas = gl.domElement;
-    if (dragged) {
-      canvas.style.pointerEvents = 'auto';
-      return;
-    }
+    canvas.style.pointerEvents = 'none';
 
-    const pointer = new THREE.Vector2();
-    let over = false;
+    const ndc = new THREE.Vector2();
+    const origin = new THREE.Vector3();
 
-    const onMove = (event) => {
-      const object = target.current;
-      if (!object) return;
-
+    const toNdc = (event) => {
       const rect = canvas.getBoundingClientRect();
-      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-      raycaster.setFromCamera(pointer, camera);
-
-      const hit = raycaster.intersectObject(object, true).length > 0;
-      if (hit !== over) {
-        over = hit;
-        canvas.style.pointerEvents = hit ? 'auto' : 'none';
-      }
+      ndc.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      ndc.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      return ndc;
     };
 
-    canvas.style.pointerEvents = 'none';
-    window.addEventListener('pointermove', onMove, { passive: true });
+    const hitBadge = (event) => {
+      if (!badge.current) return null;
+      raycaster.setFromCamera(toNdc(event), camera);
+      return raycaster.intersectObject(badge.current, true)[0] ?? null;
+    };
+
+    const onMove = (event) => {
+      pointer.current.copy(toNdc(event));
+      if (!dragged) hover(Boolean(hitBadge(event)));
+    };
+
+    const onDown = (event) => {
+      if (event.button !== 0) return;
+      const hit = hitBadge(event);
+      if (!hit || !card.current) return;
+
+      event.preventDefault();
+      origin.copy(card.current.translation());
+      drag(new THREE.Vector3().copy(hit.point).sub(origin));
+    };
+
+    const onUp = () => drag(false);
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
 
     return () => {
       window.removeEventListener('pointermove', onMove);
-      canvas.style.pointerEvents = '';
+      window.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
     };
-  }, [gl, camera, raycaster, target, dragged]);
+  }, [gl, camera, raycaster, badge, card, pointer, drag, dragged, hover]);
 }
 
 function Band({
@@ -166,6 +183,11 @@ function Band({
     ang = new THREE.Vector3(),
     rot = new THREE.Vector3(),
     dir = new THREE.Vector3();
+  // Where the band meets the clip, in the card's own frame.
+  const clipAnchor = new THREE.Vector3(0, 1.5, 0);
+  const clipPoint = new THREE.Vector3();
+  const cardPos = new THREE.Vector3();
+  const cardQuat = new THREE.Quaternion();
   const segmentProps = { type: 'dynamic', canSleep: true, colliders: false, angularDamping: 4, linearDamping: 4 };
   const { nodes, materials } = useGLTF(cardGLB);
   const size = useThree((state) => state.size);
@@ -224,8 +246,9 @@ function Band({
   const [dragged, drag] = useState(false);
   const [hovered, hover] = useState(false);
   const badge = useRef();
+  const pointer = useRef(new THREE.Vector2());
 
-  usePointerGate(badge, dragged);
+  usePointerControls({ badge, card, pointer, drag, dragged, hover });
 
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 0.75]);
   useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 0.75]);
@@ -244,7 +267,7 @@ function Band({
 
   useFrame((state, delta) => {
     if (dragged) {
-      vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
+      vec.set(pointer.current.x, pointer.current.y, 0.5).unproject(state.camera);
       dir.copy(vec).sub(state.camera.position).normalize();
       vec.add(dir.multiplyScalar(state.camera.position.length()));
       [card, j1, j2, j3, fixed].forEach(ref => ref.current?.wakeUp());
@@ -259,7 +282,12 @@ function Band({
           delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed))
         );
       });
-      curve.points[0].copy(j3.current.translation());
+      // The band ends on the card's own clip rather than on the joint body.
+      // The solver lets the two drift apart for a frame or two while the card
+      // is thrown, which reads as the band tearing away from the clip.
+      cardQuat.copy(card.current.rotation());
+      clipPoint.copy(clipAnchor).applyQuaternion(cardQuat).add(cardPos.copy(card.current.translation()));
+      curve.points[0].copy(clipPoint);
       curve.points[1].copy(j2.current.lerped);
       curve.points[2].copy(j1.current.lerped);
       curve.points[3].copy(fixed.current.translation());
@@ -292,13 +320,6 @@ function Band({
             ref={badge}
             scale={2.25}
             position={[0, -1.2, -0.05]}
-            onPointerOver={() => hover(true)}
-            onPointerOut={() => hover(false)}
-            onPointerUp={e => (e.target.releasePointerCapture(e.pointerId), drag(false))}
-            onPointerDown={e => (
-              e.target.setPointerCapture(e.pointerId),
-              drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())))
-            )}
           >
             <mesh geometry={nodes.card.geometry}>
               <meshPhysicalMaterial
