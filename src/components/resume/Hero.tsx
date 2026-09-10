@@ -1,24 +1,14 @@
 import { profile, roles } from '../../data/resume';
 import { Icon } from '../common/icons';
 import IconLink from '../common/IconLink';
+import HeroPortrait from './HeroPortrait';
 import styles from './Hero.module.css';
 
 export default function Hero() {
   return (
     <section className={styles.hero} id="top">
       <div className={styles.aside}>
-        <picture>
-          <source srcSet={profile.portrait.avif} type="image/avif" />
-          <source srcSet={profile.portrait.webp} type="image/webp" />
-          <img
-            className={styles.portrait}
-            src={profile.portrait.fallback}
-            alt={profile.portrait.alt}
-            width={profile.portrait.width}
-            height={profile.portrait.height}
-            fetchPriority="high"
-          />
-        </picture>
+        <HeroPortrait />
 
         <ul className={styles.details}>
           <li className={styles.detail}>{profile.location}</li>

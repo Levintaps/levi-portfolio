@@ -1,0 +1,16 @@
+.portrait {
+  inline-size: 100%;
+  max-inline-size: 17rem;
+  block-size: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--radius-l);
+  border: 1px solid var(--line);
+}
+
+.stage {
+  --lanyard-height: 30rem;
+  inline-size: 20rem;
+  block-size: 30rem;
+  cursor: grab;
+}
