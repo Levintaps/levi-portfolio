@@ -15,6 +15,7 @@
 }
 
 .star {
+  position: relative;
   display: grid;
   place-items: center;
   inline-size: 2.75rem;
@@ -57,4 +58,5 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+  inset-inline-start: 0;
 }

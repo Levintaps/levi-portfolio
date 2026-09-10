@@ -68,9 +68,13 @@ describe('resume data', () => {
     expect(achievements.length).toBeGreaterThan(0);
   });
 
-  it('exposes the rotating hero roles the cyber view reads, grounded in the CV headline', () => {
-    expect(roles.length).toBeGreaterThanOrEqual(3);
-    expect(roles).toContain('Full Stack Developer');
+  it('exposes the roles both heroes read, taken from the CV headline', () => {
+    expect(roles).toEqual([
+      'Software Developer',
+      'Information Technology',
+      'System Administrator',
+      'Cybersecurity Enthusiast',
+    ]);
     expect(roles).not.toContain('Security Minded Engineer');
   });
 

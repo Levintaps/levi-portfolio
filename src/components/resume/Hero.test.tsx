@@ -1,12 +1,19 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import Hero from './Hero';
-import { profile } from '../../data/resume';
+import { profile, roles } from '../../data/resume';
 
 describe('Hero', () => {
   it('renders the name as the only level one heading', () => {
     render(<Hero />);
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(profile.name);
+  });
+
+  it('prints every role from the resume headline', () => {
+    render(<Hero />);
+    for (const role of roles) {
+      expect(screen.getByText(role)).toBeInTheDocument();
+    }
   });
 
   it('offers the CV as a direct one-click download', () => {
@@ -16,10 +23,32 @@ describe('Hero', () => {
     expect(link).toHaveAttribute('download');
   });
 
-  it('shows the availability marker and the location', () => {
+  it('carries no second call to action', () => {
     render(<Hero />);
-    expect(screen.getByText(profile.availability)).toBeInTheDocument();
-    expect(screen.getByText(profile.location)).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /get in touch/i })).toBeNull();
+  });
+
+  it('drops the availability marker', () => {
+    render(<Hero />);
+    expect(screen.queryByText(profile.availability)).toBeNull();
+  });
+
+  it('puts the location and the email under the portrait', () => {
+    const { container } = render(<Hero />);
+    const aside = container.querySelector('picture')?.parentElement;
+    expect(aside).not.toBeNull();
+
+    const scope = within(aside as HTMLElement);
+    expect(scope.getByText(profile.location)).toBeInTheDocument();
+    expect(scope.getByRole('link', { name: profile.email })).toHaveAttribute(
+      'href',
+      `mailto:${profile.email}`,
+    );
+  });
+
+  it('says what he is studying now', () => {
+    render(<Hero />);
+    expect(screen.getByText(profile.currently)).toBeInTheDocument();
   });
 
   it('serves the portrait with modern formats and explicit dimensions', () => {

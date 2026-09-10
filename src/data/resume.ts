@@ -10,12 +10,12 @@ import type {
 
 export const siteUrl = 'https://levintaps.vercel.app';
 
-// The cyber view's hero rotates through these in place of a single job
-// title. Grounded in the CV headline: "Software Developer | Information
-// Technology | System Administrator | Cyber Sec Enthusiast".
+// The four roles from the CV headline. The resume hero prints them on one
+// line; the cyber hero rotates through them.
 export const roles = [
-  'Full Stack Developer',
-  'Systems and Infrastructure',
+  'Software Developer',
+  'Information Technology',
+  'System Administrator',
   'Cybersecurity Enthusiast',
 ];
 
@@ -34,6 +34,7 @@ export const profile: Profile = {
   email: 'levintapia.work@gmail.com',
   phone: '+63 921 480 5230',
   availability: 'Open to software developer roles',
+  currently: 'Currently studying cybersecurity and AWS cloud.',
   cvPath: '/cv/Jayson_Levin_Tapia_Resume.pdf',
   portrait: {
     avif: '/images/portrait.avif',

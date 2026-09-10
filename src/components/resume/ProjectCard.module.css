@@ -76,6 +76,7 @@
 }
 
 .more {
+  position: relative;
   align-self: start;
   display: inline-flex;
   align-items: center;
@@ -134,4 +135,5 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+  inset-inline-start: 0;
 }
