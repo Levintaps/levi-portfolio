@@ -88,7 +88,7 @@ export default function HeroPortrait() {
       <div className={styles.overlay}>
         <Suspense fallback={null}>
           <Lanyard
-            position={[0, -0.3, 15]}
+            position={[0, -0.3, 14.3]}
             gravity={[0, -40, 0]}
             fov={22}
             frontImage="/images/id-card.jpg"

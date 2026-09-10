@@ -1,6 +1,6 @@
 .portrait {
   inline-size: 100%;
-  max-inline-size: 17rem;
+  max-inline-size: 15.5rem;
   block-size: auto;
   aspect-ratio: 4 / 5;
   object-fit: cover;
@@ -9,18 +9,18 @@
 }
 
 .spacer {
-  inline-size: 22rem;
-  block-size: 26rem;
+  inline-size: 15.5rem;
+  block-size: 22rem;
 }
 
-/* The canvas is centred on the portrait column but reaches well past it, so
-   a thrown badge travels over the text instead of vanishing at an edge. The
-   camera always looks at the origin, so the canvas is what gets positioned. */
+/* The canvas is centred on the portrait column and reaches far past it on
+   both sides, so the badge rests over its own column at any width and still
+   travels over the text when it is thrown. */
 .overlay {
-  --lanyard-height: 100%;
+  --lanyard-height: 54rem;
   position: absolute;
-  inset-block: -18rem -2rem;
-  inset-inline-start: -12rem;
-  inline-size: 46rem;
+  inset-inline: -16rem;
+  inset-block-start: -21rem;
+  block-size: 54rem;
   z-index: 2;
 }
