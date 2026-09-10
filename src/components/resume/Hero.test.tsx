@@ -46,9 +46,10 @@ describe('Hero', () => {
     );
   });
 
-  it('says what he is studying now', () => {
-    render(<Hero />);
-    expect(screen.getByText(profile.currently)).toBeInTheDocument();
+  it('groups the social links with the contact details', () => {
+    const { container } = render(<Hero />);
+    const aside = container.querySelector('picture')?.parentElement;
+    expect(within(aside as HTMLElement).getByRole('link', { name: /github/i })).toBeInTheDocument();
   });
 
   it('serves the portrait with modern formats and explicit dimensions', () => {

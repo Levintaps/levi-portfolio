@@ -86,19 +86,6 @@
   hyphens: auto;
 }
 
-.currently {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-size: var(--step--1);
-  color: var(--ink);
-  padding: var(--space-2xs) var(--space-s);
-  border-inline-start: 2px solid var(--accent);
-  background: var(--surface-sunken);
-  border-radius: var(--radius-s);
-  justify-self: start;
-}
-
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -132,7 +119,7 @@
 
 @media (min-width: 48rem) {
   .hero {
-    grid-template-columns: 20rem minmax(0, 1fr);
+    grid-template-columns: 22rem minmax(0, 1fr);
     gap: var(--space-xl);
     padding-block: var(--space-2xl);
   }

@@ -9,8 +9,8 @@
 }
 
 .stage {
-  --lanyard-height: 30rem;
-  inline-size: 20rem;
-  block-size: 30rem;
+  --lanyard-height: 34rem;
+  inline-size: 22rem;
+  block-size: 34rem;
   cursor: grab;
 }

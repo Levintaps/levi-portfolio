@@ -81,10 +81,10 @@ export default function HeroPortrait() {
     <div className={styles.stage}>
       <Suspense fallback={<StaticPortrait />}>
         <Lanyard
-          position={[0, 0, 22]}
+          position={[0, -1.4, 9]}
           gravity={[0, -40, 0]}
           fov={22}
-          frontImage={profile.portrait.fallback}
+          frontImage="/images/id-card.jpg"
           imageFit="cover"
         />
       </Suspense>

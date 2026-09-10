@@ -14,7 +14,6 @@ export interface Profile {
   email: string;
   phone: string;
   availability: string;
-  currently: string;
   cvPath: string;
   portrait: {
     avif: string;

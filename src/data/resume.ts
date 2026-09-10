@@ -34,7 +34,6 @@ export const profile: Profile = {
   email: 'levintapia.work@gmail.com',
   phone: '+63 921 480 5230',
   availability: 'Open to software developer roles',
-  currently: 'Currently studying cybersecurity and AWS cloud.',
   cvPath: '/cv/Jayson_Levin_Tapia_Resume.pdf',
   portrait: {
     avif: '/images/portrait.avif',
