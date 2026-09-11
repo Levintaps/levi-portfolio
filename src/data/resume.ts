@@ -247,6 +247,23 @@ export const skillGroups: SkillGroup[] = [
   },
 ];
 
+// The handful of skills worth being hired for. Each one is promoted out of
+// the groups below, so editing this list is all it takes to change what the
+// section leads with.
+export const coreSkills = [
+  'React',
+  'TypeScript',
+  'Java',
+  'Spring Boot',
+  'Firebase Firestore',
+  'MySQL',
+  'Tailwind CSS',
+];
+
+export const supportingSkillGroups: SkillGroup[] = skillGroups
+  .map((group) => ({ ...group, items: group.items.filter((item) => !coreSkills.includes(item)) }))
+  .filter((group) => group.items.length > 0);
+
 export const education: EducationEntry[] = [
   {
     qualification: 'BS Information Technology',

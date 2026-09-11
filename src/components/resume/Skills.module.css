@@ -5,6 +5,24 @@
   scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
 }
 
+.core {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-block-end: var(--space-xl);
+}
+
+.coreItem {
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  font-weight: 600;
+  padding: var(--space-2xs) var(--space-s);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-m);
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
 .groups {
   display: grid;
   gap: var(--space-l);
@@ -12,32 +30,30 @@
 
 .group {
   display: grid;
-  gap: var(--space-xs);
+  gap: var(--space-2xs);
   padding-block-start: var(--space-s);
   border-block-start: 1px solid var(--line);
 }
 
 .groupName {
   font-family: var(--font-mono);
-  font-size: var(--step--1);
-  letter-spacing: 0.1em;
+  font-size: var(--step--2);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-faint);
   font-weight: 500;
 }
 
+/* Supporting skills read as prose rather than a wall of boxes: the chips are
+   reserved for the core stack, where they earn the attention. */
 .items {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs);
-}
-
-.item {
+  /* Spacing separates the items rather than punctuation, which would leave a
+     stray mark hanging at the end of a wrapped line. */
+  gap: var(--space-2xs) var(--space-m);
+  color: var(--ink-muted);
   font-size: var(--step--1);
-  padding: var(--space-2xs) var(--space-xs);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-s);
-  background: var(--surface);
 }
 
 @media (min-width: 48rem) {

@@ -1,4 +1,4 @@
-import { skillGroups } from '../../data/resume';
+import { coreSkills, supportingSkillGroups } from '../../data/resume';
 import { useReveal } from '../../hooks/useReveal';
 import styles from './CyberSkills.module.css';
 
@@ -12,8 +12,16 @@ export default function CyberSkills() {
         <h2 className={styles.title}>Tech arsenal</h2>
       </header>
 
+      <ul className={styles.core} aria-label="Core stack">
+        {coreSkills.map((skill) => (
+          <li key={skill} className={styles.coreItem}>
+            {skill}
+          </li>
+        ))}
+      </ul>
+
       <div className={styles.grid}>
-        {skillGroups.map((group, index) => (
+        {supportingSkillGroups.map((group, index) => (
           <article
             key={group.name}
             className={styles.card}

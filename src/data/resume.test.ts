@@ -1,5 +1,7 @@
 import {
   achievements,
+  coreSkills,
+  supportingSkillGroups,
   achievementsLead,
   certifications,
   education,
@@ -58,6 +60,29 @@ describe('resume data', () => {
   it('opens with the client work, since the carousel takes the first five in order', () => {
     expect(projects.length).toBeGreaterThanOrEqual(5);
     expect(projects.slice(0, 4).every((project) => project.kind === 'Client project')).toBe(true);
+  });
+
+  it('leads the skills with a short core list, every item of it real', () => {
+    expect(coreSkills.length).toBeGreaterThanOrEqual(5);
+    expect(coreSkills.length).toBeLessThanOrEqual(9);
+
+    const every = skillGroups.flatMap((group) => group.items);
+    for (const skill of coreSkills) {
+      expect(every).toContain(skill);
+    }
+  });
+
+  it('never lists a core skill twice', () => {
+    const supporting = supportingSkillGroups.flatMap((group) => group.items);
+    for (const skill of coreSkills) {
+      expect(supporting).not.toContain(skill);
+    }
+  });
+
+  it('keeps every skill somewhere between the two lists', () => {
+    const shown = [...coreSkills, ...supportingSkillGroups.flatMap((group) => group.items)].sort();
+    const every = skillGroups.flatMap((group) => group.items).sort();
+    expect(shown).toEqual(every);
   });
 
   it('carries the supporting resume sections', () => {
