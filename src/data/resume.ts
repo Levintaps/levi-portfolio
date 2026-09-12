@@ -269,6 +269,7 @@ export const education: EducationEntry[] = [
     qualification: 'BS Information Technology',
     institution: 'ICCT Colleges Foundation, Inc.',
     period: 'Jan 2022 — Dec 2025',
+    detail: 'Capstone: Smart Parking System, an IoT-enabled parking platform I led end to end.',
   },
 ];
 

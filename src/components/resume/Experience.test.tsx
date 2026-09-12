@@ -22,10 +22,42 @@ describe('Experience', () => {
 });
 
 describe('Education', () => {
-  it('renders qualifications and certifications', () => {
+  it('renders the degree with its institution and dates', () => {
     render(<Education />);
-    expect(screen.getByText(education[0].qualification)).toBeInTheDocument();
-    expect(screen.getByText(certifications[0].name)).toBeInTheDocument();
+    for (const entry of education) {
+      expect(screen.getByText(entry.qualification)).toBeInTheDocument();
+      expect(screen.getByText(entry.institution)).toBeInTheDocument();
+      expect(screen.getByText(entry.period)).toBeInTheDocument();
+    }
+  });
+
+  it('ties the degree to the capstone that came out of it', () => {
+    render(<Education />);
+    for (const entry of education) {
+      if (!entry.detail) continue;
+      expect(screen.getByText(entry.detail)).toBeInTheDocument();
+    }
+  });
+
+  it('lists every certification under its own label, with the issuer', () => {
+    render(<Education />);
+    const list = screen.getByRole('list', { name: /certifications/i });
+    expect(within(list).getAllByRole('listitem')).toHaveLength(certifications.length);
+
+    for (const certification of certifications) {
+      expect(within(list).getByText(certification.name)).toBeInTheDocument();
+      expect(within(list).getByText(certification.issuer)).toBeInTheDocument();
+    }
+  });
+
+  it('claims no credential that is not in the data', () => {
+    render(<Education />);
+    const list = screen.getByRole('list', { name: /certifications/i });
+    const claimed = within(list)
+      .getAllByRole('listitem')
+      .map((item) => item.textContent ?? '');
+    expect(claimed).toHaveLength(certifications.length);
+    expect(screen.queryByText(/AWS|Cloud Practitioner/i)).toBeNull();
   });
 });
 
