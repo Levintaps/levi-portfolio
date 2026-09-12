@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Reviews from './Reviews';
 import * as feedback from '../../lib/feedback';
@@ -41,20 +41,33 @@ describe('Reviews', () => {
     expect(screen.getByText(/2 ratings/i)).toBeInTheDocument();
   });
 
-  it('shows the most recent notes visitors left', async () => {
+  it('names the people who rated, and what they gave', async () => {
     render(<Reviews />);
-    expect(await screen.findByText('Clear and easy to read.')).toBeInTheDocument();
-    expect(screen.getByText('Strong project write-ups.')).toBeInTheDocument();
+    const raters = await screen.findByRole('list', { name: /recent ratings/i });
+
+    expect(within(raters).getByText('Ana')).toBeInTheDocument();
+    expect(within(raters).getByText('Ben')).toBeInTheDocument();
+    expect(within(raters).getByText('5 out of 5')).toBeInTheDocument();
+    expect(within(raters).getByText('4 out of 5')).toBeInTheDocument();
   });
 
-  it('hides the notes list when there are none', async () => {
+  it('shows the messages visitors left as bubbles', async () => {
+    render(<Reviews />);
+    const stage = await screen.findByRole('list', { name: /messages/i });
+
+    expect(within(stage).getByText('Clear and easy to read.')).toBeInTheDocument();
+    expect(within(stage).getByText('Strong project write-ups.')).toBeInTheDocument();
+  });
+
+  it('invites the first message when there are none', async () => {
     fetchMessages.mockResolvedValue([]);
     render(<Reviews />);
     await screen.findByText('4.5');
-    expect(screen.queryByRole('heading', { name: /recent notes/i })).toBeNull();
+
+    expect(await screen.findByText(/no messages yet/i)).toBeInTheDocument();
   });
 
-  it('submits a rating and then locks the form', async () => {
+  it('submits a rating, and writes no message with it', async () => {
     const user = userEvent.setup();
     render(<Reviews />);
     await screen.findByText('4.5');
@@ -64,50 +77,45 @@ describe('Reviews', () => {
     await user.click(screen.getByRole('button', { name: /submit rating/i }));
 
     await waitFor(() => expect(submitRating).toHaveBeenCalledWith('Recruiter', 5));
-    expect(await screen.findByText(/thank you/i)).toBeInTheDocument();
+    expect(submitMessage).not.toHaveBeenCalled();
+    expect(await screen.findByText(/thank you for rating/i)).toBeInTheDocument();
   });
 
-  it('submits the note as a message alongside the rating', async () => {
+  it('sends a message from its own form, without touching the rating', async () => {
     const user = userEvent.setup();
     render(<Reviews />);
     await screen.findByText('4.5');
 
-    await user.type(screen.getByLabelText(/your note/i), 'Great case studies.');
-    await user.click(screen.getByRole('radio', { name: /5 stars/i }));
-    await user.click(screen.getByRole('button', { name: /submit rating/i }));
+    await user.type(screen.getByLabelText(/your message/i), 'Great case studies.');
+    await user.click(screen.getByRole('button', { name: /send message/i }));
 
     await waitFor(() => expect(submitMessage).toHaveBeenCalledWith('Great case studies.'));
+    expect(submitRating).not.toHaveBeenCalled();
     expect(localStorage.getItem('portfolio-submitted-message')).toBe('true');
+    expect(screen.getByRole('button', { name: /submit rating/i })).toBeInTheDocument();
   });
 
-  it('does not write an empty message when the note is left blank', async () => {
+  it('refuses to send an empty message', async () => {
     const user = userEvent.setup();
     render(<Reviews />);
     await screen.findByText('4.5');
 
-    await user.click(screen.getByRole('radio', { name: /5 stars/i }));
-    await user.click(screen.getByRole('button', { name: /submit rating/i }));
+    await user.click(screen.getByRole('button', { name: /send message/i }));
 
-    await waitFor(() => expect(submitRating).toHaveBeenCalled());
     expect(submitMessage).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toHaveTextContent(/write something/i);
   });
 
-  it('disables the note field, and writes no second message, for a visitor who already left one', async () => {
+  it('closes the message form for a visitor who already sent one', async () => {
     localStorage.setItem('portfolio-submitted-message', 'true');
-    const user = userEvent.setup();
     render(<Reviews />);
     await screen.findByText('4.5');
 
-    expect(screen.getByLabelText(/your note/i)).toBeDisabled();
-
-    await user.click(screen.getByRole('radio', { name: /5 stars/i }));
-    await user.click(screen.getByRole('button', { name: /submit rating/i }));
-
-    await waitFor(() => expect(submitRating).toHaveBeenCalled());
-    expect(submitMessage).not.toHaveBeenCalled();
+    expect(screen.queryByLabelText(/your message/i)).toBeNull();
+    expect(screen.getByText(/thank you for the message/i)).toBeInTheDocument();
   });
 
-  it('refuses to submit without a star selected', async () => {
+  it('refuses to submit a rating without a star selected', async () => {
     const user = userEvent.setup();
     render(<Reviews />);
     await screen.findByText('4.5');
@@ -120,7 +128,7 @@ describe('Reviews', () => {
   it('stays locked for a visitor who already rated', async () => {
     localStorage.setItem('portfolio-submitted-rating', 'true');
     render(<Reviews />);
-    expect(await screen.findByText(/thank you/i)).toBeInTheDocument();
+    expect(await screen.findByText(/thank you for rating/i)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /submit rating/i })).toBeNull();
   });
 
@@ -205,7 +213,7 @@ describe('Reviews', () => {
     await user.click(screen.getByRole('button', { name: /submit rating/i }));
 
     // The thank you should appear
-    expect(await screen.findByText(/thank you/i)).toBeInTheDocument();
+    expect(await screen.findByText(/thank you for rating/i)).toBeInTheDocument();
 
     // No alert should appear
     expect(screen.queryByRole('alert')).toBeNull();

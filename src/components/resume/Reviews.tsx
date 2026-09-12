@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import {
   fetchMessages,
@@ -10,12 +10,13 @@ import {
   MAX_MESSAGE_LENGTH,
   MAX_NAME_LENGTH,
   type FeedbackMessage,
-  type RatingSummary,
+  type Rating,
 } from '../../lib/feedback';
 import { hasSubmitted, markSubmitted } from '../../lib/submissionGuard';
 import { useReveal } from '../../hooks/useReveal';
 import SectionHeading from '../common/SectionHeading';
 import { Icon } from '../common/icons';
+import MessageBubbles from './MessageBubbles';
 import StarInput from './StarInput';
 import styles from './Reviews.module.css';
 
@@ -24,34 +25,54 @@ import styles from './Reviews.module.css';
 // the fetch — and the SDK chunk it pulls in — starts well before the visitor
 // actually scrolls this section into view.
 const FETCH_ROOT_MARGIN = '600px 0px';
+const RECENT_RATINGS = 4;
 
 type Status = 'loading' | 'ready' | 'unavailable';
+
+function Stars({ value, size }: { value: number; size: number }) {
+  return (
+    <span className={styles.stars} aria-hidden="true">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span key={star} className={styles.star} data-active={star <= Math.round(value)}>
+          <Icon name="star" size={size} />
+        </span>
+      ))}
+    </span>
+  );
+}
 
 export default function Reviews() {
   const { ref, revealed } = useReveal<HTMLElement>({ rootMargin: FETCH_ROOT_MARGIN });
   const [status, setStatus] = useState<Status>('loading');
-  const [summary, setSummary] = useState<RatingSummary | null>(null);
+  const [ratings, setRatings] = useState<Rating[]>([]);
   const [notes, setNotes] = useState<FeedbackMessage[]>([]);
+
   const [name, setName] = useState('');
   const [value, setValue] = useState(0);
-  const [note, setNote] = useState('');
-  const [error, setError] = useState('');
-  const [done, setDone] = useState(() => hasSubmitted('rating'));
-  // The rating and the note write to separate collections behind separate
-  // one-submission-per-visitor guards (see submissionGuard.ts), so a
-  // visitor who already left a note on this view or the cyber one gets a
-  // disabled field here rather than a second, silently-dropped write.
-  const [noteLocked, setNoteLocked] = useState(() => hasSubmitted('message'));
-  const [sending, setSending] = useState(false);
+  const [ratingError, setRatingError] = useState('');
+  const [ratingSending, setRatingSending] = useState(false);
+  const [ratingDone, setRatingDone] = useState(() => hasSubmitted('rating'));
+
+  // The rating and the message write to separate collections behind separate
+  // one-submission-per-visitor guards (see submissionGuard.ts), so each half
+  // of this section locks on its own. A visitor who left a message on the
+  // cyber view finds this one already closed, and can still rate.
+  const [draft, setDraft] = useState('');
+  const [messageError, setMessageError] = useState('');
+  const [messageSending, setMessageSending] = useState(false);
+  const [messageDone, setMessageDone] = useState(() => hasSubmitted('message'));
+
+  const summary = useMemo(() => summarise(ratings), [ratings]);
+  const recent = ratings.slice(0, RECENT_RATINGS);
 
   useEffect(() => {
     if (!revealed) return;
     let active = true;
 
     fetchRatings()
-      .then((ratings) => {
+      .then((loaded) => {
         if (!active) return;
-        setSummary(summarise(ratings));
+        setRatings(loaded);
         setStatus('ready');
       })
       .catch(() => {
@@ -60,10 +81,10 @@ export default function Reviews() {
 
     fetchMessages()
       .then((messages) => {
-        if (active) setNotes(messages.slice(0, 4));
+        if (active) setNotes(messages);
       })
       .catch(() => {
-        // The notes list is supporting detail. Losing it must not affect the rating summary.
+        // The messages are supporting detail. Losing them must not affect the rating summary.
       });
 
     return () => {
@@ -71,63 +92,61 @@ export default function Reviews() {
     };
   }, [revealed]);
 
-  async function handleSubmit(event: FormEvent) {
+  async function handleRating(event: FormEvent) {
     event.preventDefault();
     if (value < 1) {
-      setError('Choose a rating first.');
+      setRatingError('Choose a rating first.');
       return;
     }
 
-    // The note is optional: only validate it, and only ever write it, when
-    // the visitor actually typed something. An empty note must never reach
-    // submitMessage.
-    const trimmedNote = note.trim();
-    if (trimmedNote) {
-      const problem = validateMessage(trimmedNote);
-      if (problem) {
-        setError(problem);
-        return;
-      }
-    }
+    setRatingSending(true);
+    setRatingError('');
 
-    setSending(true);
-    setError('');
-    let succeeded = false;
-
-    // Write the rating
     try {
       await submitRating(name, value);
       markSubmitted('rating');
-      setDone(true);
-      succeeded = true;
+      setRatingDone(true);
     } catch {
-      setError('That did not go through. Please try again later.');
+      setRatingError('That did not go through. Please try again later.');
+      return;
     } finally {
-      setSending(false);
+      setRatingSending(false);
     }
 
-    // Write the note as a message, independently guarded so a visitor who
-    // already left one (here or on the cyber view) never gets a second
-    // write recorded.
-    if (succeeded && trimmedNote && !hasSubmitted('message')) {
-      try {
-        await submitMessage(trimmedNote);
-        markSubmitted('message');
-        setNoteLocked(true);
-      } catch {
-        // The rating already succeeded; losing the note is not worth
-        // surfacing as an error on top of that.
-      }
+    try {
+      setRatings(await fetchRatings());
+    } catch {
+      // The rating was saved; a stale average beats a false error.
+    }
+  }
+
+  async function handleMessage(event: FormEvent) {
+    event.preventDefault();
+    const text = draft.trim();
+    const problem = validateMessage(text);
+    if (problem) {
+      setMessageError(problem);
+      return;
     }
 
-    // Refresh the ratings if the write succeeded (best-effort)
-    if (succeeded) {
-      try {
-        const ratings = await fetchRatings();
-        setSummary(summarise(ratings));
-      } catch {
-        // Rating was saved; a stale average is better than a false error
-      }
+    setMessageSending(true);
+    setMessageError('');
+
+    try {
+      await submitMessage(text);
+      markSubmitted('message');
+      // Shown straight away rather than waiting for a refetch, so the visitor
+      // sees their own message take a place on the stage.
+      setNotes((current) => [
+        { id: `local-${Date.now()}`, message: text, createdAt: new Date() },
+        ...current,
+      ]);
+      setDraft('');
+      setMessageDone(true);
+    } catch {
+      setMessageError('That did not go through. Please try again later.');
+    } finally {
+      setMessageSending(false);
     }
   }
 
@@ -136,39 +155,45 @@ export default function Reviews() {
       <SectionHeading
         index="06 / Feedback"
         title="What visitors think"
-        lead="Every rating submitted here is saved and folded into the average below."
+        lead="Ratings are saved and folded into the average. Messages take their turn beside it."
       />
 
       <div className={styles.layout}>
-        <div className={styles.summary}>
-          {status === 'unavailable' ? (
-            <p className={styles.muted}>Ratings are unavailable right now.</p>
-          ) : (
-            <>
-              <p className={styles.average}>{summary ? summary.average.toFixed(1) : '—'}</p>
-              <div className={styles.stars} aria-hidden="true">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span
-                    key={star}
-                    className={styles.star}
-                    data-active={summary ? star <= Math.round(summary.average) : false}
-                  >
-                    <Icon name="star" size={18} />
-                  </span>
-                ))}
-              </div>
-              <p className={styles.count}>
-                {summary ? `${summary.count} ${summary.count === 1 ? 'rating' : 'ratings'}` : ''}
-              </p>
-            </>
-          )}
-        </div>
+        <div className={styles.ratingSide}>
+          <div className={styles.summary}>
+            {status === 'unavailable' ? (
+              <p className={styles.muted}>Ratings are unavailable right now.</p>
+            ) : (
+              <>
+                <p className={styles.average}>
+                  {status === 'ready' ? summary.average.toFixed(1) : '—'}
+                </p>
+                <Stars value={summary.average} size={18} />
+                <p className={styles.count}>
+                  {status === 'ready'
+                    ? `${summary.count} ${summary.count === 1 ? 'rating' : 'ratings'}`
+                    : ''}
+                </p>
+              </>
+            )}
+          </div>
 
-        <div className={styles.form}>
-          {done ? (
+          {recent.length > 0 ? (
+            <ul className={styles.raters} aria-label="Recent ratings">
+              {recent.map((rating) => (
+                <li key={rating.id} className={styles.rater}>
+                  <span className={styles.raterName}>{rating.name}</span>
+                  <Stars value={rating.rating} size={12} />
+                  <span className={styles.srOnly}>{Math.round(rating.rating)} out of 5</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+
+          {ratingDone ? (
             <p className={styles.thanks}>Thank you for rating this portfolio.</p>
           ) : (
-            <form onSubmit={handleSubmit} className={styles.fields}>
+            <form onSubmit={handleRating} className={styles.fields}>
               <label className={styles.label} htmlFor="review-name">
                 Your name
               </label>
@@ -182,45 +207,53 @@ export default function Reviews() {
                 autoComplete="name"
               />
 
-              <StarInput value={value} onChange={setValue} disabled={sending} />
+              <StarInput value={value} onChange={setValue} disabled={ratingSending} />
 
-              <label className={styles.label} htmlFor="review-note">
-                Your note (optional)
-              </label>
-              <input
-                id="review-note"
-                className={styles.input}
-                value={note}
-                maxLength={MAX_MESSAGE_LENGTH}
-                onChange={(event) => setNote(event.target.value)}
-                placeholder={noteLocked ? 'You already left a note' : 'Optional'}
-                disabled={sending || noteLocked}
-              />
-
-              {error ? (
+              {ratingError ? (
                 <p className={styles.error} role="alert">
-                  {error}
+                  {ratingError}
                 </p>
               ) : null}
 
-              <button className={styles.submit} type="submit" disabled={sending}>
-                {sending ? 'Sending' : 'Submit rating'}
+              <button className={styles.submit} type="submit" disabled={ratingSending}>
+                {ratingSending ? 'Sending' : 'Submit rating'}
               </button>
             </form>
           )}
+        </div>
 
-          {notes.length > 0 ? (
-            <div className={styles.notes}>
-              <h3 className={styles.notesTitle}>Recent notes</h3>
-              <ul className={styles.notesList}>
-                {notes.map((entry) => (
-                  <li key={entry.id} className={styles.note}>
-                    {entry.message}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+        <div className={styles.messageSide}>
+          <MessageBubbles messages={notes} />
+
+          {messageDone ? (
+            <p className={styles.thanks}>Thank you for the message.</p>
+          ) : (
+            <form onSubmit={handleMessage} className={styles.messageForm}>
+              <label className={styles.label} htmlFor="review-message">
+                Your message
+              </label>
+              <div className={styles.row}>
+                <input
+                  id="review-message"
+                  className={styles.input}
+                  value={draft}
+                  maxLength={MAX_MESSAGE_LENGTH}
+                  onChange={(event) => setDraft(event.target.value)}
+                  placeholder="Say something"
+                  disabled={messageSending}
+                />
+                <button className={styles.send} type="submit" disabled={messageSending}>
+                  {messageSending ? 'Sending' : 'Send message'}
+                </button>
+              </div>
+
+              {messageError ? (
+                <p className={styles.error} role="alert">
+                  {messageError}
+                </p>
+              ) : null}
+            </form>
+          )}
         </div>
       </div>
     </section>

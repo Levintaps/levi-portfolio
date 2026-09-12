@@ -7,7 +7,14 @@
 
 .layout {
   display: grid;
-  gap: var(--space-l);
+  gap: var(--space-xl);
+}
+
+.ratingSide,
+.messageSide {
+  display: grid;
+  gap: var(--space-m);
+  align-content: start;
 }
 
 .summary {
@@ -28,7 +35,7 @@
 }
 
 .stars {
-  display: flex;
+  display: inline-flex;
   gap: var(--space-2xs);
   color: var(--ink-faint);
 }
@@ -48,6 +55,44 @@
   color: var(--ink-faint);
 }
 
+.raters {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.rater {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-s);
+  padding-block-end: var(--space-xs);
+  border-block-end: 1px solid var(--line);
+}
+
+.rater:last-child {
+  border-block-end: none;
+  padding-block-end: 0;
+}
+
+.raterName {
+  font-size: var(--step--1);
+  color: var(--ink-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.srOnly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  inset-inline-start: 0;
+}
+
 .fields {
   display: grid;
   gap: var(--space-xs);
@@ -56,6 +101,21 @@
 .label {
   font-size: var(--step--1);
   color: var(--ink-muted);
+}
+
+.messageForm {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.row .input {
+  flex: 1 1 14rem;
 }
 
 .input {
@@ -71,7 +131,8 @@
   outline-offset: 1px;
 }
 
-.submit {
+.submit,
+.send {
   justify-self: start;
   padding: var(--space-s) var(--space-l);
   min-block-size: 2.75rem;
@@ -81,7 +142,8 @@
   font-weight: 600;
 }
 
-.submit:disabled {
+.submit:disabled,
+.send:disabled {
   opacity: 0.6;
   cursor: progress;
 }
@@ -96,37 +158,9 @@
   font-weight: 600;
 }
 
-.notes {
-  margin-block-start: var(--space-l);
-  padding-block-start: var(--space-m);
-  border-block-start: 1px solid var(--line);
-}
-
-.notesTitle {
-  font-family: var(--font-mono);
-  font-size: var(--step--1);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  font-weight: 500;
-  margin-block-end: var(--space-s);
-}
-
-.notesList {
-  display: grid;
-  gap: var(--space-s);
-}
-
-.note {
-  padding-inline-start: var(--space-m);
-  border-inline-start: 2px solid var(--line-strong);
-  color: var(--ink-muted);
-  font-size: var(--step--1);
-}
-
 @media (min-width: 48rem) {
   .layout {
-    grid-template-columns: 16rem 1fr;
+    grid-template-columns: 18rem 1fr;
     gap: var(--space-xl);
   }
 
