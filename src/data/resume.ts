@@ -31,6 +31,7 @@ export const profile: Profile = {
   summary:
     'Information Technology graduate and full-stack developer who has shipped web, mobile and IoT-integrated applications for real clients. Comfortable across the stack in React, TypeScript, Java and Firebase, and equally at home in the infrastructure underneath it after a corporate IT support internship covering systems administration, Active Directory and enterprise networking.',
   location: 'Antipolo City, Rizal, Philippines',
+  timezone: 'Philippine Standard Time, UTC+8',
   email: 'levintapia.work@gmail.com',
   phone: '+63 921 480 5230',
   availability: 'Open to software developer roles',

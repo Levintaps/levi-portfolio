@@ -10,10 +10,54 @@
   gap: var(--space-l);
 }
 
-.details {
+.reach {
   display: grid;
   gap: var(--space-m);
   align-content: start;
+}
+
+.detail {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+/* The address and its copy button share a line and wrap together, so a long
+   address never pushes the button off the column. */
+.emailRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.copy {
+  padding: var(--space-2xs) var(--space-s);
+  min-block-size: 2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.copy:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.copyNote,
+.detailAside {
+  font-size: var(--step--1);
+  color: var(--ink-faint);
+}
+
+.socials {
+  display: flex;
+  gap: var(--space-xs);
+  padding-block-start: var(--space-2xs);
 }
 
 .detailLabel {
@@ -42,8 +86,29 @@ a.detailValue:hover {
 }
 
 .form {
+  position: relative;
   display: grid;
   gap: var(--space-s);
+}
+
+/* The two short fields share a row on a wide screen: a name box the full
+   width of the column reads as a wall rather than a form. */
+.pair {
+  display: grid;
+  gap: var(--space-s);
+}
+
+/* Present but unreachable: no pointer, no tab stop, no announcement. Only
+   something filling the form blind will ever put anything in it. */
+.honeypot {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  inset-inline-start: 0;
+  inset-block-start: 0;
+  opacity: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 
 .field {
@@ -110,6 +175,10 @@ a.detailValue:hover {
   .layout {
     grid-template-columns: 18rem 1fr;
     gap: var(--space-xl);
+  }
+
+  .pair {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .section {

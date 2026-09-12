@@ -11,6 +11,7 @@ export interface Profile {
   headline: string;
   summary: string;
   location: string;
+  timezone: string;
   email: string;
   phone: string;
   availability: string;

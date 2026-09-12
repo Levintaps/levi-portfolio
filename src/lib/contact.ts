@@ -7,6 +7,27 @@ export interface ContactPayload {
   message: string;
 }
 
+// A person reading four fields and writing a sentence takes longer than this.
+// A script that fills and submits in one pass does not.
+export const MIN_FILL_MS = 2000;
+
+/**
+ * Decides whether a submission came from a script rather than a visitor, from
+ * the two signals the form collects: a field no person can see or tab into,
+ * and how long the form was open. A negative elapsed time means the clock
+ * moved during the visit, which is nobody's fault but the machine's.
+ */
+export function looksAutomated({
+  honeypot,
+  elapsedMs,
+}: {
+  honeypot: string;
+  elapsedMs: number;
+}): boolean {
+  if (honeypot.trim().length > 0) return true;
+  return elapsedMs >= 0 && elapsedMs < MIN_FILL_MS;
+}
+
 export function validateContact(
   payload: ContactPayload,
 ): Partial<Record<keyof ContactPayload, string>> {
