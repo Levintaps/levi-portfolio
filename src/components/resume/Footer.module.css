@@ -8,6 +8,7 @@
   margin-inline: auto;
   display: grid;
   gap: var(--space-m);
+  justify-items: start;
 }
 
 .name {
@@ -15,19 +16,39 @@
   font-weight: 600;
 }
 
-.meta,
+.role,
 .credit {
   color: var(--ink-faint);
   font-size: var(--step--1);
 }
 
-.socials {
-  display: flex;
+/* Outlined rather than solid: the hero already spends the accent on this
+   same file, and two identical buttons would compete at the end of the page. */
+.cv {
+  display: inline-flex;
+  align-items: center;
   gap: var(--space-xs);
+  padding: var(--space-s) var(--space-m);
+  min-block-size: 2.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--motion-fast) var(--ease),
+    border-color var(--motion-fast) var(--ease);
+}
+
+.cv:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .credit {
   inline-size: min(100% - (var(--gutter) * 2), var(--shell));
+  /* Paragraphs are capped at a reading measure globally, which in the mono
+     face is narrower than this line needs and would centre it away from the
+     name above. */
+  max-inline-size: none;
   margin-inline: auto;
   margin-block-start: var(--space-m);
   font-family: var(--font-mono);

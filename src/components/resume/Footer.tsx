@@ -1,5 +1,5 @@
 import { profile } from '../../data/resume';
-import IconLink from '../common/IconLink';
+import { Icon } from '../common/icons';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -8,21 +8,17 @@ export default function Footer() {
       <div className={styles.inner}>
         <div className={styles.identity}>
           <p className={styles.name}>{profile.name}</p>
-          <p className={styles.meta}>{profile.location}</p>
+          <p className={styles.role}>{profile.title}</p>
         </div>
-        <div className={styles.socials}>
-          {profile.socials.map((social) => (
-            <IconLink
-              key={social.label}
-              href={social.href}
-              label={social.label}
-              icon={social.icon}
-            />
-          ))}
-        </div>
+
+        <a className={styles.cv} href={profile.cvPath} download>
+          Download CV
+          <Icon name="download" size={18} />
+        </a>
       </div>
+
       <p className={styles.credit}>
-        Built with React and Vite. {new Date().getFullYear()}
+        © {new Date().getFullYear()} {profile.name}. Built with React and Vite.
       </p>
     </footer>
   );
