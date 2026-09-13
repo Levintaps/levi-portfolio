@@ -37,11 +37,6 @@ export default function CyberHero() {
           </a>
         </div>
 
-        <p className={styles.availability}>
-          <span className={styles.dot} aria-hidden="true" />
-          {profile.availability}
-        </p>
-
         <div className={styles.socials}>
           {profile.socials.map((social) => (
             <IconLink

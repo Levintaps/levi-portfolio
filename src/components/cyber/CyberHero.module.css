@@ -14,8 +14,7 @@
 }
 
 .greeting,
-.role,
-.availability {
+.role {
   font-family: var(--font-mono);
   font-size: var(--step--1);
   letter-spacing: 0.1em;
@@ -108,15 +107,6 @@
   background: var(--accent-wash);
 }
 
-.dot {
-  display: inline-block;
-  inline-size: 0.45rem;
-  block-size: 0.45rem;
-  border-radius: 50%;
-  background: var(--lime);
-  margin-inline-end: var(--space-2xs);
-}
-
 .socials {
   display: flex;
   gap: var(--space-xs);
@@ -133,7 +123,7 @@
 .frame img {
   inline-size: 100%;
   block-size: auto;
-  max-inline-size: 18rem;
+  max-inline-size: min(100%, 20rem);
   aspect-ratio: 4 / 5;
   object-fit: cover;
   filter: saturate(1.05) contrast(1.05);
@@ -183,5 +173,12 @@
 
   .frame {
     justify-self: end;
+    inline-size: 100%;
+  }
+
+  /* The frame fills its column rather than sitting at a fixed width, which
+     left a hole between the text and the photo on a wide screen. */
+  .frame img {
+    max-inline-size: min(100%, 26rem);
   }
 }

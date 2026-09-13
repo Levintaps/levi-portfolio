@@ -8,9 +8,11 @@ describe('CyberHero', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Jayson');
   });
 
-  it('renders the same availability text as the resume view', () => {
+  // The resume hero dropped this line, and a second view stating it is a
+  // claim that has to be kept current in two places at once.
+  it('makes no availability claim', () => {
     render(<CyberHero />);
-    expect(screen.getByText(profile.availability)).toBeInTheDocument();
+    expect(screen.queryByText(profile.availability)).toBeNull();
   });
 
   it('offers the same one-click CV download', () => {
