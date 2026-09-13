@@ -124,6 +124,28 @@
     grid-template-columns: 14rem minmax(0, 1fr);
     gap: var(--space-xl);
     padding-block: var(--space-2xl);
+    /* Both columns run the full height so they can finish together. */
+    align-items: stretch;
+  }
+
+  /* The badge hangs far enough that the address beneath it cannot move up
+     without being covered, so the two columns are squared off at the foot
+     instead: the name and the prose stay at the top, and the download drops
+     to the baseline the social buttons already sit on. */
+  .text {
+    align-content: initial;
+    grid-template-rows: repeat(4, auto) 1fr;
+  }
+
+  .actions {
+    align-self: end;
+  }
+
+  /* One measure for both, so the column has a straight right edge rather
+     than stepping in and out between the headline and the summary. */
+  .headline,
+  .summary {
+    max-inline-size: 42rem;
   }
 
   /* Justifying a column this narrow opens rivers of white space, so the
