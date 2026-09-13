@@ -15,7 +15,7 @@ import {
 import { hasSubmitted, markSubmitted } from '../../lib/submissionGuard';
 import { useReveal } from '../../hooks/useReveal';
 import SectionHeading from '../common/SectionHeading';
-import { Icon } from '../common/icons';
+import Stars from '../common/Stars';
 import MessageBubbles from './MessageBubbles';
 import StarInput from './StarInput';
 import styles from './Reviews.module.css';
@@ -28,18 +28,6 @@ const FETCH_ROOT_MARGIN = '600px 0px';
 const RECENT_RATINGS = 4;
 
 type Status = 'loading' | 'ready' | 'unavailable';
-
-function Stars({ value, size }: { value: number; size: number }) {
-  return (
-    <span className={styles.stars} aria-hidden="true">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <span key={star} className={styles.star} data-active={star <= Math.round(value)}>
-          <Icon name="star" size={size} />
-        </span>
-      ))}
-    </span>
-  );
-}
 
 export default function Reviews() {
   const { ref, revealed } = useReveal<HTMLElement>({ rootMargin: FETCH_ROOT_MARGIN });
@@ -61,6 +49,7 @@ export default function Reviews() {
   const [messageError, setMessageError] = useState('');
   const [messageSending, setMessageSending] = useState(false);
   const [messageDone, setMessageDone] = useState(() => hasSubmitted('message'));
+  const [mine, setMine] = useState<string | undefined>(undefined);
 
   const summary = useMemo(() => summarise(ratings), [ratings]);
   const recent = ratings.slice(0, RECENT_RATINGS);
@@ -135,12 +124,11 @@ export default function Reviews() {
     try {
       await submitMessage(text);
       markSubmitted('message');
-      // Shown straight away rather than waiting for a refetch, so the visitor
-      // sees their own message take a place on the stage.
-      setNotes((current) => [
-        { id: `local-${Date.now()}`, message: text, createdAt: new Date() },
-        ...current,
-      ]);
+      // Held on the stage rather than dropped into the pool, where a shuffle
+      // would have left the sender looking for their own message.
+      const id = `local-${Date.now()}`;
+      setNotes((current) => [{ id, message: text, createdAt: new Date() }, ...current]);
+      setMine(id);
       setDraft('');
       setMessageDone(true);
     } catch {
@@ -223,7 +211,7 @@ export default function Reviews() {
         </div>
 
         <div className={styles.messageSide}>
-          <MessageBubbles messages={notes} />
+          <MessageBubbles messages={notes} pin={mine} />
 
           {messageDone ? (
             <p className={styles.thanks}>Thank you for the message.</p>

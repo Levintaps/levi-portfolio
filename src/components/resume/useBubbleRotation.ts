@@ -5,6 +5,8 @@ interface BubbleRotationOptions {
   slots: number;
   stepMs?: number;
   paused?: boolean;
+  /** Id of a message that must hold the first slot and never rotate out. */
+  pin?: string;
 }
 
 function shuffle(messages: FeedbackMessage[]): FeedbackMessage[] {
@@ -16,8 +18,15 @@ function shuffle(messages: FeedbackMessage[]): FeedbackMessage[] {
   return copy;
 }
 
-function seed(order: FeedbackMessage[], slots: number): (FeedbackMessage | null)[] {
-  return Array.from({ length: slots }, (_, index) => order[index] ?? null);
+function seed(
+  order: FeedbackMessage[],
+  slots: number,
+  pin?: string,
+): (FeedbackMessage | null)[] {
+  const pinned = pin ? order.find((message) => message.id === pin) : undefined;
+  const rest = pinned ? order.filter((message) => message.id !== pin) : order;
+  const filled = pinned ? [pinned, ...rest] : rest;
+  return Array.from({ length: slots }, (_, index) => filled[index] ?? null);
 }
 
 /**
@@ -28,17 +37,18 @@ function seed(order: FeedbackMessage[], slots: number): (FeedbackMessage | null)
  */
 export function useBubbleRotation(
   messages: FeedbackMessage[],
-  { slots, stepMs = 2400, paused = false }: BubbleRotationOptions,
+  { slots, stepMs = 2400, paused = false, pin }: BubbleRotationOptions,
 ): (FeedbackMessage | null)[] {
   // Keyed on the ids rather than the array itself: a caller that rebuilds the
   // list on every render must not reshuffle the pool under the visitor.
   const signature = messages.map((message) => message.id).join('|');
   const order = useMemo(() => shuffle(messages), [signature]);
-  const key = `${slots}:${signature}`;
+  const key = `${slots}:${pin ?? ''}:${signature}`;
+  const pinned = pin !== undefined && messages.some((message) => message.id === pin);
 
   const cursor = useRef(Math.min(slots, messages.length));
   const turn = useRef(0);
-  const [state, setState] = useState(() => ({ key, shown: seed(order, slots) }));
+  const [state, setState] = useState(() => ({ key, shown: seed(order, slots, pin) }));
 
   // The slots fill during render rather than in an effect. Filling afterwards
   // leaves one commit where the stage is mounted but empty, which reads as a
@@ -47,17 +57,20 @@ export function useBubbleRotation(
   if (state.key !== key) {
     cursor.current = Math.min(slots, order.length);
     turn.current = 0;
-    setState({ key, shown: seed(order, slots) });
+    setState({ key, shown: seed(order, slots, pin) });
   }
 
   useEffect(() => {
     // With no more messages than slots every one of them is already on
     // screen, so there is nothing to rotate in.
     if (paused || order.length <= slots) return;
+    // With one slot held by a pinned message there is nowhere left to turn over.
+    if (pinned && slots <= 1) return;
 
     const timer = window.setInterval(() => {
       setState((current) => {
-        const index = turn.current % slots;
+        // The pinned message holds slot zero, so the turn walks the rest.
+        const index = pinned ? 1 + (turn.current % (slots - 1)) : turn.current % slots;
         turn.current += 1;
 
         const onScreen = new Set(
@@ -68,7 +81,7 @@ export function useBubbleRotation(
 
         for (let step = 0; step < order.length; step += 1) {
           const candidate = order[(cursor.current + step) % order.length];
-          if (onScreen.has(candidate.id)) continue;
+          if (onScreen.has(candidate.id) || candidate.id === pin) continue;
 
           cursor.current = (cursor.current + step + 1) % order.length;
           const shown = [...current.shown];
@@ -81,7 +94,7 @@ export function useBubbleRotation(
     }, stepMs);
 
     return () => window.clearInterval(timer);
-  }, [order, slots, stepMs, paused]);
+  }, [order, slots, stepMs, paused, pin, pinned]);
 
-  return state.key === key ? state.shown : seed(order, slots);
+  return state.key === key ? state.shown : seed(order, slots, pin);
 }

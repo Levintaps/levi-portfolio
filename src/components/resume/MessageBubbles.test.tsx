@@ -35,6 +35,12 @@ describe('MessageBubbles', () => {
     expect(shown()).toHaveLength(5);
   });
 
+  it('keeps a pinned message on screen however large the pool', () => {
+    render(<MessageBubbles messages={pool(40)} slots={5} pin="m31" />);
+
+    expect(shown()).toContain('Message 31');
+  });
+
   it('invites the first message when there are none', () => {
     render(<MessageBubbles messages={[]} />);
 

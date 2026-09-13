@@ -1,0 +1,13 @@
+.stars {
+  display: inline-flex;
+  gap: var(--space-2xs);
+  color: var(--ink-faint);
+}
+
+.star[data-active='true'] {
+  color: var(--accent);
+}
+
+.star[data-active='true'] svg {
+  fill: currentColor;
+}

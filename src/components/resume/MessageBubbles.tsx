@@ -8,6 +8,8 @@ interface MessageBubblesProps {
   messages: FeedbackMessage[];
   slots?: number;
   stepMs?: number;
+  /** A message to hold on screen, such as the one the visitor just left. */
+  pin?: string;
 }
 
 const SLOTS = 5;
@@ -17,6 +19,7 @@ export default function MessageBubbles({
   messages,
   slots = SLOTS,
   stepMs = STEP_MS,
+  pin,
 }: MessageBubblesProps) {
   const [hovered, setHovered] = useState(false);
   const [backgrounded, setBackgrounded] = useState(false);
@@ -35,7 +38,7 @@ export default function MessageBubbles({
   }, []);
 
   const paused = hovered || backgrounded || still;
-  const shown = useBubbleRotation(messages, { slots, stepMs, paused });
+  const shown = useBubbleRotation(messages, { slots, stepMs, paused, pin });
 
   if (messages.length === 0) {
     return (

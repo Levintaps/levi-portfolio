@@ -87,6 +87,50 @@ describe('useBubbleRotation', () => {
     expect(ids(result.current)).toEqual(before);
   });
 
+  // A visitor who just wrote something must see it, and with a pool of sixty
+  // a shuffle would otherwise place it on screen about one time in twelve.
+  it('keeps a pinned message on screen from the start', () => {
+    const { result } = renderHook(() =>
+      useBubbleRotation(pool(8), { slots: 3, stepMs: 1000, pin: 'm5' }),
+    );
+
+    expect(ids(result.current)).toContain('m5');
+  });
+
+  it('never rotates a pinned message away', () => {
+    const { result } = renderHook(() =>
+      useBubbleRotation(pool(8), { slots: 3, stepMs: 1000, pin: 'm5' }),
+    );
+
+    for (let tick = 0; tick < 9; tick += 1) {
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
+      expect(ids(result.current)).toContain('m5');
+    }
+  });
+
+  it('still turns the other slots over around a pinned message', () => {
+    const { result } = renderHook(() =>
+      useBubbleRotation(pool(8), { slots: 3, stepMs: 1000, pin: 'm5' }),
+    );
+    const before = ids(result.current);
+
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(ids(result.current)).not.toEqual(before);
+  });
+
+  it('ignores a pin that names no message in the pool', () => {
+    const { result } = renderHook(() =>
+      useBubbleRotation(pool(4), { slots: 3, stepMs: 1000, pin: 'gone' }),
+    );
+
+    expect(result.current.filter(Boolean)).toHaveLength(3);
+  });
+
   it('shows nothing when there are no messages', () => {
     const { result } = renderHook(() => useBubbleRotation([], { slots: 3, stepMs: 1000 }));
 
