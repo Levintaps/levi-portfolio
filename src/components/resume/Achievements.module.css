@@ -7,14 +7,17 @@
 
 .list {
   display: grid;
-  gap: var(--space-m);
+  gap: var(--space-l);
 }
 
+/* The same quiet treatment as the skills groups and the education entries:
+   a rule and the content, rather than a row of accent bars. */
 .item {
   display: grid;
   gap: var(--space-2xs);
-  padding-inline-start: var(--space-m);
-  border-inline-start: 2px solid var(--accent);
+  align-content: start;
+  padding-block-start: var(--space-s);
+  border-block-start: 1px solid var(--line);
 }
 
 .title {
@@ -30,6 +33,7 @@
 @media (min-width: 48rem) {
   .list {
     grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-l) var(--space-xl);
   }
 
   .section {

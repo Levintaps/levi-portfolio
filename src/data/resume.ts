@@ -285,10 +285,12 @@ export const achievements: Achievement[] = [
   },
   {
     title: 'Multiple-time tournament champion',
-    detail: 'Competitive chess, across several open tournaments.',
+    // Placeholder: replace with the count and the years, the way the first
+    // entry states its rank and rating. Until then it reads as a note.
+    detail: 'Open chess tournament titles. Add the count and the years here.',
   },
   {
     title: 'UAAP award recipient',
-    detail: 'Multiple awards in university athletic association competition.',
+    detail: 'University athletic association awards. Add which ones, and when, here.',
   },
 ];

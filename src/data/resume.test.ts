@@ -114,6 +114,13 @@ describe('resume data', () => {
     expect(vanima?.demoUrl).toBeUndefined();
   });
 
+  it('never leaves an achievement as a bare heading', () => {
+    for (const achievement of achievements) {
+      expect(achievement.title.trim().length).toBeGreaterThan(0);
+      expect(achievement.detail.trim().length).toBeGreaterThan(0);
+    }
+  });
+
   it('exposes editable leads for the projects and achievements sections', () => {
     expect(projectsLead.length).toBeGreaterThan(0);
     expect(achievementsLead.length).toBeGreaterThan(0);
