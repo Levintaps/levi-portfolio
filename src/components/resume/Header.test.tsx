@@ -1,6 +1,7 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '../../theme/ThemeProvider';
+import { profile } from '../../data/resume';
 import Header from './Header';
 
 function renderHeader() {
@@ -33,6 +34,82 @@ describe('Header', () => {
 
     expect(hrefs.indexOf('#projects')).toBeGreaterThanOrEqual(0);
     expect(hrefs.indexOf('#projects')).toBeLessThan(hrefs.indexOf('#experience'));
+  });
+
+  // Like the desktop nav above, this link is display:none under jsdom, which
+  // never matches the min-width query, so its structure is asserted instead.
+  it('carries the CV, so it is reachable from anywhere on the page', () => {
+    const { container } = renderHeader();
+    const bar = container.querySelector('header > div');
+    const cv = bar?.querySelector(`a[href="${profile.cvPath}"]`);
+
+    expect(cv).not.toBeNull();
+    expect(cv).toHaveAttribute('download');
+    expect(cv).toHaveTextContent(/download cv/i);
+  });
+
+  it('offers the CV inside the menu as well, where the bar has no room', async () => {
+    const user = userEvent.setup();
+    renderHeader();
+    await user.click(screen.getByRole('button', { name: /open menu/i }));
+
+    const sheet = screen.getByRole('navigation', { name: /mobile/i });
+    expect(within(sheet).getByRole('link', { name: /download cv/i })).toHaveAttribute(
+      'download',
+    );
+  });
+
+  // A page nearly six thousand pixels tall needs to say where the reader is.
+  it('marks the section in view, and only that one', () => {
+    const original = window.IntersectionObserver;
+    let deliver: IntersectionObserverCallback | undefined;
+
+    class StubObserver {
+      constructor(callback: IntersectionObserverCallback) {
+        deliver = callback;
+      }
+      observe = vi.fn();
+      disconnect = vi.fn();
+      unobserve = vi.fn();
+      takeRecords = vi.fn(() => []);
+      root = null;
+      rootMargin = '';
+      thresholds: number[] = [];
+    }
+
+    for (const id of ['projects', 'experience', 'skills', 'education', 'contact']) {
+      const element = document.createElement('section');
+      element.id = id;
+      document.body.append(element);
+    }
+
+    window.IntersectionObserver = StubObserver as unknown as typeof IntersectionObserver;
+
+    try {
+      const { container } = renderHeader();
+      const nav = container.querySelector('nav[aria-label="Sections"]') as HTMLElement;
+      expect(nav.querySelectorAll('[aria-current]')).toHaveLength(0);
+
+      act(() => {
+        deliver!(
+          [
+            {
+              target: document.getElementById('experience') as Element,
+              isIntersecting: true,
+              boundingClientRect: { top: -30 } as DOMRectReadOnly,
+            } as IntersectionObserverEntry,
+          ],
+          new StubObserver(() => {}) as unknown as IntersectionObserver,
+        );
+      });
+
+      const current = nav.querySelectorAll('[aria-current]');
+      expect(current).toHaveLength(1);
+      expect(current[0].getAttribute('href')).toBe('#experience');
+    } finally {
+      window.IntersectionObserver = original;
+      document.body.innerHTML = '';
+    }
   });
 
   it('toggles the scheme and records the choice', async () => {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useScheme } from '../../theme/ThemeProvider';
+import { useActiveSection } from '../../hooks/useActiveSection';
 import { profile } from '../../data/resume';
 import { Icon } from '../common/icons';
 import styles from './Header.module.css';
@@ -12,9 +13,12 @@ const sections = [
   { href: '#contact', label: 'Contact' },
 ];
 
+const sectionIds = sections.map((section) => section.href.slice(1));
+
 export default function Header() {
   const { scheme, toggle } = useScheme();
   const [open, setOpen] = useState(false);
+  const active = useActiveSection(sectionIds);
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -58,13 +62,21 @@ export default function Header() {
 
         <nav className={styles.desktopNav} aria-label="Sections">
           {sections.map((section) => (
-            <a key={section.href} className={styles.navLink} href={section.href}>
+            <a
+              key={section.href}
+              className={styles.navLink}
+              href={section.href}
+              aria-current={section.href === `#${active}` ? 'true' : undefined}
+            >
               {section.label}
             </a>
           ))}
         </nav>
 
         <div className={styles.actions}>
+          <a className={styles.cv} href={profile.cvPath} download>
+            Download CV
+          </a>
           <button
             type="button"
             className={styles.iconButton}
@@ -97,6 +109,10 @@ export default function Header() {
               {section.label}
             </a>
           ))}
+          <a className={styles.sheetCv} href={profile.cvPath} download>
+            Download CV
+            <Icon name="download" size={18} />
+          </a>
         </nav>
       ) : null}
     </header>
