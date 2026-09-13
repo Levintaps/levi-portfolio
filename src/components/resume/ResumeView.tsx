@@ -29,8 +29,8 @@ export default function ResumeView() {
       <Header />
       <main id="main" className={styles.main}>
         <Hero />
-        <Experience />
         <Projects />
+        <Experience />
         <div className={styles.bleed}>
           <Skills />
         </div>

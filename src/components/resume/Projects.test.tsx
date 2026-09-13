@@ -74,3 +74,10 @@ describe('Projects', () => {
     expect(document.activeElement).toBe(opener);
   });
 });
+
+describe('Projects placement', () => {
+  it('opens the page, at number one', () => {
+    render(<Projects />);
+    expect(screen.getByText('01 / Projects')).toBeInTheDocument();
+  });
+});

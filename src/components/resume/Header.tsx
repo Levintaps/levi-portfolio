@@ -5,8 +5,8 @@ import { Icon } from '../common/icons';
 import styles from './Header.module.css';
 
 const sections = [
-  { href: '#experience', label: 'Experience' },
   { href: '#projects', label: 'Projects' },
+  { href: '#experience', label: 'Experience' },
   { href: '#skills', label: 'Skills' },
   { href: '#education', label: 'Education' },
   { href: '#contact', label: 'Contact' },

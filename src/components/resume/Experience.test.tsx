@@ -14,6 +14,19 @@ describe('Experience', () => {
     }
   });
 
+  it('follows the projects, at number two', () => {
+    render(<Experience />);
+    expect(screen.getByText('02 / Experience')).toBeInTheDocument();
+  });
+
+  it('names the company and the kind of role on one line', () => {
+    render(<Experience />);
+    for (const entry of experience) {
+      const line = screen.getByText(entry.company).closest('p');
+      expect(line).toHaveTextContent(entry.kind);
+    }
+  });
+
   it('renders every highlight as a list item', () => {
     render(<Experience />);
     const items = screen.getAllByRole('listitem');

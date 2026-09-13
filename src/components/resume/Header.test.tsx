@@ -24,6 +24,17 @@ describe('Header', () => {
     expect(nav?.querySelectorAll('a')).toHaveLength(5);
   });
 
+  // What someone built comes before where they interned, so the navigation
+  // has to agree with the order of the page.
+  it('lists projects ahead of experience', () => {
+    const { container } = renderHeader();
+    const nav = container.querySelector('nav[aria-label="Sections"]');
+    const hrefs = [...(nav?.querySelectorAll('a') ?? [])].map((link) => link.getAttribute('href'));
+
+    expect(hrefs.indexOf('#projects')).toBeGreaterThanOrEqual(0);
+    expect(hrefs.indexOf('#projects')).toBeLessThan(hrefs.indexOf('#experience'));
+  });
+
   it('toggles the scheme and records the choice', async () => {
     const user = userEvent.setup();
     renderHeader();

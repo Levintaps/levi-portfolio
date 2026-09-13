@@ -33,6 +33,17 @@
   font-size: var(--step-1);
 }
 
+.at {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2xs);
+}
+
+.divider {
+  color: var(--ink-faint);
+}
+
 .company {
   color: var(--accent);
   font-weight: 600;
@@ -73,5 +84,14 @@
 
   .section {
     padding-block: var(--space-3xl);
+  }
+}
+
+/* Five long lines in one column made a wall of the section. Two columns cut
+   its height roughly in half once there is room for them. */
+@media (min-width: 64rem) {
+  .highlights {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xs) var(--space-l);
   }
 }
