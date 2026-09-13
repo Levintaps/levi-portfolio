@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useDialog } from '../../hooks/useDialog';
 import type { Project } from '../../data/types';
 import { Icon } from '../common/icons';
 import ProjectCard from './ProjectCard';
@@ -11,23 +11,7 @@ interface AllProjectsModalProps {
 }
 
 export default function AllProjectsModal({ projects, onOpen, onClose }: AllProjectsModalProps) {
-  const dialogRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    dialogRef.current?.focus();
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') onClose();
-    }
-
-    document.addEventListener('keydown', onKeyDown);
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = '';
-    };
-  }, [onClose]);
+  const dialogRef = useDialog<HTMLDivElement>(onClose);
 
   return (
     <div className={styles.scrim} onClick={onClose}>

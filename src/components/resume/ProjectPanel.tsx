@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
+import { useDialog } from '../../hooks/useDialog';
 import { confidentialNote } from '../../data/resume';
 import { demoNoteFor, repoNoteFor } from '../common/projectNotes';
 import type { Project } from '../../data/types';
@@ -10,52 +11,9 @@ interface ProjectPanelProps {
   onClose: () => void;
 }
 
-const focusable =
-  'a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])';
-
 export default function ProjectPanel({ project, onClose }: ProjectPanelProps) {
-  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const dialogRef = useDialog<HTMLDivElement>(onClose);
   const [shownNote, setShownNote] = useState<'demo' | 'repo' | null>(null);
-
-  useEffect(() => {
-    dialogRef.current?.focus();
-  }, []);
-
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        onClose();
-        return;
-      }
-
-      if (event.key !== 'Tab') return;
-
-      const dialog = dialogRef.current;
-      if (!dialog) return;
-
-      const targets = Array.from(dialog.querySelectorAll<HTMLElement>(focusable));
-      if (targets.length === 0) return;
-
-      const first = targets[0];
-      const last = targets[targets.length - 1];
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    }
-
-    document.addEventListener('keydown', onKeyDown);
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = '';
-    };
-  }, [onClose]);
 
   const note =
     shownNote === 'demo'
