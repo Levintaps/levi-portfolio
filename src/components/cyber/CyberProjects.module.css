@@ -50,8 +50,128 @@
   transform: none;
 }
 
-.card:hover {
+.card:hover,
+.card[data-open='true'] {
   border-color: var(--accent);
+}
+
+/* The face stays the same height across the wall whatever the summary runs
+   to, so the toggle sits on one line rather than wherever the text ends. */
+.card {
+  align-content: start;
+}
+
+.client {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--ink-muted);
+}
+
+.client a {
+  color: inherit;
+}
+
+.client a:hover {
+  color: var(--accent);
+}
+
+.divider {
+  color: var(--accent);
+}
+
+.toggle {
+  justify-self: start;
+  margin-block-start: var(--space-2xs);
+  min-block-size: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: none;
+  border: none;
+  border-block-end: 1px solid currentColor;
+}
+
+.toggle:hover {
+  text-shadow: 0 0 12px var(--accent-glow);
+}
+
+.srOnly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  inset-inline-start: 0;
+}
+
+.details {
+  display: grid;
+  gap: var(--space-s);
+  padding-block-start: var(--space-s);
+  border-block-start: 1px solid var(--line);
+  animation: unfold var(--motion-base) var(--ease);
+}
+
+@keyframes unfold {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--space-2xs) * -1));
+  }
+}
+
+.highlights {
+  display: grid;
+  gap: var(--space-2xs);
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
+.highlights li {
+  padding-inline-start: var(--space-s);
+  position: relative;
+}
+
+.highlights li::before {
+  content: '>';
+  position: absolute;
+  inset-inline-start: 0;
+  color: var(--accent);
+}
+
+.links {
+  display: grid;
+  gap: var(--space-2xs);
+  justify-items: start;
+}
+
+/* The sealed card shows the shape of a record without any of its content. */
+.sealed {
+  position: relative;
+}
+
+.blur {
+  display: grid;
+  gap: var(--space-2xs);
+  margin-block-end: var(--space-2xs);
+}
+
+.blurLine {
+  block-size: 0.6rem;
+  background: linear-gradient(90deg, var(--accent-wash), transparent);
+  filter: blur(3px);
+}
+
+.blurLine:last-child {
+  inline-size: 60%;
 }
 
 .meta {
@@ -104,6 +224,7 @@
 
 .link {
   justify-self: start;
+  position: relative;
   font-family: var(--font-mono);
   font-size: var(--step--1);
   text-transform: uppercase;
