@@ -12,18 +12,68 @@
   gap: var(--space-s);
 }
 
+.identity {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
 .line {
+  display: flex;
+  gap: var(--space-2xs);
   font-family: var(--font-mono);
   font-size: var(--step--1);
   color: var(--ink-muted);
   overflow-wrap: anywhere;
 }
 
+.line a {
+  color: inherit;
+  text-decoration: none;
+  border-block-end: 1px solid transparent;
+}
+
+.line a:hover {
+  color: var(--accent);
+  border-block-end-color: currentColor;
+}
+
+.name {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.role {
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.credit {
+  inline-size: min(100% - (var(--gutter) * 2), var(--shell));
+  /* Paragraphs carry a reading measure globally, which in this mono face is
+     narrower than the line and would centre it away from the name above. */
+  max-inline-size: none;
+  margin-inline: auto;
+  margin-block-start: var(--space-m);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--ink-faint);
+}
+
 .prompt {
   color: var(--accent);
 }
 
-.exit {
+.action {
   justify-self: start;
   font-family: var(--font-mono);
   font-size: var(--step--1);
@@ -38,7 +88,7 @@
   border: 1px solid var(--line-strong);
 }
 
-.exit:hover {
+.action:hover {
   background: var(--accent-wash);
 }
 
@@ -46,5 +96,9 @@
   .inner {
     grid-template-columns: 1fr auto;
     align-items: center;
+  }
+
+  .actions {
+    justify-content: end;
   }
 }

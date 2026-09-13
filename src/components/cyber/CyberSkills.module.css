@@ -88,18 +88,29 @@
   color: var(--accent);
 }
 
+/* The supporting skills read as a list rather than forty-two boxes. The
+   chips are kept for the core stack, where the emphasis is earned. */
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2xs);
+  gap: var(--space-2xs) var(--space-s);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-muted);
 }
 
 .chip {
-  font-family: var(--font-mono);
-  font-size: var(--step--1);
-  padding: 0.15rem var(--space-xs);
-  border: 1px solid var(--line);
-  color: var(--ink-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+/* A dim marker rather than a border, so the items still parse as separate
+   entries in a readout. */
+.chip::before {
+  content: '/';
+  color: var(--accent);
+  opacity: 0.55;
 }
 
 @media (min-width: 48rem) {
