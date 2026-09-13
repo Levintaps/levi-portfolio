@@ -1,5 +1,16 @@
 @import './tokens.css';
 
+/* The hero's lanyard overlay reaches far past the page's own width so a
+   thrown badge is never clipped by a box, which left the page scrollable
+   sideways at every viewport under about 1240px. Clipping rather than hiding
+   that overflow keeps the sticky header sticky, which overflow:hidden on an
+   ancestor would break. It is set on both boxes because a clip on the body
+   alone is not propagated to the viewport. */
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   background: var(--ground);
   color: var(--ink);
