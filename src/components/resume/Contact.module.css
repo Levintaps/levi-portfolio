@@ -42,23 +42,17 @@
   gap: var(--space-xs);
 }
 
+/* A small square holding only an icon: copy, then a check once it has. */
 .copy {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
-  padding: var(--space-2xs) 0.625rem;
-  min-block-size: 2rem;
-  /* Wide enough for the copied state too, so the row never shifts. */
-  min-inline-size: 6rem;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  inline-size: 2rem;
+  block-size: 2rem;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-m);
   background: var(--surface);
   color: var(--ink-muted);
-  font-family: var(--font-mono);
-  font-size: var(--step--2);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   transition:
     color var(--motion-fast) var(--ease),
     border-color var(--motion-fast) var(--ease),
@@ -401,11 +395,10 @@ a.detailValue:focus-visible {
 }
 
 @media (min-width: 48rem) {
-  /* Just wide enough for the address and the copied button on one line. */
   .layout {
     --card-pad: 1.5rem;
 
-    grid-template-columns: 19rem 1fr;
+    grid-template-columns: 18rem 1fr;
     gap: var(--space-xl);
   }
 

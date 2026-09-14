@@ -18,7 +18,8 @@ export type IconName =
   | 'alert'
   | 'user'
   | 'tag'
-  | 'message';
+  | 'message'
+  | 'copy';
 
 const paths: Record<IconName, string> = {
   github:
@@ -44,6 +45,7 @@ const paths: Record<IconName, string> = {
   user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M4.5 20.5a7.5 7.5 0 0 1 15 0',
   tag: 'M3.5 12V4.5a1 1 0 0 1 1-1H12l8.5 8.5-8 8Z M8 8h.01',
   message: 'M20.5 15a1.5 1.5 0 0 1-1.5 1.5H8l-4.5 4v-15A1.5 1.5 0 0 1 5 4h14a1.5 1.5 0 0 1 1.5 1.5Z',
+  copy: 'M9.5 9h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-10a1 1 0 0 1-1-1V10a1 1 0 0 1 1-1Z M15.5 6V4a1 1 0 0 0-1-1h-10a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h2',
 };
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {

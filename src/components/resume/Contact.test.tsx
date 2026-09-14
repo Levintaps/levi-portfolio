@@ -35,6 +35,11 @@ function counter(): HTMLElement {
   return element;
 }
 
+/** Which icon the copy button is showing. */
+function copyIcon(button: HTMLElement): string | undefined {
+  return button.querySelector<SVGElement>('svg[data-icon]')?.dataset.icon;
+}
+
 function honeypot(): HTMLInputElement {
   const field = document.querySelector<HTMLInputElement>('input[name="referral-code"]');
   if (!field) throw new Error('the form has no hidden field for a bot to fall into');
@@ -135,12 +140,20 @@ describe('Contact', () => {
     expect(screen.queryByText('Please enter a valid email address')).toBeNull();
   });
 
-  it('checks a field once the visitor has typed in it and moves on', async () => {
+  // Messages under the fields wait for the send button. Filling the form in,
+  // and moving from field to field, never brings one up.
+  it('says nothing about a field that is filled in wrongly until send is pressed', async () => {
     const user = userEvent.setup();
     render(<Contact />);
 
     await user.type(screen.getByLabelText(/^email/i), 'hiring@');
     await user.tab();
+
+    expect(screen.getByLabelText(/^email/i)).not.toHaveAttribute('aria-invalid');
+    expect(screen.queryByText('Please enter a valid email address')).toBeNull();
+
+    advance(8000);
+    await user.click(screen.getByRole('button', { name: /send message/i }));
 
     expect(screen.getByLabelText(/^email/i)).toHaveAttribute('aria-invalid', 'true');
     expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
@@ -318,41 +331,52 @@ describe('Contact', () => {
 
   // userEvent installs a working clipboard of its own, so this reads back what
   // the button actually wrote rather than watching a mock get called.
-  it('copies the email address, and says it did', async () => {
+  it('copies the email address, and shows and says it did', async () => {
     const user = userEvent.setup();
     render(<Contact />);
+    const button = screen.getByRole('button', { name: 'Copy email address' });
+    expect(copyIcon(button)).toBe('copy');
 
-    await user.click(screen.getByRole('button', { name: /copy/i }));
+    await user.click(button);
 
     await expect(navigator.clipboard.readText()).resolves.toBe(profile.email);
-    expect(await screen.findByRole('button', { name: 'Copied!' })).toBeInTheDocument();
+    expect(copyIcon(button)).toBe('check');
     expect(screen.getByText('Email address copied')).toBeInTheDocument();
+  });
+
+  // Only an icon on the button, so it takes little room; its name is kept for
+  // anyone who cannot see the icon.
+  it('shows no words on the copy button', () => {
+    render(<Contact />);
+    expect(screen.getByRole('button', { name: 'Copy email address' })).toHaveTextContent(/^$/);
   });
 
   // Testing Library waits on real timers between steps, so this drives the
   // click directly and gives the page a clipboard that simply accepts.
-  it('goes back to Copy two seconds later', async () => {
+  it('goes back to the copy icon two seconds later', async () => {
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
       value: { writeText: () => Promise.resolve() },
     });
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
     render(<Contact />);
+    const button = screen.getByRole('button', { name: 'Copy email address' });
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /copy/i }));
+      fireEvent.click(button);
     });
-    expect(screen.getByRole('button', { name: 'Copied!' })).toBeInTheDocument();
+    expect(copyIcon(button)).toBe('check');
 
     act(() => {
       vi.advanceTimersByTime(1999);
     });
-    expect(screen.getByRole('button', { name: 'Copied!' })).toBeInTheDocument();
+    expect(copyIcon(button)).toBe('check');
 
     act(() => {
       vi.advanceTimersByTime(1);
     });
-    expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument();
+    expect(copyIcon(button)).toBe('copy');
+    expect(screen.queryByText('Email address copied')).toBeNull();
   });
 
   it('lets a phone call the number with a tap', () => {

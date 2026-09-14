@@ -29,10 +29,9 @@ const MESSAGE_MAX_HEIGHT = 400;
 
 export default function Contact() {
   const [payload, setPayload] = useState<ContactPayload>(empty);
+  // Filled only by pressing send, so nothing under the fields speaks up while
+  // the visitor is still writing.
   const [errors, setErrors] = useState<ContactErrors>({});
-  // Fields the visitor has typed in. Only these are checked on the way out,
-  // so tabbing past an empty field never turns it red.
-  const [typedIn, setTypedIn] = useState<Partial<Record<Field, boolean>>>({});
   const [attempted, setAttempted] = useState(false);
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle');
   const [copy, setCopy] = useState<'idle' | 'copied' | 'failed'>('idle');
@@ -70,20 +69,14 @@ export default function Contact() {
   function update(field: Field, value: string) {
     const next = { ...payload, [field]: value };
     setPayload(next);
-    setTypedIn((current) => ({ ...current, [field]: true }));
     if (status === 'sent' || status === 'failed') setStatus('idle');
 
-    // A field already flagged is rechecked as it changes, so its message
-    // keeps up with the correction and goes the moment it is right. A field
-    // not flagged is left alone until the visitor moves on.
+    // A field send has already flagged is rechecked as it changes, so its
+    // message keeps up with the correction and goes the moment it is right.
+    // A field not flagged is left alone until send is pressed again.
     if (errors[field]) {
       setErrors((current) => withField(current, field, validateContact(next)[field]));
     }
-  }
-
-  function leave(field: Field) {
-    if (!typedIn[field]) return;
-    setErrors((current) => withField(current, field, validateContact(payload)[field]));
   }
 
   async function copyEmail() {
@@ -138,7 +131,6 @@ export default function Contact() {
   function finish() {
     setStatus('sent');
     setPayload(empty);
-    setTypedIn({});
   }
 
   function fieldProps(field: Field) {
@@ -147,7 +139,6 @@ export default function Contact() {
       id: `contact-${field}`,
       value: payload[field],
       readOnly: sending,
-      onBlur: () => leave(field),
       'aria-invalid': error ? true : undefined,
       'aria-describedby': error ? `contact-${field}-error` : undefined,
     };
@@ -207,11 +198,12 @@ export default function Contact() {
                 <button
                   type="button"
                   className={styles.copy}
+                  aria-label="Copy email address"
+                  title="Copy email address"
                   data-copied={copy === 'copied' || undefined}
                   onClick={copyEmail}
                 >
-                  {copy === 'copied' ? <Icon name="check" size={14} /> : null}
-                  {copy === 'copied' ? 'Copied!' : 'Copy'}
+                  <Icon name={copy === 'copied' ? 'check' : 'copy'} size={16} />
                 </button>
               </span>
               {/* Present from the start, so a screen reader is already
