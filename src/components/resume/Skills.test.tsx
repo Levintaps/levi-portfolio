@@ -2,39 +2,73 @@ import { render, screen, within } from '@testing-library/react';
 import Skills from './Skills';
 import { coreSkills, supportingSkillGroups } from '../../data/resume';
 
+function rows(container: HTMLElement): HTMLElement[] {
+  return [...container.querySelectorAll<HTMLElement>('[data-direction]')];
+}
+
+/** The copy of each row that assistive technology reads, not its repeat. */
+function visibleItems(row: HTMLElement): string[] {
+  const list = row.querySelector('ul:not([aria-hidden])');
+  return [...(list?.querySelectorAll('li:not([aria-hidden])') ?? [])].map(
+    (item) => item.textContent ?? '',
+  );
+}
+
 describe('Skills', () => {
-  it('leads with the core stack', () => {
+  it('keeps the section heading as it was', () => {
     render(<Skills />);
-    const core = screen.getByRole('list', { name: /core stack/i });
-    expect(within(core).getAllByRole('listitem')).toHaveLength(coreSkills.length);
+    expect(screen.getByRole('heading', { level: 2, name: 'Technical skills' })).toBeInTheDocument();
+    expect(screen.getByText('03 / Skills')).toBeInTheDocument();
+  });
+
+  it('lays the skills out in three rows', () => {
+    const { container } = render(<Skills />);
+    expect(rows(container)).toHaveLength(3);
+  });
+
+  it('gives the core stack a row of its own, first, in the accent', () => {
+    const { container } = render(<Skills />);
+    const first = rows(container)[0];
+
+    expect(first).toHaveAttribute('data-variant', 'core');
+    expect(within(first).getByRole('list', { name: /core stack/i })).toBeInTheDocument();
+    expect(visibleItems(first)).toEqual(coreSkills);
+  });
+
+  it('alternates direction row by row', () => {
+    const { container } = render(<Skills />);
+    expect(rows(container).map((row) => row.dataset.direction)).toEqual(['left', 'right', 'left']);
+  });
+
+  it('carries every supporting skill exactly once across the other two rows', () => {
+    const { container } = render(<Skills />);
+    const [, second, third] = rows(container);
+
+    const shown = [...visibleItems(second), ...visibleItems(third)].sort();
+    const expected = supportingSkillGroups.flatMap((group) => group.items).sort();
+    expect(shown).toEqual(expected);
+  });
+
+  it('keeps the core stack out of the other rows', () => {
+    const { container } = render(<Skills />);
+    const [, second, third] = rows(container);
 
     for (const skill of coreSkills) {
-      expect(within(core).getByText(skill)).toBeInTheDocument();
+      expect([...visibleItems(second), ...visibleItems(third)]).not.toContain(skill);
     }
   });
 
-  it('renders every supporting group as a heading', () => {
-    render(<Skills />);
-    for (const group of supportingSkillGroups) {
-      expect(screen.getByRole('heading', { name: group.name })).toBeInTheDocument();
-    }
-  });
+  // The group headings no longer show, so each row is named for the groups
+  // it carries and a screen reader still hears how the skills are organised.
+  it('names each supporting row after the groups it carries', () => {
+    const { container } = render(<Skills />);
+    const [, second, third] = rows(container);
+    const names = [second, third]
+      .map((row) => row.querySelector('ul:not([aria-hidden])')?.getAttribute('aria-label') ?? '')
+      .join(' ');
 
-  it('renders every supporting skill exactly once', () => {
-    render(<Skills />);
     for (const group of supportingSkillGroups) {
-      const list = screen.getByRole('list', { name: group.name });
-      expect(within(list).getAllByRole('listitem')).toHaveLength(group.items.length);
-    }
-  });
-
-  it('keeps the core stack out of the groups below it', () => {
-    render(<Skills />);
-    for (const group of supportingSkillGroups) {
-      const list = screen.getByRole('list', { name: group.name });
-      for (const skill of coreSkills) {
-        expect(within(list).queryByText(skill)).toBeNull();
-      }
+      expect(names.toLowerCase()).toContain(group.name.toLowerCase());
     }
   });
 });

@@ -1,0 +1,100 @@
+.marquee {
+  --gap: var(--space-s);
+
+  /* The badges never shrink, so the row's natural width is enormous. Without
+     containment that width flows up to every ancestor that sizes itself to
+     its content, the page's grid column included, and the row then measures
+     itself as wider still. Containing the inline size breaks the loop: the
+     row is exactly as wide as the space it is given, whatever it holds. */
+  contain: inline-size;
+  min-inline-size: 0;
+  display: flex;
+  gap: var(--gap);
+  overflow: hidden;
+  padding-block: var(--space-2xs);
+  /* The badges fade in and out at the edges rather than being sliced off.
+     A mask works on transparency, not colour, so it needs nothing per theme. */
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--gap);
+  animation: slide var(--duration, 45s) linear infinite;
+}
+
+/* Each half slides left by its own width plus the gap between the halves,
+   which puts the second half exactly where the first began. */
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+.marquee[data-direction='right'] .group {
+  animation-direction: reverse;
+}
+
+/* Holding the pointer over a row stops it, so a badge can be read. */
+.marquee:hover .group {
+  animation-play-state: paused;
+}
+
+.badge {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: var(--space-2xs) var(--space-s);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
+.marquee[data-variant='core'] .badge {
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  font-weight: 600;
+  border-color: var(--accent);
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+@media (max-width: 47.999rem) {
+  .marquee {
+    --gap: var(--space-xs);
+  }
+
+  .badge {
+    padding: 0.2rem var(--space-xs);
+  }
+
+  .marquee[data-variant='core'] .badge {
+    font-size: var(--step--1);
+  }
+}
+
+/* For anyone who has asked their device for less motion, the rows stop and
+   the badges wrap in place, shown once each. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    overflow: visible;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .group {
+    flex-wrap: wrap;
+    flex-shrink: 1;
+    animation: none;
+  }
+
+  .group[aria-hidden='true'] {
+    display: none;
+  }
+}

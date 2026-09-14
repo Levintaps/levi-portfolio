@@ -17,8 +17,11 @@
   border-radius: var(--radius-s);
 }
 
+/* One column, never wider than the page. An auto-sized column grows to fit
+   its widest child, so any wide content inside would widen the whole page. */
 .main {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .bleed {
