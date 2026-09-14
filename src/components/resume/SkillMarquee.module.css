@@ -1,5 +1,8 @@
 .marquee {
   --gap: var(--space-s);
+  /* How far in from each edge the badges fade: long enough on a phone to read
+     as a fade rather than a cut, capped on a wide screen. */
+  --fade: clamp(3rem, 16%, 7rem);
 
   /* The badges never shrink, so the row's natural width is enormous. Without
      containment that width flows up to every ancestor that sizes itself to
@@ -8,14 +11,63 @@
      row is exactly as wide as the space it is given, whatever it holds. */
   contain: inline-size;
   min-inline-size: 0;
-  display: flex;
-  gap: var(--gap);
   overflow: hidden;
   padding-block: var(--space-2xs);
-  /* The badges fade in and out at the edges rather than being sliced off.
-     A mask works on transparency, not colour, so it needs nothing per theme. */
-  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+
+  /* The fade is drawn in transparency rather than colour, so it blends into
+     whatever the row sits on, in either theme, with nothing to keep in step.
+     The extra stops ease it in instead of ramping straight. */
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgb(0 0 0 / 0.2) calc(var(--fade) * 0.3),
+    rgb(0 0 0 / 0.65) calc(var(--fade) * 0.65),
+    #000 var(--fade),
+    #000 calc(100% - var(--fade)),
+    rgb(0 0 0 / 0.65) calc(100% - var(--fade) * 0.65),
+    rgb(0 0 0 / 0.2) calc(100% - var(--fade) * 0.3),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgb(0 0 0 / 0.2) calc(var(--fade) * 0.3),
+    rgb(0 0 0 / 0.65) calc(var(--fade) * 0.65),
+    #000 var(--fade),
+    #000 calc(100% - var(--fade)),
+    rgb(0 0 0 / 0.65) calc(100% - var(--fade) * 0.65),
+    rgb(0 0 0 / 0.2) calc(100% - var(--fade) * 0.3),
+    transparent 100%
+  );
+
+  cursor: grab;
+  /* Horizontal gestures belong to the row; vertical ones still scroll the
+     page on a phone. */
+  touch-action: pan-y;
+  /* Dragging across the badges must never select them, show a tap flash or
+     open the long-press menu. */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.marquee[data-dragging='true'] {
+  cursor: grabbing;
+}
+
+/* The site paints selected text in the accent blue. Should a selection start
+   here anyway, it shows nothing. */
+.marquee::selection,
+.marquee *::selection {
+  background-color: transparent;
+}
+
+.track {
+  display: flex;
+  gap: var(--gap);
+  inline-size: max-content;
+  will-change: transform;
 }
 
 .group {
@@ -23,46 +75,21 @@
   flex-shrink: 0;
   align-items: center;
   gap: var(--gap);
-  animation: slide var(--duration, 45s) linear infinite;
 }
 
-/* Each half slides left by its own width plus the gap between the halves,
-   which puts the second half exactly where the first began. */
-@keyframes slide {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(calc(-100% - var(--gap)));
-  }
-}
-
-.marquee[data-direction='right'] .group {
-  animation-direction: reverse;
-}
-
-/* Holding the pointer over a row stops it, so a badge can be read. */
-.marquee:hover .group {
-  animation-play-state: paused;
-}
-
+/* One badge for every skill in every row: neutral border, no fill, the body
+   text colour. */
 .badge {
   flex-shrink: 0;
   white-space: nowrap;
   padding: var(--space-2xs) var(--space-s);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-m);
+  background: transparent;
   color: var(--ink-muted);
   font-size: var(--step--1);
-}
-
-.marquee[data-variant='core'] .badge {
-  font-family: var(--font-display);
-  font-size: var(--step-0);
-  font-weight: 600;
-  border-color: var(--accent);
-  background: var(--accent-wash);
-  color: var(--accent);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 @media (max-width: 47.999rem) {
@@ -73,25 +100,26 @@
   .badge {
     padding: 0.2rem var(--space-xs);
   }
-
-  .marquee[data-variant='core'] .badge {
-    font-size: var(--step--1);
-  }
 }
 
-/* For anyone who has asked their device for less motion, the rows stop and
-   the badges wrap in place, shown once each. */
+/* For anyone who has asked their device for less motion, the rows do not
+   move and cannot be dragged; the badges wrap in place, shown once each. */
 @media (prefers-reduced-motion: reduce) {
   .marquee {
     overflow: visible;
     mask-image: none;
     -webkit-mask-image: none;
+    cursor: auto;
+    touch-action: auto;
+  }
+
+  .track {
+    inline-size: auto;
   }
 
   .group {
     flex-wrap: wrap;
     flex-shrink: 1;
-    animation: none;
   }
 
   .group[aria-hidden='true'] {

@@ -1,5 +1,5 @@
-import { render, screen, within } from '@testing-library/react';
-import SkillMarquee, { marqueeDuration } from './SkillMarquee';
+import { act, render, screen, within } from '@testing-library/react';
+import SkillMarquee from './SkillMarquee';
 
 const items = ['React', 'TypeScript', 'Java'];
 
@@ -7,6 +7,13 @@ function row(container: HTMLElement): HTMLElement {
   const marquee = container.querySelector<HTMLElement>('[data-direction]');
   if (!marquee) throw new Error('no marquee row');
   return marquee;
+}
+
+function track(container: HTMLElement): HTMLElement {
+  const lists = row(container).querySelectorAll('ul');
+  const parent = lists[0].parentElement;
+  if (!parent || parent === row(container)) throw new Error('the halves have no track to move');
+  return parent;
 }
 
 describe('SkillMarquee', () => {
@@ -28,6 +35,11 @@ describe('SkillMarquee', () => {
     expect(groups[1].textContent).toBe(groups[0].textContent);
   });
 
+  it('carries both copies on a single track, so they move as one', () => {
+    const { container } = render(<SkillMarquee label="A" items={items} direction="left" />);
+    expect(track(container).querySelectorAll('ul')).toHaveLength(2);
+  });
+
   it('records which way the row travels', () => {
     const { container: left } = render(<SkillMarquee label="A" items={items} direction="left" />);
     const { container: right } = render(<SkillMarquee label="B" items={items} direction="right" />);
@@ -36,31 +48,110 @@ describe('SkillMarquee', () => {
     expect(row(right)).toHaveAttribute('data-direction', 'right');
   });
 
-  it('marks the core stack so it can wear the accent', () => {
-    const { container } = render(
-      <SkillMarquee label="Core stack" items={items} direction="left" variant="core" />,
-    );
-    expect(row(container)).toHaveAttribute('data-variant', 'core');
-  });
-
-  it('starts with a steady duration before it has been measured', () => {
+  // No row is singled out any more: the core stack wears the same badge as
+  // everything else.
+  it('draws every badge in one plain style', () => {
     const { container } = render(<SkillMarquee label="A" items={items} direction="left" />);
-    expect(row(container).style.getPropertyValue('--duration')).toMatch(/^\d+(\.\d+)?s$/);
+
+    expect(row(container)).not.toHaveAttribute('data-variant');
+    const classes = new Set([...row(container).querySelectorAll('li')].map((badge) => badge.className));
+    expect(classes.size).toBe(1);
   });
 });
 
-describe('marqueeDuration', () => {
-  it('moves a wider row for longer, so every row travels at the speed it was given', () => {
-    expect(marqueeDuration(2400, 30)).toBe('80s');
-    expect(marqueeDuration(1200, 30)).toBe('40s');
+describe('SkillMarquee motion', () => {
+  let frames: FrameRequestCallback[] = [];
+  let now = 0;
+
+  function frame(at: number) {
+    now = at;
+    const pending = frames;
+    frames = [];
+    act(() => {
+      for (const callback of pending) callback(at);
+    });
+  }
+
+  function pointer(target: Element, type: string, init: { x?: number; id?: number; kind?: string }) {
+    const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: init.x ?? 0, button: 0 });
+    Object.defineProperty(event, 'pointerId', { value: init.id ?? 1 });
+    Object.defineProperty(event, 'pointerType', { value: init.kind ?? 'mouse' });
+    act(() => {
+      target.dispatchEvent(event);
+    });
+  }
+
+  function offset(element: HTMLElement): number {
+    const match = element.style.transform.match(/translate3d\((-?[\d.e-]+)px/);
+    return match ? Number(match[1]) : Number.NaN;
+  }
+
+  beforeEach(() => {
+    frames = [];
+    now = 0;
+    vi.stubGlobal('ResizeObserver', class {
+      observe() {}
+      disconnect() {}
+    });
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      frames.push(callback);
+      return frames.length;
+    });
+    vi.stubGlobal('cancelAnimationFrame', () => {});
+    vi.spyOn(performance, 'now').mockImplementation(() => now);
   });
 
-  it('never races a very short row past the eye', () => {
-    expect(Number.parseFloat(marqueeDuration(60, 30))).toBeGreaterThanOrEqual(12);
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
 
-  it('falls back to a steady pace when the row has no width yet', () => {
-    expect(marqueeDuration(0, 30)).toBe(marqueeDuration(Number.NaN, 30));
-    expect(Number.parseFloat(marqueeDuration(0, 30))).toBeGreaterThan(0);
+  it('follows a drag, marks the row as grabbed, and flings on release', () => {
+    const { container } = render(<SkillMarquee label="A" items={items} direction="left" speed={30} />);
+    const marquee = row(container);
+    frame(0);
+
+    now = 0;
+    pointer(marquee, 'pointerdown', { x: 100 });
+    expect(marquee).toHaveAttribute('data-dragging', 'true');
+
+    now = 50;
+    pointer(marquee, 'pointermove', { x: 160 });
+    frame(50);
+    expect(offset(track(container))).toBeCloseTo(60, 5);
+
+    now = 100;
+    pointer(marquee, 'pointermove', { x: 220 });
+    pointer(marquee, 'pointerup', { x: 220 });
+    expect(marquee).not.toHaveAttribute('data-dragging');
+
+    frame(100);
+    frame(116);
+    expect(offset(track(container))).toBeGreaterThan(120);
+  });
+
+  it('eases to a stop while a mouse rests on the row', () => {
+    const { container } = render(<SkillMarquee label="A" items={items} direction="left" speed={30} />);
+    const marquee = row(container);
+    frame(0);
+
+    pointer(marquee, 'pointerenter', { kind: 'mouse' });
+    for (let time = 16; time <= 2000; time += 16) frame(time);
+    const settled = offset(track(container));
+    for (let time = 2016; time <= 3000; time += 16) frame(time);
+
+    expect(Math.abs(offset(track(container)) - settled)).toBeLessThan(0.5);
+  });
+
+  it('holds still under a resting finger, without needing a hover', () => {
+    const { container } = render(<SkillMarquee label="A" items={items} direction="left" speed={30} />);
+    const marquee = row(container);
+    frame(0);
+
+    pointer(marquee, 'pointerdown', { x: 40, kind: 'touch' });
+    const held = offset(track(container)) || 0;
+    for (let time = 16; time <= 1000; time += 16) frame(time);
+
+    expect(offset(track(container))).toBeCloseTo(held, 5);
   });
 });

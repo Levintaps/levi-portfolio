@@ -39,8 +39,7 @@ describe.each(Object.entries(schemes))('the %s theme', (_, palette) => {
     ['the address and email', '--ink-faint', '--ground'],
     ['the typed roles and blue labels', '--accent', '--ground'],
     ['the download button label', '--accent-ink', '--accent'],
-    ['a core skill pill', '--accent', '--accent-wash'],
-    ['a supporting skill pill on the skills band', '--ink-muted', '--surface-sunken'],
+    ['a skill badge on the skills band', '--ink-muted', '--surface-sunken'],
   ];
 
   it.each(pairs)('gives %s at least 4.5:1', (_label, foreground, background) => {

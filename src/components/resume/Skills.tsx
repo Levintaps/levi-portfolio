@@ -24,7 +24,7 @@ export default function Skills() {
       />
 
       <div className={styles.rows}>
-        <SkillMarquee label="Core stack" items={coreSkills} direction="left" variant="core" speed={28} />
+        <SkillMarquee label="Core stack" items={coreSkills} direction="left" speed={28} />
         <SkillMarquee label={nameOf(middleRow)} items={itemsOf(middleRow)} direction="right" speed={32} />
         <SkillMarquee label={nameOf(lastRow)} items={itemsOf(lastRow)} direction="left" speed={30} />
       </div>

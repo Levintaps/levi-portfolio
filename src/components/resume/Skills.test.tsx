@@ -26,13 +26,24 @@ describe('Skills', () => {
     expect(rows(container)).toHaveLength(3);
   });
 
-  it('gives the core stack a row of its own, first, in the accent', () => {
+  it('gives the core stack a row of its own, first', () => {
     const { container } = render(<Skills />);
     const first = rows(container)[0];
 
-    expect(first).toHaveAttribute('data-variant', 'core');
     expect(within(first).getByRole('list', { name: /core stack/i })).toBeInTheDocument();
     expect(visibleItems(first)).toEqual(coreSkills);
+  });
+
+  // The featured row used to wear the blue accent. Every badge now looks the
+  // same, so nothing in the markup may single a row or a badge out.
+  it('draws every badge in every row the same way', () => {
+    const { container } = render(<Skills />);
+
+    for (const row of rows(container)) {
+      expect(row).not.toHaveAttribute('data-variant');
+    }
+    const classes = new Set([...container.querySelectorAll('[data-direction] li')].map((badge) => badge.className));
+    expect(classes.size).toBe(1);
   });
 
   it('alternates direction row by row', () => {
