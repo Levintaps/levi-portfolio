@@ -30,6 +30,8 @@ export function looksAutomated({
 
 /** The shortest message worth sending, not counting surrounding spaces. */
 export const MIN_MESSAGE_LENGTH = 10;
+/** The longest, counted as typed, the same way the counter under the field counts. */
+export const MAX_MESSAGE_LENGTH = 500;
 
 export type ContactErrors = Partial<Record<keyof ContactPayload, string>>;
 
@@ -50,6 +52,8 @@ export function validateContact(payload: ContactPayload): ContactErrors {
   if (!message) errors.message = 'Message is required';
   else if (message.length < MIN_MESSAGE_LENGTH) {
     errors.message = `Message must be at least ${MIN_MESSAGE_LENGTH} characters`;
+  } else if (payload.message.length > MAX_MESSAGE_LENGTH) {
+    errors.message = `Message must be ${MAX_MESSAGE_LENGTH} characters or fewer`;
   }
 
   return errors;

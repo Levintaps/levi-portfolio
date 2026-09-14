@@ -6,6 +6,8 @@
 }
 
 .layout {
+  --card-pad: 1rem;
+
   display: grid;
   gap: var(--space-l);
 }
@@ -140,17 +142,24 @@ a.detailValue:focus-visible {
   text-decoration-color: currentColor;
 }
 
+/* The form sits on a card lifted a shade off the page: its own surface, a
+   fine border, and a shadow tuned per theme in tokens.css. */
 .form {
   position: relative;
   display: grid;
-  gap: var(--space-s);
+  gap: var(--space-m);
+  padding: var(--card-pad);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
 }
 
 /* The two short fields share a row on a wide screen: a name box the full
    width of the column reads as a wall rather than a form. */
 .pair {
   display: grid;
-  gap: var(--space-s);
+  gap: var(--space-m);
 }
 
 /* Present but unreachable: no pointer, no tab stop, no announcement. Only
@@ -168,37 +177,176 @@ a.detailValue:focus-visible {
 
 .field {
   display: grid;
-  gap: var(--space-2xs);
+  gap: 0.375rem;
 }
 
-.field label {
-  font-size: var(--step--1);
-  color: var(--ink-muted);
+/* One field: the input, its label and icon laid over it, and for the message
+   the count in the corner. */
+.control {
+  --pad-x: 0.875rem;
+  --text-start: 2.625rem;
+  --height: 3.5rem;
+  /* Where the label rests: the middle of a single line field. */
+  --rest-y: calc(var(--height) / 2);
+  --tone: var(--accent);
+
+  position: relative;
 }
 
-.field input,
-.field textarea {
+.control[data-invalid] {
+  --tone: var(--danger);
+}
+
+.control input,
+.control textarea {
+  display: block;
   inline-size: 100%;
-  padding: var(--space-xs) var(--space-s);
-  min-block-size: 2.75rem;
+  block-size: var(--height);
+  padding: 0 var(--pad-x) 0 var(--text-start);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-m);
   background: var(--surface);
-  resize: vertical;
+  color: var(--ink);
+  outline: none;
+  /* Two rings at rest, both empty, so focus eases into them rather than
+     snapping from nothing. */
+  box-shadow:
+    0 0 0 0 transparent,
+    0 0 0 0 transparent;
+  transition:
+    border-color var(--motion-base) var(--ease),
+    box-shadow var(--motion-base) var(--ease);
 }
 
-.field input:focus-visible,
-.field textarea:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
+.control textarea {
+  /* useAutoResize sets the height from here on; this is its floor. */
+  block-size: auto;
+  min-block-size: var(--height);
+  /* Room at the foot for the count, clear of the last line. */
+  padding-block: 0.95rem 2rem;
+  line-height: 1.5;
+  resize: none;
 }
 
-.field [aria-invalid='true'] {
+.control:hover input,
+.control:hover textarea {
+  border-color: var(--ink-faint);
+}
+
+.control[data-invalid] input,
+.control[data-invalid] textarea {
   border-color: var(--danger);
 }
 
-.field [aria-invalid='true']:focus-visible {
-  outline-color: var(--danger);
+/* Focus: the border takes the tone and a soft ring of it fades in around the
+   field. The inner ring doubles the border so the focus is plain to see, the
+   outer one is the glow. Keyed to the same focus-within as the label and the
+   icon, so all three always change together. */
+.control:focus-within input,
+.control:focus-within textarea {
+  border-color: var(--tone);
+  box-shadow:
+    0 0 0 1px var(--tone),
+    0 0 0 5px color-mix(in srgb, var(--tone) 18%, transparent);
+}
+
+.control label {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: calc(var(--text-start) - 0.3rem);
+  max-inline-size: calc(100% - var(--text-start) - var(--pad-x));
+  padding-inline: 0.3rem;
+  overflow: hidden;
+  /* The label's own patch of card, so once it floats it breaks the border
+     line cleanly. */
+  background: var(--surface);
+  color: var(--ink-faint);
+  font-size: var(--step-0);
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  transform-origin: left center;
+  transform: translateY(calc(var(--rest-y) - 50%));
+  transition:
+    transform var(--motion-base) var(--ease),
+    color var(--motion-base) var(--ease);
+}
+
+.control textarea + label {
+  --rest-y: calc(0.95rem + 0.75em);
+}
+
+/* Floated: up onto the top border, smaller, and over to where the icon
+   starts. Only transform moves, so the text is never laid out again mid
+   animation. */
+.control:focus-within label,
+.control input:not(:placeholder-shown) + label,
+.control textarea:not(:placeholder-shown) + label {
+  transform: translate(calc(var(--pad-x) - var(--text-start)), -50%) scale(0.8);
+}
+
+/* Kept as rules of their own: a selector a browser does not know would void
+   the whole list it sits in. */
+.control input:autofill + label {
+  transform: translate(calc(var(--pad-x) - var(--text-start)), -50%) scale(0.8);
+}
+
+.control input:-webkit-autofill + label {
+  transform: translate(calc(var(--pad-x) - var(--text-start)), -50%) scale(0.8);
+}
+
+.control:focus-within label {
+  color: var(--tone);
+}
+
+.control[data-invalid] label {
+  color: var(--danger);
+}
+
+.icon {
+  position: absolute;
+  inset-block-start: calc(var(--rest-y) - 9px);
+  inset-inline-start: var(--pad-x);
+  display: grid;
+  color: var(--ink-faint);
+  pointer-events: none;
+  transition: color var(--motion-base) var(--ease);
+}
+
+.control:has(textarea) .icon {
+  inset-block-start: calc(0.95rem + 0.75em - 9px);
+}
+
+.control:focus-within .icon,
+.control[data-invalid] .icon {
+  color: var(--tone);
+}
+
+.counter {
+  position: absolute;
+  inset-block-end: 0.5rem;
+  /* Clear of a scrollbar once the field is at its tallest. */
+  inset-inline-end: 1.25rem;
+  padding-inline: 0.25rem;
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  transition: color var(--motion-base) var(--ease);
+}
+
+.counter[data-level='near'] {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.counter[data-level='over'] {
+  color: var(--danger);
+  font-weight: 600;
 }
 
 .fieldError {
@@ -250,22 +398,39 @@ a.detailValue:focus-visible {
   }
 }
 
-/* Still turning, so it never reads as stuck, but slowly. */
+/* Still turning, so it never reads as stuck, but slowly. The fields change
+   state at once. */
 @media (prefers-reduced-motion: reduce) {
   .spinner {
     animation-duration: 2.4s;
+  }
+
+  .control input,
+  .control textarea,
+  .control label,
+  .icon,
+  .counter {
+    transition: none;
   }
 }
 
 @media (min-width: 48rem) {
   /* Just wide enough for the address and the copied button on one line. */
   .layout {
+    --card-pad: 1.5rem;
+
     grid-template-columns: 19rem 1fr;
     gap: var(--space-xl);
   }
 
   .pair {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Inset by the card's padding, so the details still start level with the
+     first field and the social links still finish level with the button. */
+  .reach {
+    padding-block: calc(var(--card-pad) + 1px);
   }
 
   .section {

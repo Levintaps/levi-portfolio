@@ -15,7 +15,10 @@ export type IconName =
   | 'arrow'
   | 'chevron'
   | 'check'
-  | 'alert';
+  | 'alert'
+  | 'user'
+  | 'tag'
+  | 'message';
 
 const paths: Record<IconName, string> = {
   github:
@@ -38,6 +41,9 @@ const paths: Record<IconName, string> = {
   chevron: 'M6 9l6 6 6-6',
   check: 'M5 12.5l4.5 4.5L19 7',
   alert: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z M12 7.5v5.5 M12 16.5v.01',
+  user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M4.5 20.5a7.5 7.5 0 0 1 15 0',
+  tag: 'M3.5 12V4.5a1 1 0 0 1 1-1H12l8.5 8.5-8 8Z M8 8h.01',
+  message: 'M20.5 15a1.5 1.5 0 0 1-1.5 1.5H8l-4.5 4v-15A1.5 1.5 0 0 1 5 4h14a1.5 1.5 0 0 1 1.5 1.5Z',
 };
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {

@@ -30,8 +30,9 @@ describe('contrastRatio', () => {
   });
 });
 
-// Every pairing of text the hero puts on screen, in both themes, held to
-// WCAG AA for body text. A token edit that breaks one fails here first.
+// Every pairing of text the hero and the contact form put on screen, in both
+// themes, held to WCAG AA for body text. A token edit that breaks one fails
+// here first.
 describe.each(Object.entries(schemes))('the %s theme', (_, palette) => {
   const pairs: [string, string, string][] = [
     ['the name and emphasised terms', '--ink', '--ground'],
@@ -40,6 +41,10 @@ describe.each(Object.entries(schemes))('the %s theme', (_, palette) => {
     ['the typed roles and blue labels', '--accent', '--ground'],
     ['the download button label', '--accent-ink', '--accent'],
     ['a skill badge on the skills band', '--ink-muted', '--surface-sunken'],
+    ['a resting form label and the character count', '--ink-faint', '--surface'],
+    ['a focused form label', '--accent', '--surface'],
+    ['a character count nearing the limit', '--warning', '--surface'],
+    ['a character count past the limit, and field errors', '--danger', '--surface'],
   ];
 
   it.each(pairs)('gives %s at least 4.5:1', (_label, foreground, background) => {

@@ -1,18 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import { profile } from '../../data/resume';
 import {
   looksAutomated,
   sendContact,
   validateContact,
+  MAX_MESSAGE_LENGTH,
   type ContactErrors,
   type ContactPayload,
 } from '../../lib/contact';
+import { useAutoResize } from '../../hooks/useAutoResize';
 import SectionHeading from '../common/SectionHeading';
 import IconLink from '../common/IconLink';
 import StatusBanner from '../common/StatusBanner';
-import { Icon } from '../common/icons';
+import { Icon, type IconName } from '../common/icons';
 import styles from './Contact.module.css';
 
 type Field = keyof ContactPayload;
@@ -20,6 +22,10 @@ type Field = keyof ContactPayload;
 const empty: ContactPayload = { name: '', email: '', subject: '', message: '' };
 const FIELDS: Field[] = ['name', 'email', 'subject', 'message'];
 const COPIED_MS = 2000;
+/** The count turns to a warning from here, a tenth short of the limit. */
+const NEAR_LIMIT = Math.round(MAX_MESSAGE_LENGTH * 0.9);
+/** The message field grows with its text up to this height, then scrolls. */
+const MESSAGE_MAX_HEIGHT = 400;
 
 export default function Contact() {
   const [payload, setPayload] = useState<ContactPayload>(empty);
@@ -39,7 +45,13 @@ export default function Contact() {
   const openedAt = useRef(Date.now());
   const copyTimer = useRef<number | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
   const sending = status === 'sending';
+
+  useAutoResize(messageRef, payload.message, MESSAGE_MAX_HEIGHT);
+
+  const count = payload.message.length;
+  const level = count > MAX_MESSAGE_LENGTH ? 'over' : count >= NEAR_LIMIT ? 'near' : 'normal';
 
   useEffect(
     () => () => {
@@ -149,6 +161,30 @@ export default function Contact() {
     ) : null;
   }
 
+  /**
+   * The label and icon sit inside the field. The label floats up onto the
+   * border when the field has focus or holds text, which the stylesheet reads
+   * from the field itself, so a value the browser autofills floats it too.
+   */
+  function control(
+    field: Field,
+    label: string,
+    icon: IconName,
+    input: ReactNode,
+    extra?: ReactNode,
+  ) {
+    return (
+      <div className={styles.control} data-invalid={errors[field] ? true : undefined}>
+        {input}
+        <label htmlFor={`contact-${field}`}>{label}</label>
+        <span className={styles.icon} aria-hidden="true">
+          <Icon name={icon} size={18} />
+        </span>
+        {extra}
+      </div>
+    );
+  }
+
   const needsFixing = attempted && Object.keys(errors).length > 0;
 
   return (
@@ -223,40 +259,79 @@ export default function Contact() {
         <form ref={formRef} className={styles.form} onSubmit={handleSubmit} noValidate>
           <div className={styles.pair}>
             <div className={styles.field}>
-              <label htmlFor="contact-name">Name</label>
-              <input
-                {...fieldProps('name')}
-                onChange={(event) => update('name', event.target.value)}
-                autoComplete="name"
-              />
+              {control(
+                'name',
+                'Name',
+                'user',
+                <input
+                  {...fieldProps('name')}
+                  placeholder=" "
+                  onChange={(event) => update('name', event.target.value)}
+                  autoComplete="name"
+                />,
+              )}
               {fieldError('name')}
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="contact-email">Email</label>
-              <input
-                {...fieldProps('email')}
-                type="email"
-                onChange={(event) => update('email', event.target.value)}
-                autoComplete="email"
-              />
+              {control(
+                'email',
+                'Email',
+                'mail',
+                <input
+                  {...fieldProps('email')}
+                  type="email"
+                  placeholder=" "
+                  onChange={(event) => update('email', event.target.value)}
+                  autoComplete="email"
+                />,
+              )}
               {fieldError('email')}
             </div>
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="contact-subject">Subject</label>
-            <input {...fieldProps('subject')} onChange={(event) => update('subject', event.target.value)} />
+            {control(
+              'subject',
+              'Subject',
+              'tag',
+              <input
+                {...fieldProps('subject')}
+                placeholder=" "
+                onChange={(event) => update('subject', event.target.value)}
+              />,
+            )}
             {fieldError('subject')}
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="contact-message">Message</label>
-            <textarea
-              {...fieldProps('message')}
-              rows={5}
-              onChange={(event) => update('message', event.target.value)}
-            />
+            {control(
+              'message',
+              'Message',
+              'message',
+              <textarea
+                {...fieldProps('message')}
+                ref={messageRef}
+                rows={5}
+                placeholder=" "
+                aria-describedby={
+                  errors.message ? 'contact-message-error contact-message-hint' : 'contact-message-hint'
+                }
+                onChange={(event) => update('message', event.target.value)}
+              />,
+              <span className={styles.counter} data-counter data-level={level} aria-hidden="true">
+                {count}/{MAX_MESSAGE_LENGTH}
+              </span>,
+            )}
+            <span id="contact-message-hint" className={styles.srOnly}>
+              Up to {MAX_MESSAGE_LENGTH} characters.
+            </span>
+            {/* Changes only when the count crosses into a new state, so a
+                screen reader hears it at those moments and not on every key. */}
+            <span id="contact-message-limit" className={styles.srOnly} aria-live="polite">
+              {level === 'near' ? `Nearing the ${MAX_MESSAGE_LENGTH} character limit` : null}
+              {level === 'over' ? `Over the ${MAX_MESSAGE_LENGTH} character limit` : null}
+            </span>
             {fieldError('message')}
           </div>
 

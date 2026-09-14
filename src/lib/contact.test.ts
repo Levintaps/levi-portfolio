@@ -38,6 +38,18 @@ describe('validateContact', () => {
   it('accepts a message of exactly ten characters, not counting the spaces around it', () => {
     expect(validateContact({ ...valid, message: '  0123456789  ' }).message).toBeUndefined();
   });
+
+  it('accepts a message right on the 500 character limit', () => {
+    expect(validateContact({ ...valid, message: 'x'.repeat(500) }).message).toBeUndefined();
+  });
+
+  // Nothing is cut off as it is typed or pasted, so a message over the limit
+  // is stopped here instead, where the visitor can see why.
+  it('stops a message that runs past 500 characters', () => {
+    expect(validateContact({ ...valid, message: 'x'.repeat(501) }).message).toBe(
+      'Message must be 500 characters or fewer',
+    );
+  });
 });
 
 describe('looksAutomated', () => {

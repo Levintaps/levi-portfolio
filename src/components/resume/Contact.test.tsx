@@ -28,6 +28,13 @@ async function fillValidForm(user: ReturnType<typeof userEvent.setup>) {
   advance(8000);
 }
 
+/** The visible count under the message field. */
+function counter(): HTMLElement {
+  const element = document.querySelector<HTMLElement>('[data-counter]');
+  if (!element) throw new Error('the message field has no character count');
+  return element;
+}
+
 function honeypot(): HTMLInputElement {
   const field = document.querySelector<HTMLInputElement>('input[name="referral-code"]');
   if (!field) throw new Error('the form has no hidden field for a bot to fall into');
@@ -66,6 +73,7 @@ describe('Contact', () => {
     expect(await screen.findByText("Message sent successfully! I'll get back to you soon.")).toBeInTheDocument();
     expect(screen.getByLabelText(/^name/i)).toHaveValue('');
     expect(screen.getByLabelText(/message/i)).toHaveValue('');
+    expect(counter()).toHaveTextContent('0/500');
   });
 
   it('says so when sending fails, offers the address, and keeps what was written', async () => {
@@ -186,6 +194,64 @@ describe('Contact', () => {
     await fillValidForm(user);
 
     expect(screen.queryByText('Please fix the highlighted fields.')).toBeNull();
+  });
+
+  it('counts the message against its limit as it is typed', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+    expect(counter()).toHaveTextContent('0/500');
+
+    await user.type(screen.getByLabelText(/message/i), 'Hello');
+
+    expect(counter()).toHaveTextContent('5/500');
+    expect(counter()).toHaveAttribute('data-level', 'normal');
+  });
+
+  it('turns the count to a warning as the message nears the limit', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+
+    await user.click(screen.getByLabelText(/message/i));
+    await user.paste('x'.repeat(449));
+    expect(counter()).toHaveAttribute('data-level', 'normal');
+
+    await user.paste('x');
+    expect(counter()).toHaveTextContent('450/500');
+    expect(counter()).toHaveAttribute('data-level', 'near');
+  });
+
+  it('keeps a message that runs over the limit whole, marks it, and will not send it', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+    await user.type(screen.getByLabelText(/^name/i), 'Recruiter');
+    await user.type(screen.getByLabelText(/^email/i), 'hiring@example.com');
+    await user.type(screen.getByLabelText(/subject/i), 'Interview');
+    await user.click(screen.getByLabelText(/message/i));
+    await user.paste('x'.repeat(501));
+    advance(8000);
+
+    expect(screen.getByLabelText(/message/i)).toHaveValue('x'.repeat(501));
+    expect(counter()).toHaveAttribute('data-level', 'over');
+
+    await user.click(screen.getByRole('button', { name: /send message/i }));
+
+    expect(sendContact).not.toHaveBeenCalled();
+    expect(screen.getByText('Message must be 500 characters or fewer')).toBeInTheDocument();
+  });
+
+  // Spoken only when the count crosses into a new state, never on every key.
+  it('tells a screen reader when the message nears the limit and when it passes it', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+    const notice = document.getElementById('contact-message-limit');
+    expect(notice).toHaveTextContent('');
+
+    await user.click(screen.getByLabelText(/message/i));
+    await user.paste('x'.repeat(460));
+    expect(notice).toHaveTextContent('Nearing the 500 character limit');
+
+    await user.paste('x'.repeat(41));
+    expect(notice).toHaveTextContent('Over the 500 character limit');
   });
 
   it('marks invalid fields with aria-invalid and aria-describedby after validation fails', async () => {

@@ -49,8 +49,11 @@
   --accent-ink: #ffffff;
   --accent-wash: #e8ecfa;
   --positive: #1c7a4a;
+  --warning: #b45309;
   --danger: #c0392b;
   --accent-glow: rgb(27 63 174 / 0.35);
+  /* A soft lift off the pale ground. */
+  --card-shadow: 0 1px 2px rgb(20 22 26 / 0.04), 0 14px 36px -14px rgb(20 22 26 / 0.14);
 }
 
 :root[data-scheme='dark'] {
@@ -66,8 +69,11 @@
   --accent-ink: #0e1013;
   --accent-wash: #1a2236;
   --positive: #4cc38a;
+  --warning: #f0a33a;
   --danger: #f85149;
   --accent-glow: rgb(122 162 255 / 0.35);
+  /* A shadow alone vanishes on a dark ground, so a faint top edge catches the light. */
+  --card-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 18px 40px -18px rgb(0 0 0 / 0.65);
 }
 
 :root[data-view='cyber'] {
