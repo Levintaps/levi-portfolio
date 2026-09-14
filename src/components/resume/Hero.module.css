@@ -3,6 +3,9 @@
   inline-size: min(100% - (var(--gutter) * 2), var(--shell));
   margin-inline: auto;
   padding-block: var(--space-xl) var(--space-2xl);
+  /* Like every other section, clear of the sticky header when linked to, so
+     "#top" from the header mark or the footer lands at the very top. */
+  scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
   display: grid;
   gap: var(--space-l);
   align-items: start;

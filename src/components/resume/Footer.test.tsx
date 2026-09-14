@@ -21,6 +21,21 @@ describe('Footer', () => {
     expect(cv).toHaveAttribute('download');
   });
 
+  // The page is long, and on a phone the header's mark is small; this is the
+  // obvious way back up once the visitor has reached the end.
+  it('offers a way back to the top of the page', () => {
+    render(<Footer />);
+    expect(within(footer()).getByRole('link', { name: /back to top/i })).toHaveAttribute('href', '#top');
+  });
+
+  it('credits the name and the year, and says nothing about how the site was built', () => {
+    render(<Footer />);
+    const year = new Date().getFullYear();
+
+    expect(within(footer()).getByText(`\u00a9 ${year} ${profile.name}.`)).toBeInTheDocument();
+    expect(footer()).not.toHaveTextContent(/react|vite/i);
+  });
+
   it('credits the year it is being read in', () => {
     render(<Footer />);
     const year = String(new Date().getFullYear());
