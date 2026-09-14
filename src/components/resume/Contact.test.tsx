@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Contact from './Contact';
 import * as contact from '../../lib/contact';
@@ -42,6 +42,7 @@ describe('Contact', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -51,10 +52,10 @@ describe('Contact', () => {
     advance(8000);
     await user.click(screen.getByRole('button', { name: /send message/i }));
     expect(sendContact).not.toHaveBeenCalled();
-    expect(await screen.findByText(/please add your name/i)).toBeInTheDocument();
+    expect(await screen.findByText('Name is required')).toBeInTheDocument();
   });
 
-  it('sends a complete form and confirms', async () => {
+  it('sends a complete form, confirms it, and clears the fields', async () => {
     sendContact.mockResolvedValue(undefined);
     const user = userEvent.setup();
     render(<Contact />);
@@ -62,17 +63,129 @@ describe('Contact', () => {
     await user.click(screen.getByRole('button', { name: /send message/i }));
 
     await waitFor(() => expect(sendContact).toHaveBeenCalledTimes(1));
-    expect(await screen.findByText(/message sent/i)).toBeInTheDocument();
+    expect(await screen.findByText("Message sent successfully! I'll get back to you soon.")).toBeInTheDocument();
+    expect(screen.getByLabelText(/^name/i)).toHaveValue('');
+    expect(screen.getByLabelText(/message/i)).toHaveValue('');
   });
 
-  it('names a fallback address when sending fails', async () => {
+  it('says so when sending fails, offers the address, and keeps what was written', async () => {
     sendContact.mockRejectedValue(new Error('network'));
     const user = userEvent.setup();
     render(<Contact />);
     await fillValidForm(user);
     await user.click(screen.getByRole('button', { name: /send message/i }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/levintapia\.work@gmail\.com/i);
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(/something went wrong\. please try again or email me directly/i);
+    expect(alert.querySelector('a')).toHaveAttribute('href', `mailto:${profile.email}`);
+    expect(screen.getByLabelText(/^name/i)).toHaveValue('Recruiter');
+    expect(screen.getByLabelText(/message/i)).toHaveValue('We would like to talk about a role.');
+  });
+
+  it('shows it is sending, and cannot be sent twice', async () => {
+    let finish: () => void = () => {};
+    sendContact.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const user = userEvent.setup();
+    render(<Contact />);
+    await fillValidForm(user);
+    await user.click(screen.getByRole('button', { name: /send message/i }));
+
+    const busy = screen.getByRole('button', { name: /sending/i });
+    expect(busy).toBeDisabled();
+    expect(screen.getByLabelText(/subject/i)).toHaveAttribute('readonly');
+
+    await user.click(busy);
+    await user.type(screen.getByLabelText(/subject/i), '{Enter}');
+    expect(sendContact).toHaveBeenCalledTimes(1);
+
+    await act(async () => finish());
+    expect(await screen.findByRole('button', { name: /send message/i })).toBeEnabled();
+  });
+
+  it('leaves a field alone when it is passed over without typing', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+
+    await user.click(screen.getByLabelText(/^name/i));
+    await user.tab();
+
+    expect(screen.getByLabelText(/^name/i)).not.toHaveAttribute('aria-invalid');
+    expect(screen.queryByText('Name is required')).toBeNull();
+  });
+
+  it('does not complain about a field while it is still being typed in', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+
+    await user.type(screen.getByLabelText(/^email/i), 'hiring@');
+
+    expect(screen.queryByText('Please enter a valid email address')).toBeNull();
+  });
+
+  it('checks a field once the visitor has typed in it and moves on', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+
+    await user.type(screen.getByLabelText(/^email/i), 'hiring@');
+    await user.tab();
+
+    expect(screen.getByLabelText(/^email/i)).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
+  });
+
+  it('clears an error the moment its field is fixed, and leaves the others', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+    advance(8000);
+    await user.click(screen.getByRole('button', { name: /send message/i }));
+
+    await user.type(screen.getByLabelText(/^name/i), 'R');
+
+    expect(screen.getByLabelText(/^name/i)).not.toHaveAttribute('aria-invalid');
+    expect(screen.queryByText('Name is required')).toBeNull();
+    expect(screen.getByText('Subject is required')).toBeInTheDocument();
+  });
+
+  it('keeps a flagged field’s message current as it is corrected', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+    advance(8000);
+    await user.click(screen.getByRole('button', { name: /send message/i }));
+    expect(screen.getByText('Email is required')).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText(/^email/i), 'hiring');
+    expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText(/^email/i), '@example.com');
+    expect(screen.queryByText('Please enter a valid email address')).toBeNull();
+  });
+
+  it('takes the visitor to the first field that needs fixing', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+    await user.type(screen.getByLabelText(/^name/i), 'Recruiter');
+    advance(8000);
+
+    await user.click(screen.getByRole('button', { name: /send message/i }));
+
+    expect(screen.getByLabelText(/^email/i)).toHaveFocus();
+  });
+
+  it('warns beside the button until every flagged field is fixed', async () => {
+    const user = userEvent.setup();
+    render(<Contact />);
+    advance(8000);
+    await user.click(screen.getByRole('button', { name: /send message/i }));
+    expect(screen.getByText('Please fix the highlighted fields.')).toBeInTheDocument();
+
+    await fillValidForm(user);
+
+    expect(screen.queryByText('Please fix the highlighted fields.')).toBeNull();
   });
 
   it('marks invalid fields with aria-invalid and aria-describedby after validation fails', async () => {
@@ -146,7 +259,39 @@ describe('Contact', () => {
     await user.click(screen.getByRole('button', { name: /copy/i }));
 
     await expect(navigator.clipboard.readText()).resolves.toBe(profile.email);
-    expect(await screen.findByText(/copied/i)).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Copied!' })).toBeInTheDocument();
+    expect(screen.getByText('Email address copied')).toBeInTheDocument();
+  });
+
+  // Testing Library waits on real timers between steps, so this drives the
+  // click directly and gives the page a clipboard that simply accepts.
+  it('goes back to Copy two seconds later', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText: () => Promise.resolve() },
+    });
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    render(<Contact />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /copy/i }));
+    });
+    expect(screen.getByRole('button', { name: 'Copied!' })).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(1999);
+    });
+    expect(screen.getByRole('button', { name: 'Copied!' })).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument();
+  });
+
+  it('lets a phone call the number with a tap', () => {
+    render(<Contact />);
+    expect(screen.getByRole('link', { name: profile.phone })).toHaveAttribute('href', 'tel:+639214805230');
   });
 
   it('says so when the browser refuses the clipboard', async () => {

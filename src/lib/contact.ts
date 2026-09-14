@@ -28,18 +28,28 @@ export function looksAutomated({
   return elapsedMs >= 0 && elapsedMs < MIN_FILL_MS;
 }
 
-export function validateContact(
-  payload: ContactPayload,
-): Partial<Record<keyof ContactPayload, string>> {
-  const errors: Partial<Record<keyof ContactPayload, string>> = {};
+/** The shortest message worth sending, not counting surrounding spaces. */
+export const MIN_MESSAGE_LENGTH = 10;
 
-  if (!payload.name.trim()) errors.name = 'Please add your name.';
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email.trim())) {
-    errors.email = 'Please add a valid email address.';
+export type ContactErrors = Partial<Record<keyof ContactPayload, string>>;
+
+export function validateContact(payload: ContactPayload): ContactErrors {
+  const errors: ContactErrors = {};
+  const email = payload.email.trim();
+  const message = payload.message.trim();
+
+  if (!payload.name.trim()) errors.name = 'Name is required';
+
+  if (!email) errors.email = 'Email is required';
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errors.email = 'Please enter a valid email address';
   }
-  if (!payload.subject.trim()) errors.subject = 'Please add a subject.';
-  if (payload.message.trim().length < 10) {
-    errors.message = 'Please write a slightly longer message.';
+
+  if (!payload.subject.trim()) errors.subject = 'Subject is required';
+
+  if (!message) errors.message = 'Message is required';
+  else if (message.length < MIN_MESSAGE_LENGTH) {
+    errors.message = `Message must be at least ${MIN_MESSAGE_LENGTH} characters`;
   }
 
   return errors;

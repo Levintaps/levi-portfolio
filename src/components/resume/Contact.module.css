@@ -10,9 +10,19 @@
   gap: var(--space-l);
 }
 
+/* Beside the form the column runs its full height: the details start level
+   with the first field and the social links finish level with the send
+   button, following it down when errors or a result make the form taller. */
 .reach {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-l);
+}
+
+.details {
   display: grid;
-  gap: var(--space-m);
+  gap: var(--space-l);
   align-content: start;
 }
 
@@ -31,8 +41,14 @@
 }
 
 .copy {
-  padding: var(--space-2xs) var(--space-s);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: var(--space-2xs) 0.625rem;
   min-block-size: 2rem;
+  /* Wide enough for the copied state too, so the row never shifts. */
+  min-inline-size: 6rem;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-m);
   background: var(--surface);
@@ -41,11 +57,42 @@
   font-size: var(--step--2);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  transition:
+    color var(--motion-fast) var(--ease),
+    border-color var(--motion-fast) var(--ease),
+    background-color var(--motion-fast) var(--ease);
 }
 
 .copy:hover {
   color: var(--accent);
   border-color: var(--accent);
+}
+
+.copy[data-copied],
+.copy[data-copied]:hover {
+  color: var(--positive);
+  border-color: color-mix(in srgb, var(--positive) 55%, transparent);
+  background: color-mix(in srgb, var(--positive) 10%, var(--surface));
+}
+
+/* Out of the flow unless it holds the visible failure note, so the spoken
+   success message never adds a line of space. A screen reader still hears
+   whatever is written into it. */
+.copyStatus {
+  position: absolute;
+}
+
+.copyStatus[data-note] {
+  position: static;
+}
+
+.srOnly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .copyNote,
@@ -79,10 +126,18 @@ a.detailValue {
   display: inline-flex;
   align-items: center;
   min-block-size: 2.75rem;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition:
+    color var(--motion-fast) var(--ease),
+    text-decoration-color var(--motion-fast) var(--ease);
 }
 
-a.detailValue:hover {
+a.detailValue:hover,
+a.detailValue:focus-visible {
   color: var(--accent);
+  text-decoration-color: currentColor;
 }
 
 .form {
@@ -138,23 +193,32 @@ a.detailValue:hover {
   outline-offset: 1px;
 }
 
+.field [aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.field [aria-invalid='true']:focus-visible {
+  outline-color: var(--danger);
+}
+
 .fieldError {
   font-size: var(--step--1);
   color: var(--danger);
 }
 
-.error {
-  color: var(--danger);
-  font-size: var(--step--1);
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs) var(--space-m);
 }
 
-.sent {
-  color: var(--positive);
-  font-weight: 600;
+.warning {
+  font-size: var(--step--1);
+  color: var(--danger);
 }
 
 .submit {
-  justify-self: start;
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
@@ -167,13 +231,36 @@ a.detailValue:hover {
 }
 
 .submit:disabled {
-  opacity: 0.6;
+  opacity: 0.85;
   cursor: progress;
 }
 
+.spinner {
+  inline-size: 1em;
+  block-size: 1em;
+  border: 2px solid currentColor;
+  border-inline-end-color: transparent;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* Still turning, so it never reads as stuck, but slowly. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.4s;
+  }
+}
+
 @media (min-width: 48rem) {
+  /* Just wide enough for the address and the copied button on one line. */
   .layout {
-    grid-template-columns: 18rem 1fr;
+    grid-template-columns: 19rem 1fr;
     gap: var(--space-xl);
   }
 

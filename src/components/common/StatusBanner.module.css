@@ -1,0 +1,48 @@
+.banner {
+  --tone: var(--positive);
+
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-s);
+  border: 1px solid color-mix(in srgb, var(--tone) 45%, transparent);
+  border-radius: var(--radius-m);
+  background: color-mix(in srgb, var(--tone) 10%, var(--surface));
+  color: var(--ink);
+  font-size: var(--step--1);
+  animation: arrive var(--motion-base) var(--ease);
+}
+
+.banner[data-tone='error'] {
+  --tone: var(--danger);
+}
+
+.banner svg {
+  flex: none;
+  margin-block-start: 0.1em;
+  color: var(--tone);
+}
+
+.text {
+  overflow-wrap: anywhere;
+}
+
+.text a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner {
+    animation: none;
+  }
+}

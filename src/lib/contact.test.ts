@@ -13,16 +13,30 @@ describe('validateContact', () => {
   });
 
   it('requires a name', () => {
-    expect(validateContact({ ...valid, name: '  ' }).name).toMatch(/name/i);
+    expect(validateContact({ ...valid, name: '  ' }).name).toBe('Name is required');
   });
 
-  it('rejects an address without an at sign or a dot', () => {
-    expect(validateContact({ ...valid, email: 'nope' }).email).toMatch(/email/i);
-    expect(validateContact({ ...valid, email: 'nope@nope' }).email).toMatch(/email/i);
+  it('tells a missing email address apart from a malformed one', () => {
+    expect(validateContact({ ...valid, email: ' ' }).email).toBe('Email is required');
+    expect(validateContact({ ...valid, email: 'nope' }).email).toBe('Please enter a valid email address');
+    expect(validateContact({ ...valid, email: 'nope@nope' }).email).toBe(
+      'Please enter a valid email address',
+    );
   });
 
-  it('requires a message of a usable length', () => {
-    expect(validateContact({ ...valid, message: 'hi' }).message).toMatch(/message/i);
+  it('requires a subject', () => {
+    expect(validateContact({ ...valid, subject: '' }).subject).toBe('Subject is required');
+  });
+
+  it('tells a missing message apart from one that is too short', () => {
+    expect(validateContact({ ...valid, message: '   ' }).message).toBe('Message is required');
+    expect(validateContact({ ...valid, message: 'hi there' }).message).toBe(
+      'Message must be at least 10 characters',
+    );
+  });
+
+  it('accepts a message of exactly ten characters, not counting the spaces around it', () => {
+    expect(validateContact({ ...valid, message: '  0123456789  ' }).message).toBeUndefined();
   });
 });
 
