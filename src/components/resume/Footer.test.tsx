@@ -1,16 +1,25 @@
 import { render, screen, within } from '@testing-library/react';
 import Footer from './Footer';
-import { profile } from '../../data/resume';
+import { profile, roles } from '../../data/resume';
 
 function footer() {
   return screen.getByRole('contentinfo');
 }
 
 describe('Footer', () => {
-  it('signs the page off with the name and the role', () => {
+  it('signs the page off with the name, and every role beneath it as a list', () => {
     render(<Footer />);
     expect(within(footer()).getByText(profile.name)).toBeInTheDocument();
-    expect(within(footer()).getByText(profile.title)).toBeInTheDocument();
+
+    const list = within(footer()).getByRole('list', { name: 'Roles' });
+    const items = within(list).getAllByRole('listitem').map((item) => item.textContent);
+    expect(items).toEqual([
+      'Software Developer',
+      'Information Technology',
+      'System Administrator',
+      'Cybersecurity Enthusiast',
+    ]);
+    expect(items).toEqual(roles);
   });
 
   it('offers the CV one last time, as a download', () => {
@@ -25,7 +34,17 @@ describe('Footer', () => {
   // obvious way back up once the visitor has reached the end.
   it('offers a way back to the top of the page', () => {
     render(<Footer />);
-    expect(within(footer()).getByRole('link', { name: /back to top/i })).toHaveAttribute('href', '#top');
+    expect(within(footer()).getByRole('link', { name: 'Back to top' })).toHaveAttribute('href', '#top');
+  });
+
+  // A round button holding only an arrow; the name stays for anyone who
+  // cannot see it.
+  it('shows the way back up as an arrow alone', () => {
+    render(<Footer />);
+    const link = within(footer()).getByRole('link', { name: 'Back to top' });
+
+    expect(link).toHaveTextContent(/^$/);
+    expect(link.querySelector('svg[data-icon]')).toHaveAttribute('data-icon', 'arrowUp');
   });
 
   it('credits the name and the year, and says nothing about how the site was built', () => {
