@@ -10,6 +10,8 @@ export interface LanyardProps {
   imageFit?: 'cover' | 'contain';
   lanyardImage?: string | null;
   lanyardWidth?: number;
+  /** A flat strap colour. When set, the sample strap texture is not drawn. */
+  bandColor?: string | null;
   maxDpr?: number;
   eventSource?: { current: HTMLElement | null } | HTMLElement | null;
 }

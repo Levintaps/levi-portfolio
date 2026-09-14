@@ -1,0 +1,43 @@
+/* Solid accent in both themes. The accent and its ink are defined per scheme
+   in tokens.css and measured above 4.5:1 in each, so the label stays legible
+   whichever theme is on. */
+.link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-block-size: 2.75rem;
+  padding: var(--space-s) var(--space-m);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-m);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform var(--motion-fast) var(--ease),
+    box-shadow var(--motion-fast) var(--ease);
+}
+
+.link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px -8px var(--accent-glow);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.block {
+  display: flex;
+  inline-size: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link,
+  .link:hover {
+    transform: none;
+    transition: none;
+  }
+}

@@ -9,6 +9,11 @@ export interface Profile {
   initials: string;
   title: string;
   headline: string;
+  /** The hero introduction, one entry per paragraph. */
+  intro: string[];
+  /** Terms set in bold wherever the introduction mentions them. */
+  keyTerms: string[];
+  /** The introduction as one run of text, for page descriptions. */
   summary: string;
   location: string;
   timezone: string;

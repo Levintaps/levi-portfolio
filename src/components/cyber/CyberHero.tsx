@@ -1,6 +1,6 @@
 import { profile, roles } from '../../data/resume';
 import IconLink from '../common/IconLink';
-import { useTypewriter } from './useTypewriter';
+import { useTypewriter } from '../../hooks/useTypewriter';
 import styles from './CyberHero.module.css';
 
 export default function CyberHero() {

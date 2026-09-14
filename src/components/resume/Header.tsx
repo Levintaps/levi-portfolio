@@ -3,6 +3,7 @@ import { useScheme } from '../../theme/ThemeProvider';
 import { useActiveSection } from '../../hooks/useActiveSection';
 import { profile } from '../../data/resume';
 import { Icon } from '../common/icons';
+import DownloadCvLink from '../common/DownloadCvLink';
 import styles from './Header.module.css';
 
 const sections = [
@@ -74,16 +75,18 @@ export default function Header() {
         </nav>
 
         <div className={styles.actions}>
-          <a className={styles.cv} href={profile.cvPath} download>
-            Download CV
-          </a>
+          <span className={styles.cv}>
+            <DownloadCvLink />
+          </span>
           <button
             type="button"
             className={styles.iconButton}
             onClick={toggle}
             aria-label={`Switch to ${scheme === 'light' ? 'dark' : 'light'} theme`}
           >
-            <Icon name={scheme === 'light' ? 'moon' : 'sun'} />
+            {/* The icon shows the theme that is on; the label says what a
+                press will do. */}
+            <Icon name={scheme === 'light' ? 'sun' : 'moon'} />
           </button>
           <button
             type="button"
@@ -109,10 +112,9 @@ export default function Header() {
               {section.label}
             </a>
           ))}
-          <a className={styles.sheetCv} href={profile.cvPath} download>
-            Download CV
-            <Icon name="download" size={18} />
-          </a>
+          <span className={styles.sheetCv}>
+            <DownloadCvLink block />
+          </span>
         </nav>
       ) : null}
     </header>

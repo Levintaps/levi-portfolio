@@ -15,16 +15,6 @@
   justify-items: start;
 }
 
-.portrait {
-  inline-size: 100%;
-  max-inline-size: 17rem;
-  block-size: auto;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  border-radius: var(--radius-l);
-  border: 1px solid var(--line);
-}
-
 .details {
   display: grid;
   gap: var(--space-2xs);
@@ -57,30 +47,61 @@
   letter-spacing: -0.035em;
 }
 
+/* One line, always. The line holds its height whether it is showing a whole
+   role or nothing between two of them, so the tagline below never moves. */
 .roles {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-2xs);
+  align-items: center;
+  min-block-size: 1.75em;
   font-family: var(--font-mono);
   font-size: var(--step--1);
   letter-spacing: 0.02em;
   color: var(--accent);
-}
-
-.role {
   white-space: nowrap;
 }
 
-.divider {
-  color: var(--line-strong);
-  margin-inline-start: var(--space-2xs);
+.typed {
+  display: inline-flex;
+  align-items: center;
+  min-inline-size: calc(var(--longest, 24ch) + 2ch);
+}
+
+.caret {
+  display: inline-block;
+  inline-size: 2px;
+  block-size: 1.15em;
+  margin-inline-start: 2px;
+  background: currentColor;
+  animation: blink 1.05s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.srOnly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .headline {
   font-family: var(--font-display);
   font-size: var(--step-1);
   line-height: 1.35;
+  /* Twice the column's usual gap, so the tagline reads as its own line rather
+     than the first sentence of the paragraph beneath it. */
+  margin-block-end: var(--space-s);
+}
+
+.intro {
+  display: grid;
+  gap: var(--space-s);
 }
 
 .summary {
@@ -88,30 +109,20 @@
   hyphens: auto;
 }
 
+/* The stack a recruiter is scanning for, lifted from the muted body colour to
+   the full ink colour and set heavier. Ink on the ground is measured in both
+   themes, so the emphasis never trades away legibility. */
+.summary strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-m);
+  gap: var(--space-s) var(--space-m);
   margin-block-start: var(--space-xs);
-}
-
-.primary {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-s) var(--space-m);
-  border-radius: var(--radius-m);
-  text-decoration: none;
-  font-weight: 600;
-  min-block-size: 2.75rem;
-  background: var(--accent);
-  color: var(--accent-ink);
-  transition: transform var(--motion-fast) var(--ease);
-}
-
-.primary:hover {
-  transform: translateY(-2px);
 }
 
 .socials {
@@ -126,23 +137,33 @@
     padding-block: var(--space-2xl);
     /* Both columns run the full height so they can finish together. */
     align-items: stretch;
+
+    /* Where the ID card sits in its column, shared with HeroPortrait. The
+       scene is lifted so the card rests a short drop below the top of the
+       column, which leaves a stub of strap visible under the header, and the
+       column reserves the same height whether it holds the 3D badge or the
+       still photo shown before the badge loads, so the page never jumps. */
+    --badge-lift: 5rem;
+    --badge-drop: 2.5rem;
+    --badge-column: 22.5rem;
   }
 
-  /* The badge hangs far enough that the address beneath it cannot move up
-     without being covered, so the two columns are squared off at the foot
-     instead: the name and the prose stay at the top, and the download drops
-     to the baseline the social buttons already sit on. */
+  /* The name drops to meet the card. The cap height starts a little below
+     the top of the heading's box, so the box sits that little bit higher. */
   .text {
+    padding-block-start: calc(var(--badge-drop) - 0.75rem);
     align-content: initial;
     grid-template-rows: repeat(4, auto) 1fr;
   }
 
+  /* The button and the social links finish on the same line as the address
+     beside them. */
   .actions {
     align-self: end;
   }
 
-  /* One measure for both, so the column has a straight right edge rather
-     than stepping in and out between the headline and the summary. */
+  /* One measure for the tagline and both paragraphs, so the column keeps a
+     straight right edge. */
   .headline,
   .summary {
     max-inline-size: 42rem;
@@ -152,5 +173,11 @@
      alignment only applies once the measure is wide enough to carry it. */
   .summary {
     text-align: justify;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret {
+    animation: none;
   }
 }

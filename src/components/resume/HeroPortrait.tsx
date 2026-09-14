@@ -1,12 +1,15 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { profile } from '../../data/resume';
+import { useScheme } from '../../theme/ThemeProvider';
+import { bandColorFor } from '../lanyard/bandColor';
 import styles from './HeroPortrait.module.css';
 
 const Lanyard = lazy(() => import('../lanyard/Lanyard'));
 
 function StaticPortrait() {
   return (
-    <picture>
+    <div className={styles.still}>
+      <picture>
       <source srcSet={profile.portrait.avif} type="image/avif" />
       <source srcSet={profile.portrait.webp} type="image/webp" />
       <img
@@ -17,7 +20,27 @@ function StaticPortrait() {
         height={profile.portrait.height}
         fetchPriority="high"
       />
-    </picture>
+      </picture>
+    </div>
+  );
+}
+
+// Only mounted once the badge is allowed to run, so the theme is read inside
+// the page's provider and never by the still photo.
+function ThemedLanyard() {
+  const { scheme } = useScheme();
+
+  return (
+    <Lanyard
+      position={[0, -0.3, 15.9]}
+      gravity={[0, -40, 0]}
+      fov={22}
+      frontImage="/images/id-card.jpg"
+      imageFit="cover"
+      maxDpr={1.5}
+      bandColor={bandColorFor(scheme)}
+      lanyardWidth={0.55}
+    />
   );
 }
 
@@ -87,14 +110,7 @@ export default function HeroPortrait() {
       <div className={styles.spacer} aria-hidden="true" />
       <div className={styles.overlay}>
         <Suspense fallback={null}>
-          <Lanyard
-            position={[0, -0.3, 15.9]}
-            gravity={[0, -40, 0]}
-            fov={22}
-            frontImage="/images/id-card.jpg"
-            imageFit="cover"
-            maxDpr={1.5}
-          />
+          <ThemedLanyard />
         </Suspense>
       </div>
     </>

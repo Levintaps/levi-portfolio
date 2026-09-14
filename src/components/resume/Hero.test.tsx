@@ -1,6 +1,18 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import Hero from './Hero';
 import { profile, roles } from '../../data/resume';
+
+function aside(): HTMLElement {
+  const details = screen.getByText(profile.location).closest('ul');
+  if (!details?.parentElement) throw new Error('the contact details have no column around them');
+  return details.parentElement;
+}
+
+function typedLine(container: HTMLElement): HTMLElement {
+  const typed = container.querySelector<HTMLElement>('[data-typed]');
+  if (!typed) throw new Error('the roles are not being typed');
+  return typed;
+}
 
 describe('Hero', () => {
   it('renders the name as the only level one heading', () => {
@@ -9,10 +21,56 @@ describe('Hero', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(profile.name);
   });
 
-  it('prints every role from the resume headline', () => {
+  // The typed line changes every few hundred milliseconds, so it is hidden
+  // from assistive technology, which hears the whole list once instead.
+  it('tells assistive technology every role at once', () => {
+    const { container } = render(<Hero />);
+    expect(screen.getByText(roles.join(', '))).toBeInTheDocument();
+    expect(typedLine(container)).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('types the roles out one at a time instead of listing them', () => {
+    vi.useFakeTimers();
+    try {
+      const { container } = render(<Hero />);
+      const line = typedLine(container);
+      expect(line).toHaveTextContent('');
+
+      act(() => {
+        vi.advanceTimersByTime(roles[0].length * 80 + 100);
+      });
+      expect(line).toHaveTextContent(roles[0]);
+
+      for (const role of roles.slice(1)) {
+        expect(line.textContent).not.toContain(role);
+      }
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('reserves the width of the longest role, so typing never reflows the line', () => {
+    const { container } = render(<Hero />);
+    const longest = Math.max(...roles.map((role) => role.length));
+    expect(typedLine(container).style.getPropertyValue('--longest')).toBe(`${longest}ch`);
+  });
+
+  it('splits the introduction into short paragraphs', () => {
     render(<Hero />);
-    for (const role of roles) {
-      expect(screen.getByText(role)).toBeInTheDocument();
+    expect(profile.intro.length).toBeGreaterThanOrEqual(2);
+
+    for (const paragraph of profile.intro) {
+      const node = screen.getByText((_, element) => element?.tagName === 'P' && element.textContent === paragraph);
+      expect(node).toBeInTheDocument();
+    }
+  });
+
+  it('makes the key technologies easy to spot', () => {
+    const { container } = render(<Hero />);
+    const marked = [...container.querySelectorAll('strong')].map((node) => node.textContent);
+
+    for (const term of profile.keyTerms) {
+      expect(marked).toContain(term);
     }
   });
 
@@ -21,6 +79,15 @@ describe('Hero', () => {
     const link = screen.getByRole('link', { name: /download cv/i });
     expect(link).toHaveAttribute('href', profile.cvPath);
     expect(link).toHaveAttribute('download');
+  });
+
+  it('sets the social links beside the download button', () => {
+    render(<Hero />);
+    const row = screen.getByRole('link', { name: /download cv/i }).parentElement as HTMLElement;
+
+    for (const social of profile.socials) {
+      expect(within(row).getByRole('link', { name: social.label })).toBeInTheDocument();
+    }
   });
 
   it('carries no second call to action', () => {
@@ -34,22 +101,15 @@ describe('Hero', () => {
   });
 
   it('puts the location and the email under the portrait', () => {
-    const { container } = render(<Hero />);
-    const aside = container.querySelector('picture')?.parentElement;
-    expect(aside).not.toBeNull();
+    render(<Hero />);
+    const column = within(aside());
 
-    const scope = within(aside as HTMLElement);
-    expect(scope.getByText(profile.location)).toBeInTheDocument();
-    expect(scope.getByRole('link', { name: profile.email })).toHaveAttribute(
+    expect(column.getByAltText(profile.portrait.alt)).toBeInTheDocument();
+    expect(column.getByText(profile.location)).toBeInTheDocument();
+    expect(column.getByRole('link', { name: profile.email })).toHaveAttribute(
       'href',
       `mailto:${profile.email}`,
     );
-  });
-
-  it('groups the social links with the contact details', () => {
-    const { container } = render(<Hero />);
-    const aside = container.querySelector('picture')?.parentElement;
-    expect(within(aside as HTMLElement).getByRole('link', { name: /github/i })).toBeInTheDocument();
   });
 
   it('serves the portrait with modern formats and explicit dimensions', () => {

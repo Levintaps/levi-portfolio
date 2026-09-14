@@ -112,6 +112,21 @@ describe('Header', () => {
     }
   });
 
+  // The icon names the theme that is on, while the label names the action,
+  // so a sighted visitor reads the state and a screen reader hears the switch.
+  it('shows the theme that is on, not the one it would switch to', async () => {
+    const user = userEvent.setup();
+    renderHeader();
+
+    const toggle = screen.getByRole('button', { name: /switch to dark theme/i });
+    expect(toggle.querySelector('svg')).toHaveAttribute('data-icon', 'sun');
+
+    await user.click(toggle);
+
+    const after = screen.getByRole('button', { name: /switch to light theme/i });
+    expect(after.querySelector('svg')).toHaveAttribute('data-icon', 'moon');
+  });
+
   it('toggles the scheme and records the choice', async () => {
     const user = userEvent.setup();
     renderHeader();

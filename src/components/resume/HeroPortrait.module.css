@@ -8,9 +8,24 @@
   border: 1px solid var(--line);
 }
 
+/* The still photo takes the badge's place before the badge loads, and for
+   anyone the badge never runs for. On a wide screen it occupies exactly the
+   column the badge will, with the photo where the card comes to rest, so
+   swapping one for the other moves nothing on the page. */
+.still {
+  display: block;
+}
+
 .spacer {
   inline-size: 14rem;
-  block-size: 27.5rem;
+  block-size: var(--badge-column, 27.5rem);
+}
+
+@media (min-width: 48rem) {
+  .still {
+    block-size: var(--badge-column);
+    padding-block-start: var(--badge-drop);
+  }
 }
 
 /* Centred on the portrait column so the badge always rests over its own
@@ -21,7 +36,7 @@
   --lanyard-height: 54rem;
   position: absolute;
   inset-inline: -58rem;
-  inset-block-start: -8rem;
+  inset-block-start: calc(-8rem - var(--badge-lift, 0rem));
   block-size: 54rem;
   z-index: 10;
   pointer-events: none;

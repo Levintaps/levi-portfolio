@@ -114,6 +114,18 @@ describe('resume data', () => {
     expect(vanima?.demoUrl).toBeUndefined();
   });
 
+  it('keeps the page description in step with the hero introduction', () => {
+    expect(profile.intro.length).toBeGreaterThanOrEqual(2);
+    expect(profile.summary).toBe(profile.intro.join(' '));
+  });
+
+  it('only highlights terms the introduction actually mentions', () => {
+    const text = profile.intro.join(' ');
+    for (const term of profile.keyTerms) {
+      expect(text).toMatch(new RegExp(`\\b${term}\\b`));
+    }
+  });
+
   it('never leaves an achievement as a bare heading', () => {
     for (const achievement of achievements) {
       expect(achievement.title.trim().length).toBeGreaterThan(0);

@@ -1,5 +1,5 @@
 import { profile } from '../../data/resume';
-import { Icon } from '../common/icons';
+import DownloadCvLink from '../common/DownloadCvLink';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -11,10 +11,7 @@ export default function Footer() {
           <p className={styles.role}>{profile.title}</p>
         </div>
 
-        <a className={styles.cv} href={profile.cvPath} download>
-          Download CV
-          <Icon name="download" size={18} />
-        </a>
+        <DownloadCvLink />
       </div>
 
       <p className={styles.credit}>

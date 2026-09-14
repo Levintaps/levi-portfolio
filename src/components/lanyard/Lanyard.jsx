@@ -31,6 +31,7 @@ export default function Lanyard({
   imageFit = 'cover',
   lanyardImage = null,
   lanyardWidth = 1,
+  bandColor = null,
   eventSource = null,
   maxDpr = 2
 }) {
@@ -64,6 +65,7 @@ export default function Lanyard({
               imageFit={imageFit}
               lanyardImage={lanyardImage}
               lanyardWidth={lanyardWidth}
+              bandColor={bandColor}
             />
           </Physics>
         </Suspense>
@@ -171,7 +173,8 @@ function Band({
   backImage = null,
   imageFit = 'cover',
   lanyardImage = null,
-  lanyardWidth = 1
+  lanyardWidth = 1,
+  bandColor = null
 }) {
   const band = useRef(),
     fixed = useRef(),
@@ -338,12 +341,16 @@ function Band({
       </group>
       <mesh ref={band}>
         <meshLineGeometry />
+        {/* A supplied colour draws a plain strap in that colour. The sample
+            texture is solid black with a logo printed on it, and a black
+            texture stays black whatever colour it is multiplied by, so it is
+            dropped rather than tinted. */}
         <meshLineMaterial
-          color="white"
+          color={bandColor ?? 'white'}
           depthTest={false}
           resolution={[size.width, size.height]}
-          useMap
-          map={texture}
+          useMap={bandColor ? 0 : 1}
+          map={bandColor ? null : texture}
           repeat={[-4, 1]}
           lineWidth={lanyardWidth}
         />

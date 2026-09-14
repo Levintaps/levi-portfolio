@@ -23,13 +23,23 @@ export const projectsLead = 'Client platforms, a capstone project, and things I 
 
 export const achievementsLead = "A short list of results I'm proud of, on and off the board.";
 
+// Two short paragraphs rather than one long one: who you are and what you
+// have shipped, then the stack and the infrastructure behind it.
+const intro = [
+  'Information Technology graduate and full-stack developer who has shipped web, mobile and IoT-integrated applications for real clients.',
+  'Comfortable across the stack in React, TypeScript, Java and Firebase, and equally at home in the infrastructure underneath it after a corporate IT support internship covering systems administration, Active Directory and enterprise networking.',
+];
+
 export const profile: Profile = {
   name: 'Jayson Levin Tapia',
   initials: 'JLT',
   title: 'Software Developer',
   headline: 'I build production systems end to end, from database and API to the interface people actually use.',
-  summary:
-    'Information Technology graduate and full-stack developer who has shipped web, mobile and IoT-integrated applications for real clients. Comfortable across the stack in React, TypeScript, Java and Firebase, and equally at home in the infrastructure underneath it after a corporate IT support internship covering systems administration, Active Directory and enterprise networking.',
+  intro,
+  // Edit these to change what a skimming reader sees in bold. Each one must
+  // appear, spelled exactly, somewhere in the introduction above.
+  keyTerms: ['React', 'TypeScript', 'Java', 'Firebase', 'Active Directory'],
+  summary: intro.join(' '),
   location: 'Antipolo City, Rizal, Philippines',
   timezone: 'Philippine Standard Time, UTC+8',
   email: 'levintapia.work@gmail.com',

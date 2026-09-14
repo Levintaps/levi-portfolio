@@ -47,6 +47,7 @@ export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
       strokeLinejoin="round"
       aria-hidden="true"
       focusable="false"
+      data-icon={name}
     >
       <path d={paths[name]} />
     </svg>
