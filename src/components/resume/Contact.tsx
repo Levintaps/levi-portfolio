@@ -174,7 +174,7 @@ export default function Contact() {
     extra?: ReactNode,
   ) {
     return (
-      <div className={styles.control} data-invalid={errors[field] ? true : undefined}>
+      <div className={styles.control}>
         {input}
         <label htmlFor={`contact-${field}`}>{label}</label>
         <span className={styles.icon} aria-hidden="true">
@@ -372,7 +372,7 @@ export default function Contact() {
               )}
             </button>
 
-            {needsFixing ? <p className={styles.warning}>Please fix the highlighted fields.</p> : null}
+            {needsFixing ? <p className={styles.warning}>Please check the fields above.</p> : null}
           </div>
         </form>
       </div>

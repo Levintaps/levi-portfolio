@@ -189,11 +189,11 @@ describe('Contact', () => {
     render(<Contact />);
     advance(8000);
     await user.click(screen.getByRole('button', { name: /send message/i }));
-    expect(screen.getByText('Please fix the highlighted fields.')).toBeInTheDocument();
+    expect(screen.getByText('Please check the fields above.')).toBeInTheDocument();
 
     await fillValidForm(user);
 
-    expect(screen.queryByText('Please fix the highlighted fields.')).toBeNull();
+    expect(screen.queryByText('Please check the fields above.')).toBeNull();
   });
 
   it('counts the message against its limit as it is typed', async () => {

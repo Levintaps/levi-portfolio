@@ -231,8 +231,8 @@ a.detailValue:focus-visible {
 /* Focus: the border takes the accent and a soft ring of it fades in around
    the field. The inner ring doubles the border so the focus is plain to see,
    the outer one is the glow. Keyed to the same focus-within as the label and
-   the icon, so all three always change together. A field with an error keeps
-   the same calm border; the message under it says what to fix. */
+   the icon, so all three always change together. A field with an error looks
+   like any other; only the message under it says what to fix. */
 .control:focus-within input,
 .control:focus-within textarea {
   border-color: var(--accent);
@@ -291,10 +291,6 @@ a.detailValue:focus-visible {
   color: var(--accent);
 }
 
-.control[data-invalid] label {
-  color: var(--danger);
-}
-
 .icon {
   position: absolute;
   inset-block-start: calc(var(--rest-y) - 9px);
@@ -311,10 +307,6 @@ a.detailValue:focus-visible {
 
 .control:focus-within .icon {
   color: var(--accent);
-}
-
-.control[data-invalid] .icon {
-  color: var(--danger);
 }
 
 .counter {
