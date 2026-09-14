@@ -15,9 +15,9 @@ describe('DownloadCvLink', () => {
     expect(link).toHaveAttribute('download');
   });
 
-  // The header bar, the menu sheet, the hero and the footer each offer the
-  // same file. They used to be two different buttons, one outlined and one
-  // solid, which read as two different actions.
+  // The hero and the footer each offer the same file. They used to be two
+  // different buttons, one outlined and one solid, which read as two
+  // different actions. The header no longer carries one at all.
   it('looks the same everywhere it appears', async () => {
     const user = userEvent.setup();
     localStorage.clear();
@@ -31,7 +31,7 @@ describe('DownloadCvLink', () => {
     await user.click(screen.getByRole('button', { name: /open menu/i }));
 
     const links = [...container.querySelectorAll<HTMLAnchorElement>(`a[href="${profile.cvPath}"]`)];
-    expect(links).toHaveLength(4);
+    expect(links).toHaveLength(2);
 
     const baseClasses = new Set(links.map((link) => link.classList[0]));
     expect(baseClasses.size).toBe(1);

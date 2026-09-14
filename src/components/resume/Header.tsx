@@ -3,7 +3,6 @@ import { useScheme } from '../../theme/ThemeProvider';
 import { useActiveSection } from '../../hooks/useActiveSection';
 import { profile } from '../../data/resume';
 import { Icon } from '../common/icons';
-import DownloadCvLink from '../common/DownloadCvLink';
 import styles from './Header.module.css';
 
 const sections = [
@@ -75,9 +74,6 @@ export default function Header() {
         </nav>
 
         <div className={styles.actions}>
-          <span className={styles.cv}>
-            <DownloadCvLink />
-          </span>
           <button
             type="button"
             className={styles.iconButton}
@@ -112,9 +108,6 @@ export default function Header() {
               {section.label}
             </a>
           ))}
-          <span className={styles.sheetCv}>
-            <DownloadCvLink block />
-          </span>
         </nav>
       ) : null}
     </header>

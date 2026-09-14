@@ -62,16 +62,6 @@
   gap: var(--space-xs);
 }
 
-/* The button itself is shared; the header only decides where it shows. It
-   leaves the bar on a phone and appears in the menu sheet instead. */
-.cv {
-  display: none;
-}
-
-.sheetCv {
-  display: block;
-  margin-block-start: var(--space-s);
-}
 
 .iconButton {
   display: grid;
@@ -109,10 +99,6 @@
 }
 
 @media (min-width: 48rem) {
-  .cv {
-    display: inline-flex;
-  }
-
   .desktopNav {
     display: flex;
   }

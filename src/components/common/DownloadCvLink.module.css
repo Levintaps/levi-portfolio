@@ -29,11 +29,6 @@
   outline-offset: 3px;
 }
 
-.block {
-  display: flex;
-  inline-size: 100%;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .link,
   .link:hover {

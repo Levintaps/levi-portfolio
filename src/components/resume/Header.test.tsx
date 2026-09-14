@@ -36,27 +36,16 @@ describe('Header', () => {
     expect(hrefs.indexOf('#projects')).toBeLessThan(hrefs.indexOf('#experience'));
   });
 
-  // Like the desktop nav above, this link is display:none under jsdom, which
-  // never matches the min-width query, so its structure is asserted instead.
-  it('carries the CV, so it is reachable from anywhere on the page', () => {
-    const { container } = renderHeader();
-    const bar = container.querySelector('header > div');
-    const cv = bar?.querySelector(`a[href="${profile.cvPath}"]`);
-
-    expect(cv).not.toBeNull();
-    expect(cv).toHaveAttribute('download');
-    expect(cv).toHaveTextContent(/download cv/i);
-  });
-
-  it('offers the CV inside the menu as well, where the bar has no room', async () => {
+  // The hero's button sits directly under the header, so a second copy in
+  // the bar, or in the menu, only repeated it.
+  it('leaves the CV to the page, in the bar and in the menu', async () => {
     const user = userEvent.setup();
-    renderHeader();
-    await user.click(screen.getByRole('button', { name: /open menu/i }));
+    const { container } = renderHeader();
+    expect(container.querySelector(`header a[href="${profile.cvPath}"]`)).toBeNull();
 
+    await user.click(screen.getByRole('button', { name: /open menu/i }));
     const sheet = screen.getByRole('navigation', { name: /mobile/i });
-    expect(within(sheet).getByRole('link', { name: /download cv/i })).toHaveAttribute(
-      'download',
-    );
+    expect(within(sheet).queryByRole('link', { name: /download cv/i })).toBeNull();
   });
 
   // A page nearly six thousand pixels tall needs to say where the reader is.
