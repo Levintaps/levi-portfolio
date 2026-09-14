@@ -1,0 +1,87 @@
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+  background: color-mix(in srgb, var(--ground) 78%, transparent);
+  backdrop-filter: blur(6px);
+  animation: fade var(--motion-base) var(--ease) both;
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  inline-size: min(100%, 30rem);
+  max-block-size: min(80dvh, 36rem);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+  animation: rise var(--motion-slow) var(--ease) both;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-m);
+  padding: var(--space-s) var(--space-s) var(--space-s) var(--space-m);
+  border-block-end: 1px solid var(--line);
+}
+
+.title {
+  font-size: var(--step-1);
+}
+
+.close {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--radius-m);
+  color: var(--ink-muted);
+}
+
+.close:hover {
+  color: var(--ink);
+  background: var(--surface-sunken);
+}
+
+/* Long content scrolls inside the sheet, never the page behind it. */
+.body {
+  overflow-y: auto;
+  padding: var(--space-m);
+  overscroll-behavior: contain;
+}
+
+.srOnly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  inset-inline-start: 0;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-s));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim,
+  .sheet {
+    animation: none;
+  }
+}

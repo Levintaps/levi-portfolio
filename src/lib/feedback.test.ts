@@ -1,5 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
-import { MAX_MESSAGE_LENGTH, summarise, toDate, validateMessage } from './feedback';
+import { MAX_MESSAGE_LENGTH, MAX_NAME_LENGTH, summarise, toDate, toMessage, validateMessage } from './feedback';
 import type { Rating } from './feedback';
 
 function rating(value: number, id = String(value)): Rating {
@@ -76,5 +76,37 @@ describe('toDate', () => {
 
   it('returns null for undefined', () => {
     expect(toDate(undefined)).toBeNull();
+  });
+});
+
+describe('toMessage', () => {
+  it('reads the message and when it was left', () => {
+    const when = Timestamp.fromDate(new Date('2026-02-01T00:00:00Z'));
+    const message = toMessage('a', { message: 'Clean work.', timestamp: when });
+
+    expect(message.id).toBe('a');
+    expect(message.message).toBe('Clean work.');
+    expect(message.createdAt?.toISOString()).toBe('2026-02-01T00:00:00.000Z');
+  });
+
+  // Nothing writes a name with a message today. A stored one is shown if it
+  // ever appears; an absent or blank one leaves the bubble unlabelled.
+  it('carries a sender name when one was stored', () => {
+    expect(toMessage('a', { message: 'Hi', name: '  Ana  ' }).name).toBe('Ana');
+  });
+
+  it('leaves the name out when it is missing, blank or not text', () => {
+    expect(toMessage('a', { message: 'Hi' })).not.toHaveProperty('name');
+    expect(toMessage('b', { message: 'Hi', name: '   ' })).not.toHaveProperty('name');
+    expect(toMessage('c', { message: 'Hi', name: 42 })).not.toHaveProperty('name');
+  });
+
+  it('never trusts a stored name to be short', () => {
+    const name = toMessage('a', { message: 'Hi', name: 'x'.repeat(500) }).name ?? '';
+    expect(name.length).toBe(MAX_NAME_LENGTH);
+  });
+
+  it('treats a message that is not text as empty', () => {
+    expect(toMessage('a', { message: 99 }).message).toBe('');
   });
 });

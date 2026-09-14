@@ -41,6 +41,17 @@ describe('Reviews', () => {
     expect(screen.getByText(/2 ratings/i)).toBeInTheDocument();
   });
 
+  it('breaks the ratings down by star level, worked out from the ratings', async () => {
+    render(<Reviews />);
+    const breakdown = await screen.findByRole('list', { name: /rating breakdown/i });
+    const rows = within(breakdown).getAllByRole('listitem');
+
+    expect(rows).toHaveLength(5);
+    expect(rows[0]).toHaveTextContent('50%');
+    expect(rows[1]).toHaveTextContent('50%');
+    expect(rows[2]).toHaveTextContent('0%');
+  });
+
   it('names the people who rated, and what they gave', async () => {
     render(<Reviews />);
     const raters = await screen.findByRole('list', { name: /recent ratings/i });

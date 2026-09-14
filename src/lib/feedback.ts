@@ -15,6 +15,8 @@ export interface FeedbackMessage {
   id: string;
   message: string;
   createdAt: Date | null;
+  /** The sender, only when a name was stored with the message. */
+  name?: string;
 }
 
 export interface Rating {
@@ -83,14 +85,22 @@ export async function fetchMessages(): Promise<FeedbackMessage[]> {
     query(collection(db, 'messages'), orderBy('timestamp', 'desc'), limit(60)),
   );
 
-  return snapshot.docs.map((document) => {
-    const data = document.data();
-    return {
-      id: document.id,
-      message: typeof data.message === 'string' ? data.message : '',
-      createdAt: toDate(data.timestamp),
-    };
-  });
+  return snapshot.docs.map((document) => toMessage(document.id, document.data()));
+}
+
+/**
+ * Turns a stored message document into a message, trusting none of its
+ * fields: a missing or blank name is left off rather than shown empty, and a
+ * stored name is cut to the same length the rating form allows.
+ */
+export function toMessage(id: string, data: Record<string, unknown>): FeedbackMessage {
+  const name = typeof data.name === 'string' ? data.name.trim().slice(0, MAX_NAME_LENGTH) : '';
+  return {
+    id,
+    message: typeof data.message === 'string' ? data.message : '',
+    createdAt: toDate(data.timestamp),
+    ...(name ? { name } : {}),
+  };
 }
 
 export async function fetchRatings(): Promise<Rating[]> {

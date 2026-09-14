@@ -16,7 +16,9 @@ import { hasSubmitted, markSubmitted } from '../../lib/submissionGuard';
 import { useReveal } from '../../hooks/useReveal';
 import SectionHeading from '../common/SectionHeading';
 import Stars from '../common/Stars';
-import MessageBubbles from './MessageBubbles';
+import BubbleAquarium from './BubbleAquarium';
+import RatingBreakdown from './RatingBreakdown';
+import RecentRaters from './RecentRaters';
 import StarInput from './StarInput';
 import styles from './Reviews.module.css';
 
@@ -25,7 +27,6 @@ import styles from './Reviews.module.css';
 // the fetch — and the SDK chunk it pulls in — starts well before the visitor
 // actually scrolls this section into view.
 const FETCH_ROOT_MARGIN = '600px 0px';
-const RECENT_RATINGS = 4;
 
 type Status = 'loading' | 'ready' | 'unavailable';
 
@@ -52,7 +53,6 @@ export default function Reviews() {
   const [mine, setMine] = useState<string | undefined>(undefined);
 
   const summary = useMemo(() => summarise(ratings), [ratings]);
-  const recent = ratings.slice(0, RECENT_RATINGS);
 
   useEffect(() => {
     if (!revealed) return;
@@ -153,30 +153,25 @@ export default function Reviews() {
               <p className={styles.muted}>Ratings are unavailable right now.</p>
             ) : (
               <>
-                <p className={styles.average}>
-                  {status === 'ready' ? summary.average.toFixed(1) : '—'}
-                </p>
-                <Stars value={summary.average} size={18} />
-                <p className={styles.count}>
-                  {status === 'ready'
-                    ? `${summary.count} ${summary.count === 1 ? 'rating' : 'ratings'}`
-                    : ''}
-                </p>
+                <div className={styles.overall}>
+                  <p className={styles.average}>
+                    {status === 'ready' ? summary.average.toFixed(1) : '—'}
+                  </p>
+                  <div className={styles.overallMeta}>
+                    <Stars value={summary.average} size={16} />
+                    <p className={styles.count}>
+                      {status === 'ready'
+                        ? `${summary.count} ${summary.count === 1 ? 'rating' : 'ratings'}`
+                        : ''}
+                    </p>
+                  </div>
+                </div>
+                <RatingBreakdown distribution={summary.distribution} count={summary.count} />
               </>
             )}
           </div>
 
-          {recent.length > 0 ? (
-            <ul className={styles.raters} aria-label="Recent ratings">
-              {recent.map((rating) => (
-                <li key={rating.id} className={styles.rater}>
-                  <span className={styles.raterName}>{rating.name}</span>
-                  <Stars value={rating.rating} size={12} />
-                  <span className={styles.srOnly}>{Math.round(rating.rating)} out of 5</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
+          <RecentRaters ratings={ratings} />
 
           {ratingDone ? (
             <p className={styles.thanks}>Thank you for rating this portfolio.</p>
@@ -211,7 +206,11 @@ export default function Reviews() {
         </div>
 
         <div className={styles.messageSide}>
-          <MessageBubbles messages={notes} pin={mine} />
+          {/* The tank takes whatever height the rating column leaves beside the
+              message form, so the two sides of the section finish level. */}
+          <div className={styles.tankFrame}>
+            <BubbleAquarium messages={notes} pin={mine} />
+          </div>
 
           {messageDone ? (
             <p className={styles.thanks}>Thank you for the message.</p>

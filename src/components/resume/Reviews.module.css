@@ -10,28 +10,48 @@
   gap: var(--space-xl);
 }
 
-.ratingSide,
-.messageSide {
+.ratingSide {
   display: grid;
   gap: var(--space-m);
   align-content: start;
 }
 
+/* The message column is a stack: the tank grows into whatever height the
+   rating column sets, and the form keeps its own height beneath it. */
+.messageSide {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+
+/* Sized to its content: the average beside its stars and count, then the
+   breakdown bars. */
 .summary {
   display: grid;
-  gap: var(--space-2xs);
-  justify-items: start;
-  align-content: start;
-  padding: var(--space-m);
+  gap: var(--space-s);
+  padding: var(--space-s) var(--space-m) var(--space-m);
   border: 1px solid var(--line);
   border-radius: var(--radius-m);
   background: var(--surface);
 }
 
+.overall {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+}
+
 .average {
   font-family: var(--font-display);
-  font-size: var(--step-4);
+  font-size: var(--step-3);
+  font-weight: 600;
   line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.overallMeta {
+  display: grid;
+  gap: 2px;
 }
 
 .count,
@@ -41,42 +61,11 @@
   color: var(--ink-faint);
 }
 
-.raters {
+.tankFrame {
   display: grid;
-  gap: var(--space-xs);
-}
-
-.rater {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-s);
-  padding-block-end: var(--space-xs);
-  border-block-end: 1px solid var(--line);
-}
-
-.rater:last-child {
-  border-block-end: none;
-  padding-block-end: 0;
-}
-
-.raterName {
-  font-size: var(--step--1);
-  color: var(--ink-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.srOnly {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  inset-inline-start: 0;
+  grid-template-rows: minmax(0, 1fr);
+  flex: 1 1 auto;
+  block-size: 22rem;
 }
 
 .fields {
@@ -146,8 +135,15 @@
 
 @media (min-width: 48rem) {
   .layout {
-    grid-template-columns: 18rem 1fr;
+    grid-template-columns: 18rem minmax(0, 1fr);
     gap: var(--space-xl);
+  }
+
+  /* Beside the rating column the tank takes the spare height instead of a
+     fixed one, never less than this. */
+  .tankFrame {
+    block-size: auto;
+    min-block-size: 24rem;
   }
 
   .section {
