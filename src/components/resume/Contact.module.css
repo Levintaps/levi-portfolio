@@ -188,13 +188,8 @@ a.detailValue:focus-visible {
   --height: 3.5rem;
   /* Where the label rests: the middle of a single line field. */
   --rest-y: calc(var(--height) / 2);
-  --tone: var(--accent);
 
   position: relative;
-}
-
-.control[data-invalid] {
-  --tone: var(--danger);
 }
 
 .control input,
@@ -233,21 +228,17 @@ a.detailValue:focus-visible {
   border-color: var(--ink-faint);
 }
 
-.control[data-invalid] input,
-.control[data-invalid] textarea {
-  border-color: var(--danger);
-}
-
-/* Focus: the border takes the tone and a soft ring of it fades in around the
-   field. The inner ring doubles the border so the focus is plain to see, the
-   outer one is the glow. Keyed to the same focus-within as the label and the
-   icon, so all three always change together. */
+/* Focus: the border takes the accent and a soft ring of it fades in around
+   the field. The inner ring doubles the border so the focus is plain to see,
+   the outer one is the glow. Keyed to the same focus-within as the label and
+   the icon, so all three always change together. A field with an error keeps
+   the same calm border; the message under it says what to fix. */
 .control:focus-within input,
 .control:focus-within textarea {
-  border-color: var(--tone);
+  border-color: var(--accent);
   box-shadow:
-    0 0 0 1px var(--tone),
-    0 0 0 5px color-mix(in srgb, var(--tone) 18%, transparent);
+    0 0 0 1px var(--accent),
+    0 0 0 5px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .control label {
@@ -297,7 +288,7 @@ a.detailValue:focus-visible {
 }
 
 .control:focus-within label {
-  color: var(--tone);
+  color: var(--accent);
 }
 
 .control[data-invalid] label {
@@ -318,9 +309,12 @@ a.detailValue:focus-visible {
   inset-block-start: calc(0.95rem + 0.75em - 9px);
 }
 
-.control:focus-within .icon,
+.control:focus-within .icon {
+  color: var(--accent);
+}
+
 .control[data-invalid] .icon {
-  color: var(--tone);
+  color: var(--danger);
 }
 
 .counter {
