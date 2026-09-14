@@ -1,5 +1,15 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import type { ReactNode } from 'react';
+import { flushSync } from 'react-dom';
+import { revealScheme } from './revealScheme';
 import { readStoredScheme, resolveScheme, storeScheme, type Scheme } from './scheme';
 
 interface ThemeValue {
@@ -17,16 +27,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         window.matchMedia('(prefers-color-scheme: dark)').matches,
     ),
   );
+  // The scheme the next toggle starts from. Moved on at the press itself, so
+  // a second press before the first change lands still goes the other way.
+  const current = useRef(scheme);
 
-  useEffect(() => {
+  // Set during the commit rather than after it, so a change flushed inside a
+  // view transition has its colours on the page before the browser takes its
+  // second photograph.
+  useLayoutEffect(() => {
     document.documentElement.setAttribute('data-scheme', scheme);
   }, [scheme]);
 
   const toggle = useCallback(() => {
-    setScheme((current) => {
-      const next: Scheme = current === 'light' ? 'dark' : 'light';
-      storeScheme(next);
-      return next;
+    const next: Scheme = current.current === 'light' ? 'dark' : 'light';
+    current.current = next;
+    storeScheme(next);
+    revealScheme(() => {
+      flushSync(() => setScheme(next));
     });
   }, []);
 

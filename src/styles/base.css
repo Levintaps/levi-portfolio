@@ -38,3 +38,19 @@ p {
   background: var(--accent);
   color: var(--accent-ink);
 }
+
+/* The theme change (src/theme/revealScheme.ts): the new theme grows out from
+   the top left corner. The browser's own crossfade is switched off so the
+   circle alone carries the change, and while it runs no element eases its
+   colours, so the new theme is already whole inside the circle. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root[data-theme-reveal] *,
+:root[data-theme-reveal] *::before,
+:root[data-theme-reveal] *::after {
+  transition: none !important;
+}
