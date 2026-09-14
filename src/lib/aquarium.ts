@@ -1,18 +1,35 @@
 import type { FeedbackMessage } from './feedback';
 
 /**
- * The tank is a grid of cells, one bubble to a cell, so bubbles drift within
- * their own patch and never pile on top of each other. It holds a few bubbles
- * fewer than it has cells, which leaves room to breathe.
+ * How the tank is sized for a screen: how many bubbles it may hold at most,
+ * the readable range of bubble sizes, and the least height the tank is given.
+ * The count that actually fits is worked out from the tank's width.
  */
-export interface AquariumLayout {
-  columns: number;
-  rows: number;
-  capacity: number;
+export interface TankLayout {
+  maxBubbles: number;
+  minDiameterRem: number;
+  maxDiameterRem: number;
+  /** Matches the tank's min-block-size, which BubbleAquarium sets from it. */
+  floorHeightRem: number;
 }
 
-export const WIDE_LAYOUT: AquariumLayout = { columns: 4, rows: 3, capacity: 10 };
-export const NARROW_LAYOUT: AquariumLayout = { columns: 2, rows: 3, capacity: 5 };
+export const WIDE_TANK: TankLayout = {
+  maxBubbles: 10,
+  minDiameterRem: 5.25,
+  maxDiameterRem: 6.75,
+  floorHeightRem: 16,
+};
+
+export const NARROW_TANK: TankLayout = {
+  maxBubbles: 6,
+  minDiameterRem: 5.25,
+  maxDiameterRem: 6.5,
+  floorHeightRem: 22,
+};
+
+/** The share of the tank's floor area the bubbles may cover between them. */
+const COVER = 0.38;
+const MIN_BUBBLES = 3;
 
 /** How long a bubble floats before it pops, when there are more to show. */
 export const LIFE_MIN_MS = 8000;
@@ -23,21 +40,11 @@ export const POP_MS = 360;
 const SHAPES = 3;
 
 export interface Bubble {
-  /** Unique per appearance, so a returning message arrives with fresh motion. */
+  /** Unique per appearance, so a returning message arrives as a new bubble. */
   key: number;
   message: FeedbackMessage;
-  cell: number;
   /** 0 to 1 across the readable size range. */
   size: number;
-  /** -1 to 1: where in its cell's spare room the bubble rests. */
-  offsetX: number;
-  offsetY: number;
-  /** 0 to 1: how far it wanders from that resting place. */
-  driftX: number;
-  driftY: number;
-  floatSeconds: number;
-  /** Negative, so each bubble joins its float part way through. */
-  floatDelay: number;
   shape: number;
   /** Null for a bubble that stays: the tank is not full, or it was pinned. */
   lifeMs: number | null;
@@ -69,34 +76,29 @@ export function sizeFor(text: string, random: Random): number {
   return clamp01(byLength * 0.85 + 0.075 + variety);
 }
 
-function shuffledCells(total: number, random: Random): number[] {
-  const cells = Array.from({ length: total }, (_, index) => index);
-  for (let index = cells.length - 1; index > 0; index -= 1) {
-    const swap = Math.floor(random() * (index + 1));
-    [cells[index], cells[swap]] = [cells[swap], cells[index]];
-  }
-  return cells;
+/** A bubble's width in pixels, in rem so it keeps pace with the reader's text size. */
+export function diameterFor(size: number, layout: TankLayout, rem: number): number {
+  const span = layout.maxDiameterRem - layout.minDiameterRem;
+  return (layout.minDiameterRem + span * clamp01(size)) * rem;
 }
 
-function spawn(
-  message: FeedbackMessage,
-  cell: number,
-  key: number,
-  mortal: boolean,
-  random: Random,
-): Bubble {
-  const floatSeconds = 7 + random() * 4;
+/**
+ * How many bubbles a tank this wide can hold and still leave them room to
+ * move. It is reckoned on the tank's least height rather than its current one,
+ * so the tank growing and shrinking beside the rating column never changes it.
+ */
+export function capacityFor(width: number, layout: TankLayout, rem: number): number {
+  const average = diameterFor(0.5, layout, rem);
+  const floorArea = width * layout.floorHeightRem * rem;
+  const fits = Math.floor((floorArea * COVER) / ((Math.PI / 4) * average * average));
+  return Math.min(layout.maxBubbles, Math.max(MIN_BUBBLES, fits));
+}
+
+function spawn(message: FeedbackMessage, key: number, mortal: boolean, random: Random): Bubble {
   return {
     key,
     message,
-    cell,
     size: sizeFor(message.message, random),
-    offsetX: random() * 2 - 1,
-    offsetY: random() * 2 - 1,
-    driftX: random(),
-    driftY: random(),
-    floatSeconds,
-    floatDelay: -random() * floatSeconds,
     shape: Math.floor(random() * SHAPES),
     // Each lifetime is drawn on its own, which staggers the pops.
     lifeMs: mortal ? Math.round(LIFE_MIN_MS + random() * (LIFE_MAX_MS - LIFE_MIN_MS)) : null,
@@ -109,16 +111,13 @@ function spawn(
  */
 export function startAquarium(
   messages: FeedbackMessage[],
-  layout: AquariumLayout,
+  capacity: number,
   { random, pin }: AquariumOptions,
 ): Aquarium {
   const count = messages.length;
   if (count === 0) return { bubbles: [], cursor: 0, nextKey: 0 };
 
-  const cellCount = layout.columns * layout.rows;
-  const capacity = Math.min(layout.capacity, cellCount);
   const cycling = count > capacity;
-
   const pinned = pin ? messages.find((message) => message.id === pin) : undefined;
   const chosen: FeedbackMessage[] = pinned ? [pinned] : [];
   let cursor = 0;
@@ -128,9 +127,8 @@ export function startAquarium(
     if (candidate.id !== pinned?.id) chosen.push(candidate);
   }
 
-  const cells = shuffledCells(cellCount, random);
   const bubbles = chosen.map((message, index) =>
-    spawn(message, cells[index], index, cycling && message.id !== pinned?.id, random),
+    spawn(message, index, cycling && message.id !== pinned?.id, random),
   );
 
   return { bubbles, cursor: cursor % count, nextKey: bubbles.length };
@@ -138,14 +136,13 @@ export function startAquarium(
 
 /**
  * Takes a popped bubble out and floats the next message in the queue in its
- * place, in whichever free cell chance picks. The queue loops once every
- * message has had its turn, skipping any already on screen.
+ * place. The queue loops once every message has had its turn, skipping any
+ * already on screen.
  */
 export function popBubble(
   aquarium: Aquarium,
   key: number,
   messages: FeedbackMessage[],
-  layout: AquariumLayout,
   { random, pin }: AquariumOptions,
 ): Aquarium {
   const index = aquarium.bubbles.findIndex((bubble) => bubble.key === key);
@@ -170,14 +167,8 @@ export function popBubble(
     break;
   }
 
-  const taken = new Set(others.map((bubble) => bubble.cell));
-  const free = Array.from({ length: layout.columns * layout.rows }, (_, cell) => cell).filter(
-    (cell) => !taken.has(cell),
-  );
-  const cell = free[Math.floor(random() * free.length)] ?? popped.cell;
-
   const bubbles = [...others];
-  bubbles.splice(index, 0, spawn(next, cell, aquarium.nextKey, true, random));
+  bubbles.splice(index, 0, spawn(next, aquarium.nextKey, true, random));
 
   return { bubbles, cursor, nextKey: aquarium.nextKey + 1 };
 }

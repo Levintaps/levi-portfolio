@@ -41,9 +41,15 @@ describe('Reviews', () => {
     expect(screen.getByText(/2 ratings/i)).toBeInTheDocument();
   });
 
-  it('breaks the ratings down by star level, worked out from the ratings', async () => {
+  it('keeps the star breakdown folded away until the arrow opens it', async () => {
+    const user = userEvent.setup();
     render(<Reviews />);
-    const breakdown = await screen.findByRole('list', { name: /rating breakdown/i });
+    await screen.findByText('4.5');
+    expect(screen.queryByRole('list', { name: /rating breakdown/i })).toBeNull();
+
+    await user.click(screen.getByRole('button', { name: /rating breakdown/i }));
+
+    const breakdown = screen.getByRole('list', { name: /rating breakdown/i });
     const rows = within(breakdown).getAllByRole('listitem');
 
     expect(rows).toHaveLength(5);

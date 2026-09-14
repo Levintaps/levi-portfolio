@@ -1,52 +1,50 @@
-import { memo, useEffect, useState } from 'react';
-import type { CSSProperties } from 'react';
-import { POP_MS, type AquariumLayout, type Bubble as BubbleSpec } from '../../lib/aquarium';
+import { memo, useEffect, useMemo, useState } from 'react';
+import { POP_MS, type Bubble as BubbleSpec } from '../../lib/aquarium';
 import type { FeedbackMessage } from '../../lib/feedback';
+import type { BubblePhysics } from '../../hooks/useBubblePhysics';
 import { usePausableTimeout } from '../../hooks/usePausableTimeout';
 import styles from './BubbleAquarium.module.css';
 
 interface BubbleProps {
   bubble: BubbleSpec;
-  layout: AquariumLayout;
+  /** In pixels. */
+  diameter: number;
   /** Held from outside: the tab is in the background, or a message is open. */
   paused: boolean;
+  physics: BubblePhysics;
   onPopped: (key: number) => void;
   onOpen: (message: FeedbackMessage) => void;
 }
 
 /**
- * One message floating in its cell. It keeps its own lifetime, which stops
- * while a pointer or keyboard focus rests on it so it never pops out from
- * under someone reading it, then plays its pop and hands its place back.
+ * One message drifting in the tank. The physics loop moves it; the bubble
+ * keeps its own lifetime, which stops, along with the bubble itself, while a
+ * pointer or keyboard focus rests on it so it can be read and chosen. Then it
+ * plays its pop and hands its place back.
  */
-function Bubble({ bubble, layout, paused, onPopped, onOpen }: BubbleProps) {
+function Bubble({ bubble, diameter, paused, physics, onPopped, onOpen }: BubbleProps) {
   const [held, setHeld] = useState(false);
   const [popping, setPopping] = useState(false);
+  const attach = useMemo(() => physics.attach(bubble.key, diameter), [physics, bubble.key, diameter]);
 
   usePausableTimeout(() => setPopping(true), bubble.lifeMs, paused || held);
 
   useEffect(() => {
-    if (!popping) return;
+    physics.hold(bubble.key, held);
+  }, [physics, bubble.key, held]);
+
+  useEffect(() => {
+    if (!popping) return undefined;
+    physics.fade(bubble.key);
     const timer = window.setTimeout(() => onPopped(bubble.key), POP_MS);
     return () => window.clearTimeout(timer);
-  }, [popping, bubble.key, onPopped]);
-
-  const style = {
-    '--column': bubble.cell % layout.columns,
-    '--row': Math.floor(bubble.cell / layout.columns),
-    '--jx': bubble.offsetX.toFixed(3),
-    '--jy': bubble.offsetY.toFixed(3),
-    '--size': bubble.size.toFixed(3),
-    '--drift-x': bubble.driftX.toFixed(3),
-    '--drift-y': bubble.driftY.toFixed(3),
-    '--float': `${bubble.floatSeconds.toFixed(2)}s`,
-    '--float-delay': `${bubble.floatDelay.toFixed(2)}s`,
-  } as CSSProperties;
+  }, [popping, bubble.key, onPopped, physics]);
 
   return (
     <li
+      ref={attach}
       className={styles.slot}
-      style={style}
+      style={{ inlineSize: diameter, blockSize: diameter }}
       data-shape={bubble.shape}
       data-popping={popping || undefined}
     >

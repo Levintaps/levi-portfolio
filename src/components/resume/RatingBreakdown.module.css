@@ -2,6 +2,9 @@
   display: grid;
   gap: 0.35rem;
   inline-size: 100%;
+  /* On a tablet the rating box runs the full width; bars that long stop
+     reading as a comparison. */
+  max-inline-size: 28rem;
 }
 
 .row {
@@ -58,6 +61,14 @@
   clip-path: inset(50%);
   white-space: nowrap;
   inset-inline-start: 0;
+}
+
+/* On a phone the labels give up a little room to the bars. */
+@media (max-width: 30rem) {
+  .row {
+    grid-template-columns: 1.5rem 1fr 2.25rem;
+    gap: 0.4rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,8 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
-import { NARROW_LAYOUT, WIDE_LAYOUT, popBubble, startAquarium } from '../../lib/aquarium';
+import {
+  NARROW_TANK,
+  WIDE_TANK,
+  capacityFor,
+  diameterFor,
+  popBubble,
+  startAquarium,
+} from '../../lib/aquarium';
 import type { FeedbackMessage } from '../../lib/feedback';
+import { useBubblePhysics } from '../../hooks/useBubblePhysics';
 import { useDocumentHidden } from '../../hooks/useDocumentHidden';
+import { useElementWidth } from '../../hooks/useElementWidth';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import Modal from '../common/Modal';
 import Bubble from './Bubble';
@@ -17,54 +25,69 @@ interface BubbleAquariumProps {
 const EMPTY_TEXT = 'No messages yet, be the first to leave one.';
 const AMBIENT = [0, 1, 2, 3, 4];
 
+function rootFontSize() {
+  return parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+}
+
 /**
- * Visitor messages as bubbles drifting in a tank. When there are more messages
- * than the tank holds, each bubble pops after its own lifetime and the next
- * message in the queue floats up in a free spot. Reduced motion gets a plain
- * list instead.
+ * Visitor messages as bubbles drifting about a tank, bouncing off its walls
+ * and off each other. When there are more messages than the tank holds, each
+ * bubble pops after its own lifetime and the next message in the queue floats
+ * up in a clear spot. Reduced motion gets a plain list instead.
  */
 export default function BubbleAquarium({ messages, pin }: BubbleAquariumProps) {
   const narrow = useMediaQuery('(max-width: 47.999rem)');
   const still = useMediaQuery('(prefers-reduced-motion: reduce)');
   const hidden = useDocumentHidden();
-  const layout = narrow ? NARROW_LAYOUT : WIDE_LAYOUT;
+  const layout = narrow ? NARROW_TANK : WIDE_TANK;
   const [open, setOpen] = useState<FeedbackMessage | null>(null);
+  const [rem] = useState(rootFontSize);
+  const [tankElement, setTankElement] = useState<HTMLDivElement | null>(null);
+  const width = useElementWidth(tankElement);
+  const capacity = width === null ? layout.maxBubbles : capacityFor(width, layout, rem);
 
-  // The tank starts over when the messages, the pin or the screen width
-  // change. Starting over during render rather than in an effect means a new
-  // set of messages never shows for one frame in the old arrangement.
-  const signature = `${narrow}|${pin ?? ''}|${messages.map((message) => message.id).join(',')}`;
+  const paused = hidden || open !== null;
+  const physics = useBubblePhysics(paused || still || messages.length === 0);
+
+  // The tank starts over when the messages, the pin or the room change.
+  // Starting over during render rather than in an effect means a new set of
+  // messages never shows for one frame in the old arrangement.
+  const signature = `${narrow}|${capacity}|${pin ?? ''}|${messages.map((message) => message.id).join(',')}`;
   const [tank, setTank] = useState(() => ({
     signature,
-    aquarium: startAquarium(messages, layout, { random: Math.random, pin }),
+    generation: 0,
+    aquarium: startAquarium(messages, capacity, { random: Math.random, pin }),
   }));
   if (tank.signature !== signature) {
-    setTank({ signature, aquarium: startAquarium(messages, layout, { random: Math.random, pin }) });
+    setTank({
+      signature,
+      generation: tank.generation + 1,
+      aquarium: startAquarium(messages, capacity, { random: Math.random, pin }),
+    });
   }
 
   // Pops arrive from timers, after renders have moved on, so they read the
   // latest messages rather than the ones in place when the bubble was born.
-  const latest = useRef({ messages, layout, pin });
+  const latest = useRef({ messages, pin });
   useEffect(() => {
-    latest.current = { messages, layout, pin };
+    latest.current = { messages, pin };
   });
 
   const onPopped = useCallback((key: number) => {
-    setTank((current) => {
-      const now = latest.current;
-      return {
-        ...current,
-        aquarium: popBubble(current.aquarium, key, now.messages, now.layout, {
-          random: Math.random,
-          pin: now.pin,
-        }),
-      };
-    });
+    setTank((current) => ({
+      ...current,
+      aquarium: popBubble(current.aquarium, key, latest.current.messages, {
+        random: Math.random,
+        pin: latest.current.pin,
+      }),
+    }));
   }, []);
+
+  const floor = { minBlockSize: `${layout.floorHeightRem}rem` };
 
   if (messages.length === 0) {
     return (
-      <div className={styles.tank} data-empty>
+      <div ref={setTankElement} className={styles.tank} style={floor} data-empty>
         <div className={styles.decoration} data-decoration aria-hidden="true">
           {AMBIENT.map((index) => (
             <span key={index} className={styles.ambient} data-ambient={index} />
@@ -77,7 +100,7 @@ export default function BubbleAquarium({ messages, pin }: BubbleAquariumProps) {
 
   if (still) {
     return (
-      <div className={styles.tank} data-still>
+      <div ref={setTankElement} className={styles.tank} style={floor} data-still>
         <ul className={styles.stillList} aria-label="Messages visitors left">
           {messages.map((message) => (
             <li key={message.id} className={styles.stillItem}>
@@ -90,22 +113,24 @@ export default function BubbleAquarium({ messages, pin }: BubbleAquariumProps) {
     );
   }
 
-  const paused = hidden || open !== null;
-
   return (
-    <div className={styles.tank}>
+    <div ref={setTankElement} className={styles.tank} style={floor}>
+      {/* A fresh list for every fresh start, so no bubble carries its place
+          or its motion over from the arrangement before. */}
       <ul
+        key={tank.generation}
+        ref={physics.tankRef}
         className={styles.bubbles}
         aria-label="Messages visitors left"
         data-paused={paused || undefined}
-        style={{ '--columns': layout.columns, '--rows': layout.rows } as CSSProperties}
       >
         {tank.aquarium.bubbles.map((bubble) => (
           <Bubble
             key={bubble.key}
             bubble={bubble}
-            layout={layout}
+            diameter={diameterFor(bubble.size, layout, rem)}
             paused={paused}
+            physics={physics}
             onPopped={onPopped}
             onOpen={setOpen}
           />

@@ -17,7 +17,7 @@ import { useReveal } from '../../hooks/useReveal';
 import SectionHeading from '../common/SectionHeading';
 import Stars from '../common/Stars';
 import BubbleAquarium from './BubbleAquarium';
-import RatingBreakdown from './RatingBreakdown';
+import RatingBreakdownToggle from './RatingBreakdownToggle';
 import RecentRaters from './RecentRaters';
 import StarInput from './StarInput';
 import styles from './Reviews.module.css';
@@ -152,7 +152,7 @@ export default function Reviews() {
             {status === 'unavailable' ? (
               <p className={styles.muted}>Ratings are unavailable right now.</p>
             ) : (
-              <>
+              <RatingBreakdownToggle distribution={summary.distribution} count={summary.count}>
                 <div className={styles.overall}>
                   <p className={styles.average}>
                     {status === 'ready' ? summary.average.toFixed(1) : '—'}
@@ -166,8 +166,7 @@ export default function Reviews() {
                     </p>
                   </div>
                 </div>
-                <RatingBreakdown distribution={summary.distribution} count={summary.count} />
-              </>
+              </RatingBreakdownToggle>
             )}
           </div>
 
@@ -206,8 +205,9 @@ export default function Reviews() {
         </div>
 
         <div className={styles.messageSide}>
-          {/* The tank takes whatever height the rating column leaves beside the
-              message form, so the two sides of the section finish level. */}
+          {/* Beside the rating column the tank grows to whatever height that
+              column leaves above the message form, so the two sides finish
+              level whether the breakdown is open or closed. */}
           <div className={styles.tankFrame}>
             <BubbleAquarium messages={notes} pin={mine} />
           </div>

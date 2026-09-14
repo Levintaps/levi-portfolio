@@ -1,14 +1,8 @@
-/* The tank. Its own size drives the bubbles' size and placement through
-   container units, so the bubbles always fit the tank they are in. */
+/* The tank. Its least height comes from the tank layout in lib/aquarium.ts,
+   which also works out how many bubbles that height leaves room for. */
 .tank {
-  --bubble-min: 5.75rem;
-  --bubble-max: 8rem;
-  --amp-scale: 1;
-
   position: relative;
-  container-type: size;
-  block-size: 100%;
-  min-block-size: 0;
+  flex: 1 1 auto;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius-l);
@@ -22,35 +16,16 @@
   inset: 0;
 }
 
-/* One grid cell per bubble. The bubble rests somewhere in its cell's spare
-   room and drifts no further than that room allows, so it never meets its
-   neighbours and never crosses the edge of the tank. */
+/* Each slot sits at the tank's top left corner and is moved from there, frame
+   by frame, by the transform the physics loop writes onto it. */
 .slot {
-  --cell-w: calc(100cqw / var(--columns));
-  --cell-h: calc(100cqh / var(--rows));
-  --amp-x: calc((4px + var(--drift-x) * 10px) * var(--amp-scale));
-  --amp-y: calc((4px + var(--drift-y) * 8px) * var(--amp-scale));
-  --d: max(
-    4.5rem,
-    min(
-      calc(var(--bubble-min) + (var(--bubble-max) - var(--bubble-min)) * var(--size)),
-      calc(var(--cell-w) - var(--amp-x) * 2 - 6px),
-      calc(var(--cell-h) - var(--amp-y) * 2 - 6px)
-    )
-  );
-  --room-x: max(0px, calc((var(--cell-w) - var(--d)) / 2 - var(--amp-x)));
-  --room-y: max(0px, calc((var(--cell-h) - var(--d)) / 2 - var(--amp-y)));
-
   position: absolute;
-  inset-inline-start: calc((var(--column) + 0.5) * var(--cell-w) + var(--jx) * var(--room-x));
-  inset-block-start: calc((var(--row) + 0.5) * var(--cell-h) + var(--jy) * var(--room-y));
-  inline-size: var(--d);
-  block-size: var(--d);
-  transform: translate(-50%, -50%);
-  animation: arrive 520ms var(--ease) both;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  will-change: transform;
 }
 
-.slot[data-popping] {
+.slot[data-popping] .bubble {
   animation: pop 360ms ease-out forwards;
 }
 
@@ -64,8 +39,11 @@
   padding: 16%;
   border-radius: 50%;
   border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line-strong));
-  /* Glass: a little of the surface, the tank showing through, blurred. */
-  background: color-mix(in srgb, var(--surface) 62%, transparent);
+  /* Glass: the surface tinted with the accent, blue in the dark theme and a
+     paler wash in the light one, with the tank showing through, blurred. */
+  background:
+    radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 62%),
+    color-mix(in srgb, color-mix(in srgb, var(--accent) 9%, var(--surface)) 64%, transparent);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   box-shadow:
@@ -76,7 +54,7 @@
   cursor: pointer;
   /* The text inside measures the bubble, to choose how many lines fit. */
   container-type: size;
-  animation: float var(--float, 9s) ease-in-out var(--float-delay, 0s) infinite;
+  animation: arrive 520ms var(--ease) both;
   transition:
     border-color var(--motion-fast) var(--ease),
     box-shadow var(--motion-fast) var(--ease);
@@ -104,10 +82,9 @@
   pointer-events: none;
 }
 
-/* A bubble someone is reading, by pointer or keyboard, stops drifting. */
+/* A bubble someone is reading, by pointer or keyboard, stops where it is. */
 .bubble:hover,
 .bubble:focus-visible {
-  animation-play-state: paused;
   border-color: var(--accent);
   box-shadow:
     0 0 26px -8px var(--accent-glow),
@@ -119,8 +96,7 @@
   outline-offset: 3px;
 }
 
-.bubbles[data-paused] .bubble,
-.bubbles[data-paused] .slot {
+.bubbles[data-paused] .bubble {
   animation-play-state: paused;
 }
 
@@ -192,24 +168,6 @@
   100% {
     scale: 1.32;
     opacity: 0;
-  }
-}
-
-/* The float moves only the bubble's own translate, which leaves the slot's
-   centring transform and the pop's scale untouched. */
-@keyframes float {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-  25% {
-    translate: var(--amp-x) calc(var(--amp-y) * -1);
-  }
-  50% {
-    translate: calc(var(--amp-x) * -0.4) calc(var(--amp-y) * -0.3);
-  }
-  75% {
-    translate: calc(var(--amp-x) * -1) var(--amp-y);
   }
 }
 
@@ -311,18 +269,9 @@
   overflow-wrap: anywhere;
 }
 
-@media (max-width: 47.999rem) {
-  .tank {
-    --bubble-min: 5.25rem;
-    --bubble-max: 6.5rem;
-    --amp-scale: 0.6;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .slot,
-  .slot[data-popping],
   .bubble,
+  .slot[data-popping] .bubble,
   .ambient {
     animation: none;
   }

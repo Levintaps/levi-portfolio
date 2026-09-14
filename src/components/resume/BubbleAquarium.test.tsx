@@ -34,6 +34,20 @@ function matchQueries(matching: string[]) {
   );
 }
 
+/** Keeps animation frame requests in a list the test can inspect. */
+function captureFrames() {
+  const pending = new Map<number, FrameRequestCallback>();
+  let next = 1;
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+    pending.set(next, callback);
+    return next++;
+  });
+  vi.spyOn(window, 'cancelAnimationFrame').mockImplementation((id) => {
+    pending.delete(id);
+  });
+  return pending;
+}
+
 function tank() {
   return screen.getByRole('list', { name: /messages visitors left/i });
 }
@@ -65,10 +79,10 @@ describe('BubbleAquarium', () => {
     expect(within(tank()).getAllByRole('listitem')).toHaveLength(10);
   });
 
-  it('holds at most five on a narrow screen', () => {
+  it('holds at most six on a narrow screen', () => {
     matchQueries(['max-width']);
     render(<BubbleAquarium messages={messages(25)} />);
-    expect(within(tank()).getAllByRole('listitem')).toHaveLength(5);
+    expect(within(tank()).getAllByRole('listitem')).toHaveLength(6);
   });
 
   it('labels a bubble with its sender when one is known', () => {
@@ -156,6 +170,30 @@ describe('BubbleAquarium', () => {
     });
 
     expect(shownMessages()).toEqual(first);
+  });
+
+  it('stops the drift while a message is open, and starts it again after', () => {
+    const frames = captureFrames();
+    render(<BubbleAquarium messages={messages(3)} />);
+    expect(frames.size).toBe(1);
+
+    fireEvent.click(within(tank()).getAllByRole('button')[0]);
+    expect(frames.size).toBe(0);
+
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /close/i }));
+    expect(frames.size).toBe(1);
+  });
+
+  it('stops the drift while the tab is in the background', () => {
+    const frames = captureFrames();
+    render(<BubbleAquarium messages={messages(3)} />);
+
+    Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+    act(() => {
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+
+    expect(frames.size).toBe(0);
   });
 
   it('keeps the visitor’s own message in the tank', () => {

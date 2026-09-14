@@ -12,7 +12,8 @@ export type IconName =
   | 'menu'
   | 'close'
   | 'star'
-  | 'arrow';
+  | 'arrow'
+  | 'chevron';
 
 const paths: Record<IconName, string> = {
   github:
@@ -32,6 +33,7 @@ const paths: Record<IconName, string> = {
   close: 'M6 6l12 12M18 6 6 18',
   star: 'M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1.1 5.9-5.3-2.9-5.3 2.9 1.1-5.9L3.5 9.7l5.9-.8Z',
   arrow: 'M5 12h14m0 0-5-5m5 5-5 5',
+  chevron: 'M6 9l6 6 6-6',
 };
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {

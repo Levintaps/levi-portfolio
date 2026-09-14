@@ -24,12 +24,10 @@
   gap: var(--space-m);
 }
 
-/* Sized to its content: the average beside its stars and count, then the
-   breakdown bars. */
+/* Sized to its content: the average beside its stars and count, with the
+   breakdown bars folded away beneath until they are asked for. */
 .summary {
-  display: grid;
-  gap: var(--space-s);
-  padding: var(--space-s) var(--space-m) var(--space-m);
+  padding: var(--space-s) var(--space-m);
   border: 1px solid var(--line);
   border-radius: var(--radius-m);
   background: var(--surface);
@@ -61,11 +59,12 @@
   color: var(--ink-faint);
 }
 
+/* The tank inside sets its own least height; beside the rating column the
+   frame stretches past that to fill the column. */
 .tankFrame {
-  display: grid;
-  grid-template-rows: minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   flex: 1 1 auto;
-  block-size: 22rem;
 }
 
 .fields {
@@ -137,13 +136,6 @@
   .layout {
     grid-template-columns: 18rem minmax(0, 1fr);
     gap: var(--space-xl);
-  }
-
-  /* Beside the rating column the tank takes the spare height instead of a
-     fixed one, never less than this. */
-  .tankFrame {
-    block-size: auto;
-    min-block-size: 24rem;
   }
 
   .section {
