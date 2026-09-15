@@ -12,6 +12,7 @@ import lanyard from '../../assets/lanyard/lanyard.png';
 
 import * as THREE from 'three';
 import LanyardEnvironment from './LanyardEnvironment';
+import { followFactor } from './strapFollow';
 import './Lanyard.css';
 
 extend({ MeshLineGeometry, MeshLineMaterial });
@@ -251,11 +252,10 @@ function Band({
     if (fixed.current) {
       [j1, j2].forEach(ref => {
         if (!ref.current.lerped) ref.current.lerped = new THREE.Vector3().copy(ref.current.translation());
-        const clampedDistance = Math.max(0.1, Math.min(1, ref.current.lerped.distanceTo(ref.current.translation())));
-        ref.current.lerped.lerp(
-          ref.current.translation(),
-          delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed))
-        );
+        // Capped at the whole way, so a slow frame can never fling the strap
+        // past its joint and on to Infinity. See strapFollow.ts.
+        const distance = ref.current.lerped.distanceTo(ref.current.translation());
+        ref.current.lerped.lerp(ref.current.translation(), followFactor(delta, distance, minSpeed, maxSpeed));
       });
       // The band ends on the card's own clip rather than on the joint body.
       // The solver lets the two drift apart for a frame or two while the card
