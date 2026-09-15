@@ -1,17 +1,17 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './theme/ThemeProvider';
 import ResumeView from './components/resume/ResumeView';
-import RouteErrorBoundary from './components/common/RouteErrorBoundary';
-import RouteFallback from './components/common/RouteFallback';
 
-const CyberView = lazy(() => import('./components/cyber/CyberView'));
+// The cyber view is parked while the resume goes live: its code stays in
+// src/components/cyber, but no route leads to it, so /cyber falls through to
+// the resume like any unknown address and none of its code is built. To bring
+// it back, restore its lazy route here, the CyberEntry panel in ResumeView,
+// and its line in public/sitemap.xml.
 
-// Neither route otherwise resets scroll position: CyberEntry sits at the
-// bottom of a long resume, so entering the cyber view would land a visitor
-// deep inside it, and returning would land them mid-resume. A plain <a>
-// navigation resets scroll for free; React Router's client-side navigation
-// does not, so it is done by hand here on every route change.
+// React Router's client-side navigation does not reset scroll position the
+// way a plain <a> navigation does, so it is done by hand on every route
+// change, such as an unknown address sent back to the resume.
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -30,16 +30,6 @@ export default function App() {
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<ResumeView />} />
-          <Route
-            path="/cyber"
-            element={
-              <RouteErrorBoundary>
-                <Suspense fallback={<RouteFallback view="cyber" />}>
-                  <CyberView />
-                </Suspense>
-              </RouteErrorBoundary>
-            }
-          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

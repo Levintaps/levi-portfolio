@@ -10,7 +10,6 @@ import Education from './Education';
 import Achievements from './Achievements';
 import Reviews from './Reviews';
 import Contact from './Contact';
-import CyberEntry from './CyberEntry';
 import Footer from './Footer';
 import styles from './ResumeView.module.css';
 
@@ -39,7 +38,6 @@ export default function ResumeView() {
         <Reviews />
         <Contact />
       </main>
-      <CyberEntry />
       <Footer />
     </>
   );
