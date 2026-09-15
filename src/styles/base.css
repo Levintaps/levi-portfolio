@@ -11,6 +11,14 @@ body {
   overflow-x: clip;
 }
 
+/* A plain scrollbar in the page's own colours: slim, no arrow buttons, a
+   quiet thumb on a track the colour of the page. It is inherited, so the
+   dialogs and the message box scroll the same way, in either theme. */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ink-faint) 50%, var(--ground)) var(--ground);
+}
+
 body {
   background: var(--ground);
   color: var(--ink);
