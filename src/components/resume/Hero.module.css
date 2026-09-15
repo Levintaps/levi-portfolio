@@ -134,8 +134,13 @@
 }
 
 @media (min-width: 48rem) {
+  /* The text column is exactly the tagline and paragraphs' measure, and the
+     two columns are pushed to the shell's edges: the card starts where the
+     header's mark does and the text ends where the theme button and every
+     section below end. Any spare width falls between them. */
   .hero {
-    grid-template-columns: 14rem minmax(0, 1fr);
+    grid-template-columns: 14rem minmax(0, 42rem);
+    justify-content: space-between;
     gap: var(--space-xl);
     padding-block: var(--space-2xl);
     /* Both columns run the full height so they can finish together. */
