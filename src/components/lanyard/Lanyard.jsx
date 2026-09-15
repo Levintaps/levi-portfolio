@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 // Vendored from React Bits (reactbits.dev), JavaScript + CSS variant.
 'use client';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, useTexture } from '@react-three/drei';
 import { BallCollider, CuboidCollider, Physics, RigidBody, useRopeJoint, useSphericalJoint } from '@react-three/rapier';
@@ -13,6 +13,7 @@ import lanyard from '../../assets/lanyard/lanyard.png';
 import * as THREE from 'three';
 import LanyardEnvironment from './LanyardEnvironment';
 import { followFactor } from './strapFollow';
+import { viewOffsetX } from './lanyardFrame';
 import './Lanyard.css';
 
 extend({ MeshLineGeometry, MeshLineMaterial });
@@ -36,7 +37,8 @@ export default function Lanyard({
   bandColor = null,
   eventSource = null,
   maxDpr = 2,
-  active = true
+  active = true,
+  anchorX = null
 }) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
@@ -57,6 +59,7 @@ export default function Lanyard({
         {...(eventSource ? { eventSource, eventPrefix: 'client' } : {})}
         onCreated={({ gl }) => gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)}
       >
+        <ViewAnchor x={anchorX} />
         <ambientLight intensity={Math.PI} />
         {/* The model and textures suspend. Keeping that boundary inside the
             canvas stops an outer fallback from hiding the canvas, which would
@@ -78,6 +81,27 @@ export default function Lanyard({
       </Canvas>
     </div>
   );
+}
+
+// Draws the scene as though the canvas were centred on x, while the canvas
+// itself only spans the page: the strap's fixed point lands over the portrait
+// column. Raycasts go through the same camera, so picking up the badge still
+// lines up with what is drawn.
+function ViewAnchor({ x }) {
+  const camera = useThree((state) => state.camera);
+  const width = useThree((state) => state.size.width);
+  const height = useThree((state) => state.size.height);
+
+  useLayoutEffect(() => {
+    if (x === null || width === 0 || height === 0) {
+      camera.clearViewOffset();
+      return;
+    }
+    camera.setViewOffset(width, height, viewOffsetX(width, x), 0, width, height);
+    camera.updateProjectionMatrix();
+  }, [camera, width, height, x]);
+
+  return null;
 }
 
 // The canvas covers the page so a thrown badge is never clipped, which would

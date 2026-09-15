@@ -72,6 +72,29 @@ describe('HeroPortrait', () => {
     expect(latest().active).toBe(true);
   });
 
+  // The canvas used to reach 58rem past the column on both sides, nearly all
+  // of it off the page and all of it drawn every frame.
+  it('draws the badge in a canvas as wide as the page, hanging over the portrait column', async () => {
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+      left: 88,
+      width: 360,
+      top: 0,
+      height: 440,
+      right: 448,
+      bottom: 440,
+      x: 88,
+      y: 0,
+      toJSON: () => ({}),
+    } as DOMRect);
+    vi.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(1265);
+
+    const { overlay } = await renderBadge();
+
+    expect(overlay.style.insetInlineStart).toBe('-88px');
+    expect(overlay.style.inlineSize).toBe('1265px');
+    expect(latest().anchorX).toBe(268);
+  });
+
   it('rests the badge while the tab is in the background', async () => {
     await renderBadge();
 

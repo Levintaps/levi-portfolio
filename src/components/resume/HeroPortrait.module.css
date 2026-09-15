@@ -28,10 +28,10 @@
   }
 }
 
-/* Centred on the portrait column so the badge always rests over its own
-   column, and far wider than the page on both sides so a thrown badge is
-   never clipped by the canvas edge. The extra width is off-screen, which is
-   why the pixel density is capped where the canvas is used. */
+/* Sized to the page once measured (see HeroPortrait), with the badge placed
+   over the portrait column by the camera rather than by the canvas, so
+   nothing is drawn off the page. Until then it is centred on the column and
+   wider than the page on both sides, as it always was. */
 .overlay {
   --lanyard-height: 54rem;
   position: absolute;

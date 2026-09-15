@@ -1,9 +1,10 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useLayoutEffect, useState } from 'react';
 import { profile } from '../../data/resume';
 import { useDocumentHidden } from '../../hooks/useDocumentHidden';
 import { useInView } from '../../hooks/useInView';
 import { useScheme } from '../../theme/ThemeProvider';
 import { bandColorFor } from '../lanyard/bandColor';
+import { lanyardFrame, type LanyardFrame } from '../lanyard/lanyardFrame';
 import styles from './HeroPortrait.module.css';
 
 const Lanyard = lazy(() => import('../lanyard/Lanyard'));
@@ -29,7 +30,7 @@ function StaticPortrait() {
 
 // Only mounted once the badge is allowed to run, so the theme is read inside
 // the page's provider and never by the still photo.
-function ThemedLanyard({ active }: { active: boolean }) {
+function ThemedLanyard({ active, anchorX }: { active: boolean; anchorX: number | null }) {
   const { scheme } = useScheme();
 
   return (
@@ -39,10 +40,11 @@ function ThemedLanyard({ active }: { active: boolean }) {
       fov={22}
       frontImage="/images/id-card.jpg"
       imageFit="cover"
-      maxDpr={1.5}
+      maxDpr={1.25}
       bandColor={bandColorFor(scheme)}
       lanyardWidth={0.55}
       active={active}
+      anchorX={anchorX}
     />
   );
 }
@@ -75,6 +77,36 @@ export default function HeroPortrait() {
   const [overlay, setOverlay] = useState<HTMLDivElement | null>(null);
   const onScreen = useInView(overlay);
   const hidden = useDocumentHidden();
+  const [frame, setFrame] = useState<LanyardFrame | null>(null);
+
+  // The canvas is sized to the page and the badge placed over the column,
+  // measured before paint and again whenever the page or the column resizes.
+  useLayoutEffect(() => {
+    const column = overlay?.parentElement;
+    if (!column) return undefined;
+
+    const measure = () => {
+      const box = column.getBoundingClientRect();
+      const next = lanyardFrame({ left: box.left, width: box.width }, document.documentElement.clientWidth);
+      setFrame((current) =>
+        current &&
+        current.start === next.start &&
+        current.width === next.width &&
+        current.anchorX === next.anchorX
+          ? current
+          : next,
+      );
+    };
+
+    measure();
+    window.addEventListener('resize', measure);
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);
+    observer?.observe(column);
+    return () => {
+      window.removeEventListener('resize', measure);
+      observer?.disconnect();
+    };
+  }, [overlay]);
 
   useEffect(() => {
     if (!canRunLanyard()) return;
@@ -116,9 +148,17 @@ export default function HeroPortrait() {
       {/* Holds the column's height while the card floats above the whole
           hero, so a thrown badge is never clipped by a box. */}
       <div className={styles.spacer} aria-hidden="true" />
-      <div ref={setOverlay} className={styles.overlay}>
+      <div
+        ref={setOverlay}
+        className={styles.overlay}
+        style={
+          frame
+            ? { insetInlineStart: frame.start, insetInlineEnd: 'auto', inlineSize: frame.width }
+            : undefined
+        }
+      >
         <Suspense fallback={null}>
-          <ThemedLanyard active={onScreen && !hidden} />
+          <ThemedLanyard active={onScreen && !hidden} anchorX={frame?.anchorX ?? null} />
         </Suspense>
       </div>
     </>

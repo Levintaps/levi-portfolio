@@ -15,6 +15,8 @@ export interface LanyardProps {
   maxDpr?: number;
   /** False to rest the badge: no frames drawn and no physics stepped. */
   active?: boolean;
+  /** Where the strap hangs, in pixels from the canvas's left edge. Null for its middle. */
+  anchorX?: number | null;
   eventSource?: { current: HTMLElement | null } | HTMLElement | null;
 }
 
