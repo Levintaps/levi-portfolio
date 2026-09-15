@@ -95,6 +95,49 @@ describe('HeroPortrait', () => {
     expect(latest().anchorX).toBe(268);
   });
 
+  // A scrollbar that appears once the page grows narrows the page and slides
+  // the column over without resizing the window or the column itself.
+  it('measures again when the page narrows without the window resizing', async () => {
+    const watchers: { targets: Element[]; callback: () => void }[] = [];
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        private watcher: { targets: Element[]; callback: () => void };
+        constructor(callback: () => void) {
+          this.watcher = { targets: [], callback };
+          watchers.push(this.watcher);
+        }
+        observe(target: Element) {
+          this.watcher.targets.push(target);
+        }
+        disconnect() {
+          this.watcher.targets = [];
+        }
+      },
+    );
+    let column = { left: 88, width: 360 };
+    let pageWidth = 1280;
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+      () => ({ ...column, top: 0, height: 440, right: column.left + column.width, bottom: 440, x: column.left, y: 0, toJSON: () => ({}) }) as DOMRect,
+    );
+    vi.spyOn(Element.prototype, 'clientWidth', 'get').mockImplementation(() => pageWidth);
+
+    const { overlay } = await renderBadge();
+    expect(overlay.style.inlineSize).toBe('1280px');
+
+    column = { left: 81, width: 360 };
+    pageWidth = 1265;
+    act(() => {
+      for (const watcher of watchers) {
+        if (watcher.targets.includes(document.documentElement)) watcher.callback();
+      }
+    });
+
+    expect(overlay.style.inlineSize).toBe('1265px');
+    expect(overlay.style.insetInlineStart).toBe('-81px');
+    expect(latest().anchorX).toBe(261);
+  });
+
   it('rests the badge while the tab is in the background', async () => {
     await renderBadge();
 

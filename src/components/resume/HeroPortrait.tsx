@@ -81,6 +81,9 @@ export default function HeroPortrait() {
 
   // The canvas is sized to the page and the badge placed over the column,
   // measured before paint and again whenever the page or the column resizes.
+  // The page itself is watched as well as the window: a scrollbar appearing
+  // as the page grows narrows it and slides the column over, and neither the
+  // window nor the column changes size when that happens.
   useLayoutEffect(() => {
     const column = overlay?.parentElement;
     if (!column) return undefined;
@@ -102,6 +105,7 @@ export default function HeroPortrait() {
     window.addEventListener('resize', measure);
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);
     observer?.observe(column);
+    observer?.observe(document.documentElement);
     return () => {
       window.removeEventListener('resize', measure);
       observer?.disconnect();
