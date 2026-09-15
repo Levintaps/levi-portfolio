@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Project } from '../../data/types';
+import { useInView } from '../../hooks/useInView';
 import { Icon } from '../common/icons';
 import ProjectCard from './ProjectCard';
 import styles from './ProjectCarousel.module.css';
@@ -12,15 +13,16 @@ interface ProjectCarouselProps {
 const PIXELS_PER_SECOND = 26;
 
 export default function ProjectCarousel({ projects, onOpen }: ProjectCarouselProps) {
-  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [track, setTrack] = useState<HTMLDivElement | null>(null);
   const [paused, setPaused] = useState(false);
+  // Scrolled away, the track rests: nobody sees it move.
+  const onScreen = useInView(track);
 
   useEffect(() => {
-    const track = trackRef.current;
     if (!track) return;
 
     const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (paused || still.matches) return;
+    if (paused || still.matches || !onScreen) return;
 
     let frame = 0;
     let last = performance.now();
@@ -49,10 +51,9 @@ export default function ProjectCarousel({ projects, onOpen }: ProjectCarouselPro
 
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
-  }, [paused, projects.length]);
+  }, [track, paused, onScreen, projects.length]);
 
   function nudge(direction: 1 | -1) {
-    const track = trackRef.current;
     if (!track) return;
 
     const slide = track.firstElementChild;
@@ -87,7 +88,7 @@ export default function ProjectCarousel({ projects, onOpen }: ProjectCarouselPro
         role="group"
         aria-label="Selected projects"
         tabIndex={0}
-        ref={trackRef}
+        ref={setTrack}
         data-paused={paused}
         onKeyDown={onKeyDown}
       >

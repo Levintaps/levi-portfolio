@@ -99,15 +99,36 @@ export function useMarqueeMotion(
     row.addEventListener('pointercancel', onCancel);
     row.addEventListener('lostpointercapture', onUp);
 
+    // The row rests while scrolled out of view and picks up where it left off.
+    // MarqueeMotion caps the time one step can cover, so the first frame back
+    // never leaps ahead by the whole time away.
+    let visible = true;
     let frame = 0;
     const tick = (time: number) => {
+      if (!visible) {
+        frame = 0;
+        return;
+      }
       track.style.transform = `translate3d(${motion.step(time)}px, 0, 0)`;
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
 
+    const sighting =
+      typeof IntersectionObserver === 'undefined'
+        ? null
+        : new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) visible = entry.isIntersecting;
+              if (visible && frame === 0) frame = requestAnimationFrame(tick);
+            },
+            { rootMargin: '200px' },
+          );
+    sighting?.observe(row);
+
     return () => {
       cancelAnimationFrame(frame);
+      sighting?.disconnect();
       observer.disconnect();
       row.removeEventListener('pointerenter', onEnter);
       row.removeEventListener('pointerleave', onLeave);

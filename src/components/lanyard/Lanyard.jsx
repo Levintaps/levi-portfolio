@@ -35,7 +35,8 @@ export default function Lanyard({
   lanyardWidth = 1,
   bandColor = null,
   eventSource = null,
-  maxDpr = 2
+  maxDpr = 2,
+  active = true
 }) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
@@ -48,6 +49,8 @@ export default function Lanyard({
   return (
     <div className="lanyard-wrapper">
       <Canvas
+        // Resting, the canvas draws no frames and the physics take no steps.
+        frameloop={active ? 'always' : 'never'}
         camera={{ position: position, fov: fov }}
         dpr={[1, isMobile ? 1.5 : maxDpr]}
         gl={{ alpha: transparent }}
@@ -59,7 +62,7 @@ export default function Lanyard({
             canvas stops an outer fallback from hiding the canvas, which would
             leave the renderer stuck at zero size. */}
         <Suspense fallback={null}>
-          <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
+          <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60} paused={!active}>
             <Band
               isMobile={isMobile}
               frontImage={frontImage}

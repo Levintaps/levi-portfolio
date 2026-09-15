@@ -1,5 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { profile } from '../../data/resume';
+import { useDocumentHidden } from '../../hooks/useDocumentHidden';
+import { useInView } from '../../hooks/useInView';
 import { useScheme } from '../../theme/ThemeProvider';
 import { bandColorFor } from '../lanyard/bandColor';
 import styles from './HeroPortrait.module.css';
@@ -27,7 +29,7 @@ function StaticPortrait() {
 
 // Only mounted once the badge is allowed to run, so the theme is read inside
 // the page's provider and never by the still photo.
-function ThemedLanyard() {
+function ThemedLanyard({ active }: { active: boolean }) {
   const { scheme } = useScheme();
 
   return (
@@ -40,6 +42,7 @@ function ThemedLanyard() {
       maxDpr={1.5}
       bandColor={bandColorFor(scheme)}
       lanyardWidth={0.55}
+      active={active}
     />
   );
 }
@@ -67,6 +70,11 @@ function canRunLanyard() {
 
 export default function HeroPortrait() {
   const [interactive, setInteractive] = useState(false);
+  // The badge's renderer and physics rest whenever nobody can see it swing:
+  // the hero is scrolled away, or the tab is in the background.
+  const [overlay, setOverlay] = useState<HTMLDivElement | null>(null);
+  const onScreen = useInView(overlay);
+  const hidden = useDocumentHidden();
 
   useEffect(() => {
     if (!canRunLanyard()) return;
@@ -108,9 +116,9 @@ export default function HeroPortrait() {
       {/* Holds the column's height while the card floats above the whole
           hero, so a thrown badge is never clipped by a box. */}
       <div className={styles.spacer} aria-hidden="true" />
-      <div className={styles.overlay}>
+      <div ref={setOverlay} className={styles.overlay}>
         <Suspense fallback={null}>
-          <ThemedLanyard />
+          <ThemedLanyard active={onScreen && !hidden} />
         </Suspense>
       </div>
     </>

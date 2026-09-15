@@ -13,6 +13,8 @@ export interface LanyardProps {
   /** A flat strap colour. When set, the sample strap texture is not drawn. */
   bandColor?: string | null;
   maxDpr?: number;
+  /** False to rest the badge: no frames drawn and no physics stepped. */
+  active?: boolean;
   eventSource?: { current: HTMLElement | null } | HTMLElement | null;
 }
 

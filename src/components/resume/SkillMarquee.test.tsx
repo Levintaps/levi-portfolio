@@ -1,5 +1,6 @@
 import { act, render, screen, within } from '@testing-library/react';
 import SkillMarquee from './SkillMarquee';
+import { stubIntersectionObserver } from '../../test/viewport';
 
 const items = ['React', 'TypeScript', 'Java'];
 
@@ -104,6 +105,31 @@ describe('SkillMarquee motion', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
+  });
+
+  // Scrolled away, nobody sees the row, so it asks the screen for no frames,
+  // and when it comes back it carries on rather than leaping ahead.
+  it('rests while scrolled out of view, and carries on from where it was', () => {
+    const viewport = stubIntersectionObserver();
+    const { container } = render(<SkillMarquee label="A" items={items} direction="left" speed={30} />);
+    const marquee = row(container);
+    frame(0);
+    frame(100);
+
+    viewport.setVisible(marquee, false);
+    frame(200);
+    const rested = offset(track(container));
+    expect(frames).toHaveLength(0);
+
+    viewport.setVisible(marquee, true);
+    expect(frames).toHaveLength(1);
+    frame(60_000);
+    frame(60_016);
+
+    const moved = Math.abs(offset(track(container)) - rested);
+    expect(moved).toBeGreaterThan(0);
+    // A minute away is not a minute of travel at thirty pixels a second.
+    expect(moved).toBeLessThan(30);
   });
 
   it('follows a drag, marks the row as grabbed, and flings on release', () => {

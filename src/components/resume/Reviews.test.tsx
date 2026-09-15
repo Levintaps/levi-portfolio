@@ -1,7 +1,8 @@
-import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Reviews from './Reviews';
 import * as feedback from '../../lib/feedback';
+import { stubIntersectionObserver } from '../../test/viewport';
 
 vi.mock('../../lib/feedback', async () => {
   const actual = await vi.importActual<typeof feedback>('../../lib/feedback');
@@ -153,56 +154,31 @@ describe('Reviews', () => {
     // jsdom has no IntersectionObserver at all, so every other test in this
     // file exercises Reviews' fallback path (fetch immediately). This test
     // stubs one in to exercise the actual deferred-until-revealed path: no
-    // fetch on mount, a fetch once the observer reports the section is near
-    // the viewport.
-    const originalIO = window.IntersectionObserver;
-    let deliver: IntersectionObserverCallback | undefined;
-    let observedTarget: Element | undefined;
-    const disconnect = vi.fn();
-
-    class StubIntersectionObserver {
-      constructor(callback: IntersectionObserverCallback) {
-        deliver = callback;
-      }
-      observe(target: Element) {
-        observedTarget = target;
-      }
-      disconnect = disconnect;
-      unobserve = vi.fn();
-      takeRecords = vi.fn(() => []);
-      root = null;
-      rootMargin = '';
-      thresholds: number[] = [];
-    }
-
-    window.IntersectionObserver =
-      StubIntersectionObserver as unknown as typeof IntersectionObserver;
+    // fetch on mount, a fetch once the section nears the viewport. The stub
+    // delivers to whichever observer watches the section, since the message
+    // tank inside watches its own element too.
+    const viewport = stubIntersectionObserver();
 
     try {
-      render(<Reviews />);
+      const { container } = render(<Reviews />);
+      const section = container.querySelector('#reviews') as HTMLElement;
 
       // Let effects settle. Nothing should have been fetched yet.
       await Promise.resolve();
       await Promise.resolve();
       expect(fetchRatings).not.toHaveBeenCalled();
       expect(fetchMessages).not.toHaveBeenCalled();
-      expect(deliver).toBeDefined();
-      expect(observedTarget).toBeDefined();
+      expect(viewport.isWatched(section)).toBe(true);
 
-      // Simulate the section approaching the viewport.
-      act(() => {
-        deliver!(
-          [{ isIntersecting: true, target: observedTarget! } as IntersectionObserverEntry],
-          new StubIntersectionObserver(() => {}) as unknown as IntersectionObserver,
-        );
-      });
+      viewport.setVisible(section, true);
 
       expect(await screen.findByText('4.5')).toBeInTheDocument();
       expect(fetchRatings).toHaveBeenCalledTimes(1);
       expect(fetchMessages).toHaveBeenCalledTimes(1);
-      expect(disconnect).toHaveBeenCalled();
+      // Revealed once is revealed for good; the section is no longer watched.
+      expect(viewport.isWatched(section)).toBe(false);
     } finally {
-      window.IntersectionObserver = originalIO;
+      vi.unstubAllGlobals();
     }
   });
 

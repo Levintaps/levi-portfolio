@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ProjectCarousel from './ProjectCarousel';
+import { stubIntersectionObserver } from '../../test/viewport';
 import type { Project } from '../../data/types';
 
 function make(id: string, name: string): Project {
@@ -55,6 +56,34 @@ describe('ProjectCarousel', () => {
     expect(track()).toHaveAttribute('data-paused', 'true');
     await user.unhover(track());
     expect(track()).toHaveAttribute('data-paused', 'false');
+  });
+
+  // Scrolled away, nobody sees it move, so it asks the screen for no frames.
+  it('stops moving itself while scrolled out of view, and starts again after', () => {
+    const pending = new Map<number, FrameRequestCallback>();
+    let next = 1;
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      pending.set(next, callback);
+      return next++;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation((id) => {
+      pending.delete(id);
+    });
+    const viewport = stubIntersectionObserver();
+
+    try {
+      render(<ProjectCarousel projects={three} onOpen={() => {}} />);
+      expect(pending.size).toBe(1);
+
+      viewport.setVisible(track(), false);
+      expect(pending.size).toBe(0);
+
+      viewport.setVisible(track(), true);
+      expect(pending.size).toBe(1);
+    } finally {
+      vi.unstubAllGlobals();
+      vi.restoreAllMocks();
+    }
   });
 
   it('pauses while something inside it holds focus', async () => {

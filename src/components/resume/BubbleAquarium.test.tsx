@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import BubbleAquarium from './BubbleAquarium';
 import { LIFE_MAX_MS, POP_MS } from '../../lib/aquarium';
 import type { FeedbackMessage } from '../../lib/feedback';
+import { stubIntersectionObserver } from '../../test/viewport';
 
 function messages(count: number): FeedbackMessage[] {
   return Array.from({ length: count }, (_, index) => ({
@@ -65,6 +66,7 @@ describe('BubbleAquarium', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
     Object.defineProperty(document, 'hidden', { configurable: true, value: false });
   });
@@ -194,6 +196,27 @@ describe('BubbleAquarium', () => {
     });
 
     expect(frames.size).toBe(0);
+  });
+
+  // Scrolled away, nobody sees the tank: no frames, and no bubble pops unseen.
+  it('rests the whole tank while it is scrolled out of view', () => {
+    const frames = captureFrames();
+    const viewport = stubIntersectionObserver();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
+    render(<BubbleAquarium messages={messages(12)} />);
+    const first = shownMessages();
+    const box = tank().parentElement as HTMLElement;
+    expect(frames.size).toBe(1);
+
+    viewport.setVisible(box, false);
+    expect(frames.size).toBe(0);
+    act(() => {
+      vi.advanceTimersByTime(60_000);
+    });
+    expect(shownMessages()).toEqual(first);
+
+    viewport.setVisible(box, true);
+    expect(frames.size).toBe(1);
   });
 
   it('keeps the visitor’s own message in the tank', () => {

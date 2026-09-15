@@ -11,6 +11,7 @@ import type { FeedbackMessage } from '../../lib/feedback';
 import { useBubblePhysics } from '../../hooks/useBubblePhysics';
 import { useDocumentHidden } from '../../hooks/useDocumentHidden';
 import { useElementWidth } from '../../hooks/useElementWidth';
+import { useInView } from '../../hooks/useInView';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import Modal from '../common/Modal';
 import Bubble from './Bubble';
@@ -46,7 +47,11 @@ export default function BubbleAquarium({ messages, pin }: BubbleAquariumProps) {
   const width = useElementWidth(tankElement);
   const capacity = width === null ? layout.maxBubbles : capacityFor(width, layout, rem);
 
-  const paused = hidden || open !== null;
+  // Everything rests, the drift and the lifetimes alike, while nobody can see
+  // the tank: the tab is in the background, a message is open, or the tank is
+  // scrolled away.
+  const onScreen = useInView(tankElement);
+  const paused = hidden || open !== null || !onScreen;
   const physics = useBubblePhysics(paused || still || messages.length === 0);
 
   // The tank starts over when the messages, the pin or the room change.
