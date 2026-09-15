@@ -11,9 +11,28 @@ import styles from './Hero.module.css';
 // changes size as letters come and go.
 const longestRole = Math.max(...roles.map((role) => role.length));
 
-export default function Hero() {
+/**
+ * The typed line on its own. The typewriter changes it ten or more times a
+ * second, and kept here that only ever redraws this line, never the rest of
+ * the hero and the three.js badge beside it.
+ */
+function TypedRoles() {
   const typed = useTypewriter(roles, { typeMs: 70, holdMs: 1800 });
 
+  return (
+    <span
+      className={styles.typed}
+      data-typed
+      aria-hidden="true"
+      style={{ '--longest': `${longestRole}ch` } as CSSProperties}
+    >
+      {typed}
+      <span className={styles.caret} />
+    </span>
+  );
+}
+
+export default function Hero() {
   return (
     <section className={styles.hero} id="top">
       <div className={styles.aside}>
@@ -32,15 +51,7 @@ export default function Hero() {
 
         <p className={styles.roles}>
           <span className={styles.srOnly}>{roles.join(', ')}</span>
-          <span
-            className={styles.typed}
-            data-typed
-            aria-hidden="true"
-            style={{ '--longest': `${longestRole}ch` } as CSSProperties}
-          >
-            {typed}
-            <span className={styles.caret} />
-          </span>
+          <TypedRoles />
         </p>
 
         <p className={styles.headline}>{profile.headline}</p>
