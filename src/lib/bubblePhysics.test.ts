@@ -155,14 +155,21 @@ describe('step', () => {
       return body({ ...spot, ...launch(random), radius });
     });
 
+    // Tallied rather than asserted frame by frame: sixty thousand separate
+    // expectations made this test slow enough to time out on a busy machine.
+    let outside = 0;
     let worstOverlap = 0;
     for (let frame = 0; frame < 1500; frame += 1) {
       step(bubbles, 16, bounds);
       for (const bubble of bubbles) {
-        expect(bubble.x - bubble.radius).toBeGreaterThanOrEqual(-1e-9);
-        expect(bubble.y - bubble.radius).toBeGreaterThanOrEqual(-1e-9);
-        expect(bubble.x + bubble.radius).toBeLessThanOrEqual(bounds.width + 1e-9);
-        expect(bubble.y + bubble.radius).toBeLessThanOrEqual(bounds.height + 1e-9);
+        if (
+          bubble.x - bubble.radius < -1e-9 ||
+          bubble.y - bubble.radius < -1e-9 ||
+          bubble.x + bubble.radius > bounds.width + 1e-9 ||
+          bubble.y + bubble.radius > bounds.height + 1e-9
+        ) {
+          outside += 1;
+        }
       }
       if (frame > 300) {
         for (let a = 0; a < bubbles.length; a += 1) {
@@ -177,6 +184,7 @@ describe('step', () => {
       }
     }
 
+    expect(outside).toBe(0);
     // Started piled on one spot; once spread out, any touch is a sliver that
     // the next frame resolves.
     expect(worstOverlap).toBeLessThan(3);
