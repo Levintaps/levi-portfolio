@@ -65,13 +65,12 @@ describe('Hero', () => {
     }
   });
 
-  it('makes the key technologies easy to spot', () => {
+  // Holds with an empty list too, where it means the introduction is plain.
+  it('bolds the key terms and nothing else', () => {
     const { container } = render(<Hero />);
     const marked = [...container.querySelectorAll('strong')].map((node) => node.textContent);
 
-    for (const term of profile.keyTerms) {
-      expect(marked).toContain(term);
-    }
+    expect(new Set(marked)).toEqual(new Set(profile.keyTerms));
   });
 
   it('offers the CV as a direct one-click download', () => {

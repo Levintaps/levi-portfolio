@@ -126,6 +126,16 @@ describe('resume data', () => {
     }
   });
 
+  // The introduction talks about the work. Naming the technologies is left
+  // to the skills section and the project cards.
+  it('names no technology from the skills section in the introduction', () => {
+    const text = profile.intro.join(' ');
+    for (const skill of skillGroups.flatMap((group) => group.items)) {
+      const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      expect(text).not.toMatch(new RegExp(`(?<![\\w])${escaped}(?![\\w])`));
+    }
+  });
+
   it('never leaves an achievement as a bare heading', () => {
     for (const achievement of achievements) {
       expect(achievement.title.trim().length).toBeGreaterThan(0);

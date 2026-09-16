@@ -24,10 +24,11 @@ export const projectsLead = 'Client platforms, a capstone project, and things I 
 export const achievementsLead = "A short list of results I'm proud of, on and off the board.";
 
 // Two short paragraphs rather than one long one: who you are and what you
-// have shipped, then the stack and the infrastructure behind it.
+// have shipped, then how you work and the IT background behind it. No
+// technology is named here; the skills section and project cards do that.
 const intro = [
   'Information Technology graduate and full-stack developer who has shipped web, mobile and IoT-integrated applications for real clients.',
-  'Comfortable across the stack in React, TypeScript, Java and Firebase, and equally at home in the infrastructure underneath it after a corporate IT support internship covering systems administration, Active Directory and enterprise networking.',
+  'Works directly with clients from the first conversation to the fixes after launch, and brings a corporate IT support background that keeps the people and machines behind the software in view.',
 ];
 
 export const profile: Profile = {
@@ -37,8 +38,9 @@ export const profile: Profile = {
   headline: 'I build production systems end to end, from database and API to the interface people actually use.',
   intro,
   // Edit these to change what a skimming reader sees in bold. Each one must
-  // appear, spelled exactly, somewhere in the introduction above.
-  keyTerms: ['React', 'TypeScript', 'Java', 'Firebase', 'Active Directory'],
+  // appear, spelled exactly, somewhere in the introduction above. Empty, so
+  // the introduction reads as plain text.
+  keyTerms: [],
   summary: intro.join(' '),
   location: 'Antipolo City, Rizal, Philippines',
   timezone: 'Philippine Standard Time, UTC+8',
