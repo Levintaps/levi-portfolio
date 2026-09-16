@@ -11,6 +11,16 @@ describe('Projects', () => {
     expect(within(track).getByRole('heading', { name: projects[0].name })).toBeInTheDocument();
   });
 
+  // The two newest builds earn a place in the front window, not just a line in
+  // the full listing.
+  it('features ClientFlow and AI Notes in the carousel', () => {
+    render(<Projects />);
+    const track = screen.getByRole('group', { name: /projects/i });
+
+    expect(within(track).getByRole('heading', { name: 'ClientFlow' })).toBeInTheDocument();
+    expect(within(track).getByRole('heading', { name: 'AI Notes' })).toBeInTheDocument();
+  });
+
   it('shows nothing of the rest until the listing is opened', () => {
     render(<Projects />);
     const laterProject = projects[projects.length - 1].name;

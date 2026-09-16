@@ -150,6 +150,20 @@ export const projects: Project[] = [
     ],
   },
   {
+    id: 'clientflow',
+    name: 'ClientFlow',
+    kind: 'Client project',
+    period: 'Apr 2026 — May 2026',
+    summary: 'A client and team workspace for an SEO agency, holding the deliverables, attendance and payroll of every account in one place.',
+    stack: ['JavaScript', 'Firebase', 'Supabase', 'Groq API', 'PWA'],
+    highlights: [
+      'A workspace per client, with a deliverable catalogue spanning SEO, technical, development, link-building and content work, logged as dated entries with file attachments and tracked against each renewal date.',
+      'A team side holding member records, attendance on a monthly calendar, a planner of task cards and an activity log of every change made.',
+      'Semi-monthly pay worked out pro rata from that attendance, counting full days, half days and rest-day work against absences, down to a per-day rate and a payslip.',
+      "An assistant that answers questions about the agency's own records, reading the same data the pages show, and moving to a second model when the first is rate limited.",
+    ],
+  },
+  {
     id: 'startup-stealth',
     name: 'In stealth',
     kind: 'Startup project',
@@ -158,6 +172,20 @@ export const projects: Project[] = [
     stack: [],
     highlights: [],
     confidential: true,
+  },
+  {
+    id: 'ai-notes',
+    name: 'AI Notes',
+    kind: 'Personal project',
+    period: 'Jul 2026 — Present',
+    summary: 'A free planning app where notes, calendar, habits and trackers all sit under one AI companion.',
+    stack: ['React 19', 'TypeScript', 'Firebase', 'Zustand', 'Tailwind CSS', 'Groq API', 'PWA'],
+    highlights: [
+      "An AI companion grounded in the account's own notes: it answers questions about them, drafts and summarises, suggests tags, and creates notes and calendar events straight from the conversation.",
+      'Notes, events, weekly tasks, goals, habits, itineraries, a focus timer and dated trackers in one workspace, where each tracker is read on its own terms, from cycle length and savings growth to spending anomalies and mood patterns.',
+      'A mind map across every entity at once, shareable note links open to real-time collaborative editing without an account, plus voice input, deadline reminders, a thirty-day trash and installable offline support.',
+    ],
+    demoUrl: 'https://aistickynotes.vercel.app',
   },
   {
     id: 'smart-parking',
