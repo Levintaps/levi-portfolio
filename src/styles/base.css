@@ -47,14 +47,22 @@ p {
   color: var(--accent-ink);
 }
 
-/* The theme change (src/theme/revealScheme.ts): the new theme grows out from
-   the top left corner. The browser's own crossfade is switched off so the
-   circle alone carries the change, and while it runs no element eases its
-   colours, so the new theme is already whole inside the circle. */
+/* The theme change (src/theme/revealScheme.ts, with the reveals themselves in
+   src/theme/reveals.ts): the browser photographs the page either side of the
+   change and one of the reveals moves or uncovers the photographs. The
+   browser's own crossfade is switched off so the reveal alone carries the
+   change, and while it runs no element eases its colours, so the new theme is
+   already whole wherever it shows. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+
+/* Every other reveal brings the new page in over the old one. The crumple
+   screws the old page up and throws it away, so it has to lie on top. */
+:root[data-theme-reveal='crumple']::view-transition-old(root) {
+  z-index: 1;
 }
 
 :root[data-theme-reveal] *,

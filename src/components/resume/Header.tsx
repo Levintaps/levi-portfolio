@@ -77,7 +77,12 @@ export default function Header() {
           <button
             type="button"
             className={styles.iconButton}
-            onClick={toggle}
+            // The middle of the button, not the pointer, so a press from the
+            // keyboard starts the button reveal in the same place.
+            onClick={(event) => {
+              const box = event.currentTarget.getBoundingClientRect();
+              toggle({ x: box.left + box.width / 2, y: box.top + box.height / 2 });
+            }}
             aria-label={`Switch to ${scheme === 'light' ? 'dark' : 'light'} theme`}
           >
             {/* The icon shows the theme that is on; the label says what a

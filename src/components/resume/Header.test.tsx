@@ -125,6 +125,52 @@ describe('Header', () => {
     expect(localStorage.getItem('portfolio-scheme')).toBeTruthy();
   });
 
+  // A press from the keyboard has no pointer position, so the circle starts
+  // from the middle of the button itself however it was pressed.
+  it('starts the button circle from the middle of the theme button', async () => {
+    const user = userEvent.setup();
+    const ready = Promise.resolve();
+    const animate = vi.fn();
+    const page = document as { startViewTransition?: unknown };
+    const root = document.documentElement as { animate?: unknown };
+    page.startViewTransition = (update: () => void) => {
+      update();
+      return { ready, finished: ready, updateCallbackDone: ready, skipTransition: () => {} };
+    };
+    root.animate = animate;
+    // With the button's position known all seven reveals are in play, and
+    // this draw lands on the sixth, the button circle.
+    const random = vi.spyOn(Math, 'random').mockReturnValue(0.75);
+
+    try {
+      renderHeader();
+      const toggle = screen.getByRole('button', { name: /switch to (dark|light) theme/i });
+      vi.spyOn(toggle, 'getBoundingClientRect').mockReturnValue({
+        left: 1220,
+        top: 12,
+        width: 40,
+        height: 40,
+        right: 1260,
+        bottom: 52,
+        x: 1220,
+        y: 12,
+        toJSON: () => ({}),
+      } as DOMRect);
+
+      toggle.focus();
+      await user.keyboard('{Enter}');
+      await ready;
+
+      expect(animate).toHaveBeenCalledTimes(1);
+      expect(animate.mock.calls[0][0][0]).toEqual({ clipPath: 'circle(0px at 1240px 32px)' });
+    } finally {
+      random.mockRestore();
+      delete page.startViewTransition;
+      delete root.animate;
+      document.documentElement.removeAttribute('data-theme-reveal');
+    }
+  });
+
   it('opens and closes the mobile menu', async () => {
     const user = userEvent.setup();
     renderHeader();
