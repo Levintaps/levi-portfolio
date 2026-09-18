@@ -30,8 +30,7 @@ export const chessStats: ChessStat[] = [
 // The openings played by choice, one for each side.
 export const chessRepertoire: ChessFigure[] = [
   { label: 'As White', value: 'English', note: 'English Opening, 1.c4' },
-  // The moves stay together on one line, never split between two.
-  { label: 'As Black', value: 'Caro-Kann', note: 'Caro-Kann Defense, 1.e4\u00a0c6' },
+  { label: 'As Black', value: 'Caro-Kann', note: 'Caro-Kann Defense, 1...c6' },
 ];
 
 // One event to a milestone. A year that held several gives each its own step,

@@ -84,7 +84,8 @@ describe('ChessCareer', () => {
     expect(within(repertoire).getByText('As White')).toBeInTheDocument();
     expect(within(repertoire).getByText('English Opening, 1.c4')).toBeInTheDocument();
     expect(within(repertoire).getByText('As Black')).toBeInTheDocument();
-    expect(within(repertoire).getByText('Caro-Kann Defense, 1.e4 c6')).toBeInTheDocument();
+    // Black's move written on its own, as notation does: 1...c6.
+    expect(within(repertoire).getByText('Caro-Kann Defense, 1...c6')).toBeInTheDocument();
   });
 
   it('links to the Chess.com profile in a new tab', () => {
