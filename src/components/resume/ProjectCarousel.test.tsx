@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ProjectCarousel from './ProjectCarousel';
 import { stubIntersectionObserver } from '../../test/viewport';
@@ -98,6 +98,97 @@ describe('ProjectCarousel', () => {
     render(<ProjectCarousel projects={three} onOpen={() => {}} />);
     expect(screen.getByRole('button', { name: /previous project/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /next project/i })).toBeInTheDocument();
+  });
+
+  describe('on a phone', () => {
+    const SLIDE = 300;
+
+    // One card to a screen: the phone query matches, nothing else does.
+    function asPhone() {
+      vi.spyOn(window, 'matchMedia').mockImplementation(
+        (query: string) =>
+          ({
+            matches: query.includes('max-width: 39.99rem'),
+            media: query,
+            onchange: null,
+            addListener: () => {},
+            removeListener: () => {},
+            addEventListener: () => {},
+            removeEventListener: () => {},
+            dispatchEvent: () => false,
+          }) as unknown as MediaQueryList,
+      );
+    }
+
+    // jsdom lays nothing out, so each slide is placed one card width apart and
+    // the track is given a scroll position it can report back.
+    function layOut(scrollLeft: number) {
+      const element = track();
+      Array.from(element.children).forEach((slide, index) => {
+        Object.defineProperty(slide, 'offsetLeft', { configurable: true, value: index * SLIDE });
+      });
+      Object.defineProperty(element, 'scrollLeft', { configurable: true, writable: true, value: scrollLeft });
+      const scrollTo = vi.fn();
+      element.scrollTo = scrollTo as unknown as typeof element.scrollTo;
+      return scrollTo;
+    }
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      asPhone();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+    });
+
+    it('rests on a whole card and moves on one card at a time', () => {
+      const frames = vi.spyOn(window, 'requestAnimationFrame');
+      render(<ProjectCarousel projects={three} onOpen={() => {}} />);
+      const scrollTo = layOut(0);
+
+      act(() => vi.advanceTimersByTime(4499));
+      expect(scrollTo).not.toHaveBeenCalled();
+
+      act(() => vi.advanceTimersByTime(1));
+      expect(scrollTo).toHaveBeenCalledWith({ left: SLIDE, behavior: 'smooth' });
+      expect(frames).not.toHaveBeenCalled();
+    });
+
+    it('steps from a copied card back onto its original without a visible jump', () => {
+      render(<ProjectCarousel projects={three} onOpen={() => {}} />);
+      // The fourth slide is the copy of the first.
+      const scrollTo = layOut(3 * SLIDE);
+
+      act(() => vi.advanceTimersByTime(4500));
+      expect(scrollTo.mock.calls).toEqual([
+        [{ left: 0, behavior: 'auto' }],
+        [{ left: SLIDE, behavior: 'smooth' }],
+      ]);
+    });
+
+    it('waits a full turn again after the visitor swipes', () => {
+      render(<ProjectCarousel projects={three} onOpen={() => {}} />);
+      const scrollTo = layOut(0);
+
+      act(() => vi.advanceTimersByTime(3000));
+      fireEvent.scroll(track());
+      act(() => vi.advanceTimersByTime(3000));
+      expect(scrollTo).not.toHaveBeenCalled();
+
+      act(() => vi.advanceTimersByTime(1500));
+      expect(scrollTo).toHaveBeenCalledTimes(1);
+    });
+
+    it('stays put while the pointer or focus is on it', () => {
+      render(<ProjectCarousel projects={three} onOpen={() => {}} />);
+      const scrollTo = layOut(0);
+
+      fireEvent.mouseEnter(track().parentElement!);
+      act(() => vi.advanceTimersByTime(10000));
+      expect(scrollTo).not.toHaveBeenCalled();
+    });
   });
 
   it('passes a card through to the open handler', async () => {

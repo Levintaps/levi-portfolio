@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { Project } from '../../data/types';
 import { useInView } from '../../hooks/useInView';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { Icon } from '../common/icons';
 import ProjectCard from './ProjectCard';
 import styles from './ProjectCarousel.module.css';
@@ -8,21 +9,80 @@ import styles from './ProjectCarousel.module.css';
 interface ProjectCarouselProps {
   projects: Project[];
   onOpen: (project: Project) => void;
+  /** Shown with the arrows: beside them on a phone, beneath them on wider screens. */
+  action?: ReactNode;
 }
 
 const PIXELS_PER_SECOND = 26;
 
-export default function ProjectCarousel({ projects, onOpen }: ProjectCarouselProps) {
+/** Where the track shows one card at a time; matches the stylesheet. */
+const PHONE = '(max-width: 39.99rem)';
+/** On a phone, how long a card rests before the next one slides in. */
+const REST_MS = 4500;
+
+/** The index of the slide whose start is nearest the scroll position. */
+function nearest(starts: number[], scrollLeft: number): number {
+  let best = 0;
+  starts.forEach((start, index) => {
+    if (Math.abs(start - scrollLeft) < Math.abs(starts[best] - scrollLeft)) best = index;
+  });
+  return best;
+}
+
+/**
+ * A phone shows one card at a time, and a card drifting past is never shown
+ * whole. So there the track rests on each card and then slides to the next,
+ * and a visitor's own swipe restarts the rest.
+ */
+function stepThrough(track: HTMLDivElement, count: number): () => void {
+  let timer = 0;
+
+  const advance = () => {
+    const slides = Array.from(track.children) as HTMLElement[];
+    const origin = slides[0]?.offsetLeft ?? 0;
+    const starts = slides.map((slide) => slide.offsetLeft - origin);
+    let index = nearest(starts, track.scrollLeft);
+
+    // Resting on a copy, it first moves onto the identical original, which
+    // looks the same, so the slide onward never runs out of cards.
+    if (index >= count) {
+      index -= count;
+      track.scrollTo?.({ left: starts[index], behavior: 'auto' });
+    }
+
+    const next = starts[index + 1];
+    if (next !== undefined) track.scrollTo?.({ left: next, behavior: 'smooth' });
+    rest();
+  };
+
+  const rest = () => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(advance, REST_MS);
+  };
+
+  track.addEventListener('scroll', rest, { passive: true });
+  rest();
+
+  return () => {
+    window.clearTimeout(timer);
+    track.removeEventListener('scroll', rest);
+  };
+}
+
+export default function ProjectCarousel({ projects, onOpen, action }: ProjectCarouselProps) {
   const [track, setTrack] = useState<HTMLDivElement | null>(null);
   const [paused, setPaused] = useState(false);
   // Scrolled away, the track rests: nobody sees it move.
   const onScreen = useInView(track);
+  const phone = useMediaQuery(PHONE);
 
   useEffect(() => {
     if (!track) return;
 
     const still = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (paused || still.matches || !onScreen) return;
+
+    if (phone) return stepThrough(track, projects.length);
 
     let frame = 0;
     let last = performance.now();
@@ -51,7 +111,7 @@ export default function ProjectCarousel({ projects, onOpen }: ProjectCarouselPro
 
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
-  }, [track, paused, onScreen, projects.length]);
+  }, [track, paused, onScreen, phone, projects.length]);
 
   function nudge(direction: 1 | -1) {
     if (!track) return;
@@ -107,22 +167,25 @@ export default function ProjectCarousel({ projects, onOpen }: ProjectCarouselPro
       </div>
 
       <div className={styles.controls}>
-        <button
-          className={styles.arrow}
-          type="button"
-          aria-label="Previous project"
-          onClick={() => nudge(-1)}
-        >
-          <Icon name="arrow" size={18} />
-        </button>
-        <button
-          className={styles.arrow}
-          type="button"
-          aria-label="Next project"
-          onClick={() => nudge(1)}
-        >
-          <Icon name="arrow" size={18} />
-        </button>
+        <div className={styles.arrows}>
+          <button
+            className={styles.arrow}
+            type="button"
+            aria-label="Previous project"
+            onClick={() => nudge(-1)}
+          >
+            <Icon name="arrow" size={18} />
+          </button>
+          <button
+            className={styles.arrow}
+            type="button"
+            aria-label="Next project"
+            onClick={() => nudge(1)}
+          >
+            <Icon name="arrow" size={18} />
+          </button>
+        </div>
+        {action}
       </div>
     </div>
   );

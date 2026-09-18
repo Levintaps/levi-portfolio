@@ -40,12 +40,16 @@ export default function Projects() {
     <section className={styles.section} id="projects">
       <SectionHeading index="01 / Projects" title="Selected work" lead={projectsLead} />
 
-      <ProjectCarousel projects={projects.slice(0, CAROUSEL_SIZE)} onOpen={openProject} />
-
-      <button className={styles.toggle} type="button" onClick={openListing}>
-        {`Show all ${projects.length} projects`}
-        <Icon name="arrow" size={16} />
-      </button>
+      <ProjectCarousel
+        projects={projects.slice(0, CAROUSEL_SIZE)}
+        onOpen={openProject}
+        action={
+          <button className={styles.toggle} type="button" onClick={openListing}>
+            {`Show all ${projects.length} projects`}
+            <Icon name="arrow" size={16} />
+          </button>
+        }
+      />
 
       {listing ? (
         <AllProjectsModal projects={projects} onOpen={openProject} onClose={closeListing} />

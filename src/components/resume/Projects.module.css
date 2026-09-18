@@ -3,7 +3,7 @@
   justify-items: stretch;
   inline-size: min(100% - (var(--gutter) * 2), var(--shell));
   margin-inline: auto;
-  padding-block: var(--space-2xl);
+  padding-block: var(--section-space);
   scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
 }
 
@@ -14,13 +14,11 @@
 }
 
 .toggle {
-  justify-self: center;
   display: inline-flex;
   align-items: center;
   gap: var(--space-2xs);
-  margin-block-start: var(--space-l);
   min-block-size: 2.75rem;
-  padding-inline: var(--space-l);
+  padding-inline: var(--space-m);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-m);
   font-size: var(--step--1);
@@ -41,5 +39,9 @@
 
   .section {
     padding-block: var(--space-3xl);
+  }
+
+  .toggle {
+    padding-inline: var(--space-l);
   }
 }

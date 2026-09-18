@@ -49,10 +49,18 @@
   inline-size: 100%;
 }
 
+/* On a phone the arrows and the action share one row, the arrows on the
+   left under the card's text and the action on the right. Wider, the action
+   drops beneath the centred arrows. */
 .controls {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: var(--space-s);
+}
+
+.arrows {
+  display: flex;
   gap: var(--space-s);
 }
 
@@ -77,9 +85,34 @@
   border-color: var(--accent);
 }
 
+/* A phone holds one card at a time. The track runs out to the screen's edges
+   so the next card peeks in from the right instead of dissolving, and every
+   stop is a whole card lined up with the text above it. */
+@media (max-width: 39.99rem) {
+  .track {
+    grid-auto-columns: 86%;
+    gap: var(--space-s);
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter);
+    scroll-snap-type: x mandatory;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .slide {
+    scroll-snap-align: start;
+  }
+}
+
 @media (min-width: 40rem) {
   .track {
     grid-auto-columns: calc((100% - var(--space-m)) / 2);
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: var(--space-l);
   }
 }
 
