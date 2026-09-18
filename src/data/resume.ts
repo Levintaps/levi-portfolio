@@ -264,7 +264,7 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     name: 'Web, mobile and game',
-    items: ['HTML5', 'CSS3', 'Tailwind CSS', 'Vite', 'Progressive Web Apps', 'Flutter', 'Android Studio', 'Unity'],
+    items: ['HTML5', 'CSS3', 'Tailwind CSS', 'Vite', 'Progressive Web Apps', 'SEO fundamentals', 'Flutter', 'Android Studio', 'Unity'],
   },
   {
     name: 'Data and cloud',
@@ -321,12 +321,10 @@ export const achievements: Achievement[] = [
   },
   {
     title: 'Multiple-time tournament champion',
-    // Placeholder: replace with the count and the years, the way the first
-    // entry states its rank and rating. Until then it reads as a note.
-    detail: 'Open chess tournament titles. Add the count and the years here.',
+    detail: 'Titles won in open chess tournaments.',
   },
   {
-    title: 'UAAP award recipient',
-    detail: 'University athletic association awards. Add which ones, and when, here.',
+    title: 'UAAP silver medalist',
+    detail: 'Silver medal in 2018 as a player for Adamson University.',
   },
 ];

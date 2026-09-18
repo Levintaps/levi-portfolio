@@ -143,6 +143,14 @@ describe('resume data', () => {
     }
   });
 
+  // A note left for filling in later, such as "Add the count and the years
+  // here", must never reach the page.
+  it('shows no achievement still waiting to be filled in', () => {
+    for (const achievement of achievements) {
+      expect(achievement.detail).not.toMatch(/\badd\b[^.]*\bhere\b/i);
+    }
+  });
+
   it('exposes editable leads for the projects and achievements sections', () => {
     expect(projectsLead.length).toBeGreaterThan(0);
     expect(achievementsLead.length).toBeGreaterThan(0);
