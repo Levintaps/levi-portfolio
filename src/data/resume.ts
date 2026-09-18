@@ -8,7 +8,7 @@ import type {
   SkillGroup,
 } from './types';
 
-export const siteUrl = 'https://levintaps.vercel.app';
+export const siteUrl = 'https://levintapia.vercel.app';
 
 // The four roles from the CV headline. The resume hero prints them on one
 // line; the cyber hero rotates through them.

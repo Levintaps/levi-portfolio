@@ -76,7 +76,7 @@ Firebase console before relying on them.
 
 ## Production domain
 
-The production domain is currently `https://levintaps.vercel.app`. It is
+The production domain is currently `https://levintapia.vercel.app`. It is
 carried as a literal string in four places, since none of them can read the
 value from `src/data/resume.ts` at build time:
 
