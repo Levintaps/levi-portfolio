@@ -317,11 +317,11 @@ export const certifications: Certification[] = [
 export const achievements: Achievement[] = [
   {
     title: 'FIDE rated chess player',
-    detail: 'Ranked 43rd in the Philippines in October 2020, peak rating 2155.',
+    detail: 'Ranked 43rd in the Philippines in October 2020, peak rating 2198.',
   },
   {
     title: 'Multiple-time tournament champion',
-    detail: 'Titles won in open chess tournaments.',
+    detail: 'Won several open chess tournaments.',
   },
   {
     title: 'UAAP silver medalist',
