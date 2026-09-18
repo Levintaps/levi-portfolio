@@ -51,11 +51,15 @@ function ThemedLanyard({ active, anchorX }: { active: boolean; anchorX: number |
   );
 }
 
+// A tablet or anything larger. Width alone would count a phone held sideways,
+// so the screen must also be taller than any phone is on its side.
+const ROOM_FOR_BADGE = '(min-width: 37.5rem) and (min-height: 30rem)';
+
 // The lanyard costs a three.js and physics bundle, so it only loads for a
 // visitor whose device can enjoy it, and never before the page is usable.
 function canRunLanyard() {
   if (typeof window === 'undefined') return false;
-  if (!window.matchMedia('(min-width: 48rem)').matches) return false;
+  if (!window.matchMedia(ROOM_FOR_BADGE).matches) return false;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
 
   // Several megabytes of model and physics is not a fair thing to spend on a

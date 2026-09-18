@@ -71,6 +71,66 @@ describe('HeroPortrait', () => {
     expect(document.querySelector('[data-portrait="still"]')).toBeNull();
   });
 
+  // A tablet and anything larger swings the badge; a phone, held either way,
+  // keeps the photo.
+  describe('by screen', () => {
+    /** Answers width and height queries as a screen of this size would. */
+    function screenOf(width: number, height: number) {
+      const rem = 16;
+      vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => {
+        const need = (feature: string) => {
+          const found = new RegExp(`\\(${feature}:\\s*([\\d.]+)rem\\)`).exec(query);
+          return found ? Number(found[1]) * rem : 0;
+        };
+        const matches =
+          !query.includes('prefers-reduced-motion') &&
+          width >= need('min-width') &&
+          height >= need('min-height');
+        return {
+          matches,
+          media: query,
+          addEventListener: () => {},
+          removeEventListener: () => {},
+        } as unknown as MediaQueryList;
+      });
+    }
+
+    async function settle(container: HTMLElement) {
+      // Longer than the badge ever waits before it loads.
+      await new Promise((resolve) => setTimeout(resolve, 1700));
+      return {
+        badge: container.querySelector('[data-badge]') !== null,
+        photo: container.querySelector('[data-portrait="still"]') !== null,
+      };
+    }
+
+    function renderAt(width: number, height: number) {
+      screenOf(width, height);
+      stubIntersectionObserver();
+      return render(
+        <ThemeProvider>
+          <HeroPortrait />
+        </ThemeProvider>,
+      ).container;
+    }
+
+    it('keeps the photo on a phone held upright', async () => {
+      expect(await settle(renderAt(390, 844))).toEqual({ badge: false, photo: true });
+    });
+
+    it('keeps the photo on a phone held sideways', async () => {
+      expect(await settle(renderAt(844, 390))).toEqual({ badge: false, photo: true });
+    });
+
+    it('swings the badge on a small tablet', async () => {
+      expect(await settle(renderAt(600, 960))).toEqual({ badge: true, photo: false });
+    });
+
+    it('swings the badge on a laptop with a short window', async () => {
+      expect(await settle(renderAt(1280, 580))).toEqual({ badge: true, photo: false });
+    });
+  });
+
   it('runs the badge while the hero is on screen', async () => {
     await renderBadge();
     expect(latest().active).toBe(true);
