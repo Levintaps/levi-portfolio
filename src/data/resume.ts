@@ -325,6 +325,6 @@ export const achievements: Achievement[] = [
   },
   {
     title: 'UAAP silver medalist',
-    detail: 'Silver medal in 2018 as a player for Adamson University.',
+    detail: 'Chess silver medal in 2018 as a player for Adamson University.',
   },
 ];
