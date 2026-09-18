@@ -1,7 +1,9 @@
 import type { ChessMilestone, ChessStat } from './types';
 
 // The chess page (/chess). Ratings and the 2017 result come from the official
-// FIDE record for this ID; school years are counted from Grade 3 in 2007–2008.
+// FIDE record for this ID, and the NCFP rating and ranking from the December
+// 2023 release as listed on ChessHermit. School years are counted from Grade 3
+// in 2007–2008.
 export const chessProfile = {
   fideId: '5230411',
   fideUrl: 'https://ratings.fide.com/profile/5230411',
@@ -15,7 +17,7 @@ export const chessStats: ChessStat[] = [
   { label: 'Peak FIDE rating', value: '2197', note: 'May 2018' },
   { label: 'National ranking', value: '43rd', note: 'October 2020' },
   { label: 'UAAP chess', value: 'Silver', note: '2018, Adamson University' },
-  { label: 'NCFP rating', value: '2181', note: 'Standard' },
+  { label: 'NCFP rating', value: '2181', note: 'Standard, 52nd of non-masters, December 2023' },
 ];
 
 export const chessTimeline: ChessMilestone[] = [
@@ -30,14 +32,19 @@ export const chessTimeline: ChessMilestone[] = [
     detail: 'Started competing for the school in Grade 6 and went on to reach the regional level.',
   },
   {
-    year: '2011–2015',
-    title: 'Regional, every year of high school',
-    detail: 'Reached the regional level in every year of high school, from first year to fourth.',
+    year: '2011',
+    title: 'Inter School Age Group champion',
+    detail: 'Won the Inter School Age Group Chess Tournament.',
+  },
+  {
+    year: '2012',
+    title: 'One Meralco Jr. Chessmaster champion',
+    detail: 'Won the One Meralco Jr. Chessmaster Tournament in May 2012.',
   },
   {
     year: '2015',
-    title: 'Adamson University varsity',
-    detail: 'Joined the chess varsity of Adamson University after high school.',
+    title: 'Regional every year, then Adamson',
+    detail: 'Reached the regional level in every year of high school, from first year to fourth, then joined the chess varsity of Adamson University.',
   },
   {
     year: '2017',
