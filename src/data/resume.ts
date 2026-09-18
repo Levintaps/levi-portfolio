@@ -21,7 +21,7 @@ export const roles = [
 
 export const projectsLead = 'Client platforms, a capstone project, and things I built on my own to learn.';
 
-export const achievementsLead = "A short list of results I'm proud of, on and off the board.";
+export const achievementsLead = 'Thirteen years of competitive chess, from a school league to the UAAP.';
 
 // Two short paragraphs rather than one long one: who you are and what you
 // have shipped, then how you work and the IT background behind it. No
@@ -328,17 +328,11 @@ export const certifications: Certification[] = [
   { name: 'Java Programming NC III', issuer: 'TESDA Manila' },
 ];
 
+// One card on the homepage. The tournament wins, the UAAP medal and the rest
+// of the story are on the chess page (src/data/chess.ts), a click away.
 export const achievements: Achievement[] = [
   {
     title: 'FIDE rated chess player',
-    detail: 'Ranked 43rd in the Philippines in October 2020, peak rating 2198.',
-  },
-  {
-    title: 'Multiple-time tournament champion',
-    detail: 'Won several open chess tournaments.',
-  },
-  {
-    title: 'UAAP silver medalist',
-    detail: 'Chess silver medal in 2018 as a player for Adamson University.',
+    detail: 'Ranked 43rd in the Philippines in October 2020, peak rating 2197.',
   },
 ];

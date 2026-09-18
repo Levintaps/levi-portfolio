@@ -95,3 +95,16 @@ export interface Achievement {
   title: string;
   detail: string;
 }
+
+export interface ChessStat {
+  label: string;
+  value: string;
+  note: string;
+}
+
+export interface ChessMilestone {
+  /** A calendar year, a school year such as 2007–2008, or a span of years. */
+  year: string;
+  title: string;
+  detail: string;
+}

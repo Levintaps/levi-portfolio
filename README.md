@@ -3,6 +3,8 @@
 A React and Vite portfolio with two views driven by one content source.
 
 - `/` is the resume view: minimalist, mobile first, light and dark.
+- `/chess` is the chess career, a timeline reached from the achievements
+  card. Its content lives in `src/data/chess.ts`.
 - `/cyber` is the cyberpunk view. It is parked for now: its code and tests
   stay in `src/components/cyber`, but no route or link reaches it, and
   `/cyber` sends visitors to the resume. To bring it back, restore its route
@@ -80,7 +82,7 @@ value from `src/data/resume.ts` at build time:
 
 - `index.html` (the `og:url` and `og:image` meta tags)
 - `public/robots.txt` (the `Sitemap:` line)
-- `public/sitemap.xml` (the `/` entry, and `/cyber` once that view returns)
+- `public/sitemap.xml` (the `/` and `/chess` entries, and `/cyber` once that view returns)
 - `src/data/resume.ts` (the `siteUrl` constant, which the React app itself
   reads for structured data)
 

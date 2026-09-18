@@ -1,0 +1,238 @@
+/* The top bar matches the resume's: the mark on the left, and on the right
+   the way back and the theme switch. */
+.bar {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-block-end: 1px solid var(--line);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-m);
+  inline-size: min(100% - (var(--gutter) * 2), var(--shell));
+  margin-inline: auto;
+  block-size: var(--header-height);
+}
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-s);
+  border-radius: var(--radius-m);
+  font-size: var(--step--1);
+  color: var(--ink-muted);
+  text-decoration: none;
+  transition:
+    color var(--motion-fast) var(--ease),
+    background-color var(--motion-fast) var(--ease);
+}
+
+.back:hover {
+  color: var(--ink);
+  background: var(--surface-sunken);
+}
+
+.iconButton {
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--radius-m);
+  color: var(--ink-muted);
+  transition:
+    color var(--motion-fast) var(--ease),
+    background-color var(--motion-fast) var(--ease);
+}
+
+.iconButton:hover {
+  color: var(--ink);
+  background: var(--surface-sunken);
+}
+
+.main {
+  inline-size: min(100% - (var(--gutter) * 2), var(--shell));
+  margin-inline: auto;
+}
+
+.intro {
+  display: grid;
+  gap: var(--space-s);
+  padding-block: var(--space-2xl) var(--space-xl);
+  scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.title {
+  font-size: var(--step-4);
+  letter-spacing: -0.035em;
+}
+
+.lead {
+  max-inline-size: 42rem;
+  color: var(--ink-muted);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-m);
+  margin-block-start: var(--space-m);
+}
+
+.stat {
+  display: grid;
+  gap: var(--space-2xs);
+  padding-block-start: var(--space-s);
+  border-block-start: 1px solid var(--line);
+}
+
+.statLabel {
+  font-size: var(--step--1);
+  color: var(--ink-muted);
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.statNote {
+  font-size: var(--step--2);
+  color: var(--ink-faint);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs) var(--space-m);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-faint);
+}
+
+.fide {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.fide:hover {
+  text-decoration: underline;
+}
+
+.story {
+  display: grid;
+  gap: var(--space-l);
+  padding-block: var(--space-xl);
+}
+
+.storyTitle {
+  font-size: var(--step-2);
+}
+
+.next {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-s);
+  padding-block: var(--space-xl) var(--space-3xl);
+}
+
+.nextText {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+}
+
+.nextLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-block-size: 2.75rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.nextLink:hover {
+  text-decoration: underline;
+}
+
+/* A small circle out of the way in the corner, clear of a phone's home
+   indicator, so the stories passing beneath it are covered as little as
+   possible. */
+.control {
+  position: fixed;
+  inset-block-end: calc(var(--space-m) + env(safe-area-inset-bottom, 0px));
+  inset-inline-end: var(--space-m);
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+  color: var(--ink);
+}
+
+.control:hover {
+  background: var(--surface-sunken);
+}
+
+@media (min-width: 48rem) {
+  .stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .intro {
+    padding-block: var(--space-3xl) var(--space-2xl);
+  }
+
+  .story {
+    gap: var(--space-xl);
+  }
+
+  .storyTitle {
+    text-align: center;
+  }
+
+  .next {
+    justify-items: center;
+    text-align: center;
+  }
+}

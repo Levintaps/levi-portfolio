@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useScheme } from '../../theme/ThemeProvider';
 import { useActiveSection } from '../../hooks/useActiveSection';
 import { profile } from '../../data/resume';
 import { Icon } from '../common/icons';
+import ThemeToggle from '../common/ThemeToggle';
 import styles from './Header.module.css';
 
 const sections = [
@@ -16,7 +16,6 @@ const sections = [
 const sectionIds = sections.map((section) => section.href.slice(1));
 
 export default function Header() {
-  const { scheme, toggle } = useScheme();
   const [open, setOpen] = useState(false);
   const active = useActiveSection(sectionIds);
 
@@ -74,21 +73,7 @@ export default function Header() {
         </nav>
 
         <div className={styles.actions}>
-          <button
-            type="button"
-            className={styles.iconButton}
-            // The middle of the button, not the pointer, so a press from the
-            // keyboard starts the button reveal in the same place.
-            onClick={(event) => {
-              const box = event.currentTarget.getBoundingClientRect();
-              toggle({ x: box.left + box.width / 2, y: box.top + box.height / 2 });
-            }}
-            aria-label={`Switch to ${scheme === 'light' ? 'dark' : 'light'} theme`}
-          >
-            {/* The icon shows the theme that is on; the label says what a
-                press will do. */}
-            <Icon name={scheme === 'light' ? 'sun' : 'moon'} />
-          </button>
+          <ThemeToggle className={styles.iconButton} />
           <button
             type="button"
             className={`${styles.iconButton} ${styles.menuButton}`}

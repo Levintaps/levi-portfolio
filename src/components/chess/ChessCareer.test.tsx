@@ -1,0 +1,69 @@
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
+import { ThemeProvider } from '../../theme/ThemeProvider';
+import { chessProfile, chessTimeline } from '../../data/chess';
+import ChessCareer from './ChessCareer';
+
+function renderChess() {
+  return render(
+    <ThemeProvider>
+      <MemoryRouter>
+        <ChessCareer />
+      </MemoryRouter>
+    </ThemeProvider>,
+  );
+}
+
+describe('ChessCareer', () => {
+  it('names the page', () => {
+    renderChess();
+    expect(screen.getByRole('heading', { name: /chess career/i, level: 1 })).toBeInTheDocument();
+  });
+
+  it('lays out every milestone, year by year', () => {
+    renderChess();
+    const timeline = screen.getByRole('list', { name: /year by year/i });
+    const entries = within(timeline).getAllByRole('listitem');
+
+    expect(entries).toHaveLength(chessTimeline.length);
+    chessTimeline.forEach((milestone, index) => {
+      expect(entries[index]).toHaveTextContent(milestone.year);
+      expect(within(entries[index]).getByRole('heading', { name: milestone.title })).toBeInTheDocument();
+    });
+  });
+
+  // The year sits on the line in the middle and the story swaps sides.
+  it('sets the milestones on alternate sides of the line', () => {
+    renderChess();
+    const entries = within(screen.getByRole('list', { name: /year by year/i })).getAllByRole('listitem');
+
+    expect(entries.map((entry) => entry.getAttribute('data-side'))).toEqual(
+      chessTimeline.map((_, index) => (index % 2 === 0 ? 'left' : 'right')),
+    );
+  });
+
+  it('links to the official FIDE profile in a new tab', () => {
+    renderChess();
+    const link = screen.getByRole('link', { name: /fide profile/i });
+
+    expect(link).toHaveAttribute('href', chessProfile.fideUrl);
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link.getAttribute('rel')).toContain('noopener');
+  });
+
+  it('lets the reader pause the slow scroll and start it again', async () => {
+    const user = userEvent.setup();
+    renderChess();
+
+    await user.click(screen.getByRole('button', { name: /pause auto-scroll/i }));
+    await user.click(screen.getByRole('button', { name: /resume auto-scroll/i }));
+
+    expect(screen.getByRole('button', { name: /pause auto-scroll/i })).toBeInTheDocument();
+  });
+
+  it('offers the way back to the portfolio', () => {
+    renderChess();
+    expect(screen.getByRole('link', { name: /back to portfolio/i })).toHaveAttribute('href', '/#achievements');
+  });
+});

@@ -5,6 +5,14 @@
   scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
 }
 
+/* The card and the way on to the chess page, stacked on a phone and side by
+   side from 48rem. */
+.record {
+  display: grid;
+  gap: var(--space-m);
+  align-items: end;
+}
+
 .list {
   display: grid;
   gap: var(--space-l);
@@ -30,10 +38,32 @@
   font-size: var(--step--1);
 }
 
+.more {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: var(--space-xs);
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-m);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: var(--step--1);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    border-color var(--motion-fast) var(--ease),
+    color var(--motion-fast) var(--ease);
+}
+
+.more:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 @media (min-width: 48rem) {
-  .list {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-l) var(--space-xl);
+  .record {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-xl);
   }
 
   .section {

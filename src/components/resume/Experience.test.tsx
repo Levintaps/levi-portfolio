@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import Experience from './Experience';
 import Education from './Education';
 import Achievements from './Achievements';
@@ -76,7 +77,11 @@ describe('Education', () => {
 
 describe('Achievements', () => {
   it('renders each achievement with its detail', () => {
-    render(<Achievements />);
+    render(
+      <MemoryRouter>
+        <Achievements />
+      </MemoryRouter>,
+    );
     const list = screen.getByRole('list');
     for (const item of achievements) {
       expect(within(list).getByText(item.title)).toBeInTheDocument();

@@ -20,7 +20,10 @@ export type IconName =
   | 'tag'
   | 'message'
   | 'copy'
-  | 'arrowUp';
+  | 'arrowUp'
+  | 'arrowLeft'
+  | 'pause'
+  | 'play';
 
 const paths: Record<IconName, string> = {
   github:
@@ -41,6 +44,9 @@ const paths: Record<IconName, string> = {
   star: 'M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1.1 5.9-5.3-2.9-5.3 2.9 1.1-5.9L3.5 9.7l5.9-.8Z',
   arrow: 'M5 12h14m0 0-5-5m5 5-5 5',
   arrowUp: 'M12 19V5m0 0-5 5m5-5 5 5',
+  arrowLeft: 'M19 12H5m0 0 5-5m-5 5 5 5',
+  pause: 'M9 5v14M15 5v14',
+  play: 'M8 5.5v13l10.5-6.5Z',
   chevron: 'M6 9l6 6 6-6',
   check: 'M5 12.5l4.5 4.5L19 7',
   alert: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z M12 7.5v5.5 M12 16.5v.01',

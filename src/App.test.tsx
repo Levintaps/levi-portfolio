@@ -1,4 +1,5 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import App from './App';
 
 function renderAt(path: string) {
@@ -32,6 +33,32 @@ describe('App routing', () => {
 
     expect(container.querySelector('a[href^="/cyber"]')).toBeNull();
     expect(screen.queryByRole('link', { name: /enter the lab/i })).toBeNull();
+  });
+
+  it('opens the chess career at /chess', async () => {
+    renderAt('/chess');
+    expect(await screen.findByRole('heading', { name: /chess career/i, level: 1 })).toBeInTheDocument();
+  });
+
+  // Back lands on the achievements, where the visitor left for the chess page,
+  // rather than at the top of a long resume.
+  it('comes back from the chess career to the achievements', async () => {
+    const original = Element.prototype.scrollIntoView;
+    const scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoView;
+    const user = userEvent.setup();
+
+    try {
+      renderAt('/chess');
+      await user.click(await screen.findByRole('link', { name: /back to portfolio/i }));
+
+      expect(window.location.pathname).toBe('/');
+      expect(window.location.hash).toBe('#achievements');
+      await waitFor(() => expect(scrollIntoView).toHaveBeenCalled());
+      expect(scrollIntoView.mock.instances.at(-1)).toBe(document.getElementById('achievements'));
+    } finally {
+      Element.prototype.scrollIntoView = original;
+    }
   });
 
   it('sends an unknown path back to the resume view', () => {
