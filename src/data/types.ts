@@ -100,6 +100,8 @@ export interface ChessStat {
   label: string;
   value: string;
   note: string;
+  /** Won at the board in rated play, or online. */
+  group: 'board' | 'online';
 }
 
 export interface ChessMilestone {

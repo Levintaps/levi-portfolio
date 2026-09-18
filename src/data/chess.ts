@@ -19,12 +19,12 @@ export const chessLead =
   'Thirteen years of competitive chess, from learning the game in Grade 3 to the UAAP with Adamson University, with several open tournaments won along the way.';
 
 export const chessStats: ChessStat[] = [
-  { label: 'Peak FIDE rating', value: '2197', note: 'May 2018' },
-  { label: 'National ranking', value: '43rd', note: 'October 2020' },
-  { label: 'UAAP chess', value: 'Silver', note: 'Board 2, 2018, Adamson University' },
-  { label: 'NCFP rating', value: '2181', note: 'Standard, 52nd of non-masters, December 2023' },
-  { label: 'Chess.com blitz', value: '2584', note: 'Peak, October 2024' },
-  { label: 'Chess.com bullet', value: '2508', note: 'Peak, December 2024' },
+  { label: 'Peak FIDE rating', value: '2197', note: 'May 2018', group: 'board' },
+  { label: 'National ranking', value: '43rd', note: 'October 2020', group: 'board' },
+  { label: 'UAAP chess', value: 'Silver', note: 'Board 2, 2018, Adamson University', group: 'board' },
+  { label: 'NCFP rating', value: '2181', note: 'Standard, 52nd of non-masters, December 2023', group: 'board' },
+  { label: 'Chess.com blitz', value: '2584', note: 'Peak, October 2024', group: 'online' },
+  { label: 'Chess.com bullet', value: '2508', note: 'Peak, December 2024', group: 'online' },
 ];
 
 // One event to a milestone. A year that held several gives each its own step,

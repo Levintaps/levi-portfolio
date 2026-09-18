@@ -102,18 +102,50 @@
   color: var(--ink-muted);
 }
 
+/* One gap for the rows, the halves and the cards inside them, so every card
+   lines up with the one above it. */
+.figures {
+  --gap: var(--space-m);
+  display: grid;
+  gap: var(--space-l) var(--gap);
+  margin-block-start: var(--space-l);
+}
+
+/* A group is its small title, then cards that fill the rest of its height,
+   so the two halves of the second row end level. */
+.group {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--space-xs);
+}
+
+.groupTitle {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
 .stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-m);
-  margin-block-start: var(--space-m);
+  gap: var(--gap);
+}
+
+.stat,
+.profiles {
+  padding: var(--space-m);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  background: var(--surface);
 }
 
 .stat {
   display: grid;
+  align-content: start;
   gap: var(--space-2xs);
-  padding-block-start: var(--space-s);
-  border-block-start: 1px solid var(--line);
 }
 
 .statLabel {
@@ -133,26 +165,43 @@
   color: var(--ink-faint);
 }
 
-.links {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-xs) var(--space-m);
-  font-family: var(--font-mono);
-  font-size: var(--step--1);
-  color: var(--ink-faint);
+.profiles {
+  display: grid;
+  align-content: space-between;
+  gap: var(--space-s);
 }
 
-.fide {
+.profileLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.profileLink {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2xs);
-  color: var(--accent);
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-m);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: var(--step--1);
+  font-weight: 600;
   text-decoration: none;
+  transition:
+    border-color var(--motion-fast) var(--ease),
+    color var(--motion-fast) var(--ease);
 }
 
-.fide:hover {
-  text-decoration: underline;
+.profileLink:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.ids {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--ink-faint);
 }
 
 .story {
@@ -176,7 +225,7 @@
    accent rules like a pair of rooks. */
 .motto {
   display: grid;
-  gap: var(--space-s);
+  gap: var(--space-2xs);
   margin: 0;
   font-family: var(--font-display);
   font-size: var(--step-2);
@@ -189,6 +238,7 @@
   content: '';
   inline-size: 2.5rem;
   block-size: 2px;
+  margin-block-end: var(--space-s);
   background: var(--accent);
 }
 
@@ -235,9 +285,19 @@
 }
 
 @media (min-width: 48rem) {
-  /* Six figures, three to a row. */
-  .stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Rated play takes the whole first row, four across. The second row splits
+     in half: online play's two cards, then the profiles, each half the width
+     of two cards above. */
+  .figures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .board {
+    grid-column: 1 / -1;
+  }
+
+  .board .stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .intro {

@@ -62,6 +62,21 @@ describe('ChessCareer', () => {
     expect(screen.getByRole('button', { name: /pause auto-scroll/i })).toBeInTheDocument();
   });
 
+  // Ratings from tournaments and ratings from online play are different
+  // things, so each has its own group, and the profiles and IDs one place.
+  it('groups the figures into over the board and online, beside the profiles', () => {
+    renderChess();
+    const board = screen.getByRole('group', { name: /over the board/i });
+    const online = screen.getByRole('group', { name: /online/i });
+    const profiles = screen.getByRole('group', { name: /profiles/i });
+
+    expect(within(board).getByText('Peak FIDE rating')).toBeInTheDocument();
+    expect(within(board).queryByText(/chess\.com/i)).toBeNull();
+    expect(within(online).getByText('Chess.com blitz')).toBeInTheDocument();
+    expect(within(profiles).getByRole('link', { name: /fide profile/i })).toBeInTheDocument();
+    expect(within(profiles).getByText(/NCFP ID T00342/)).toBeInTheDocument();
+  });
+
   it('links to the Chess.com profile in a new tab', () => {
     renderChess();
     const link = screen.getByRole('link', { name: /chess\.com profile/i });
