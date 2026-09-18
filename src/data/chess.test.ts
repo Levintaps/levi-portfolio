@@ -7,7 +7,22 @@ describe('chess data', () => {
 
     expect(starts.every(Number.isFinite)).toBe(true);
     expect(starts).toEqual([...starts].sort((a, b) => a - b));
-    expect(new Set(chessTimeline.map((milestone) => milestone.year)).size).toBe(chessTimeline.length);
+    // A year can hold two milestones; no two milestones share a title.
+    expect(new Set(chessTimeline.map((milestone) => milestone.title)).size).toBe(chessTimeline.length);
+  });
+
+  it('gives high school its own milestone, from its first year in 2011 until 2015', () => {
+    const highSchool = chessTimeline.find((milestone) => /high school/i.test(milestone.title));
+
+    expect(highSchool?.year).toBe('2011');
+    expect(highSchool?.detail).toContain('2015');
+  });
+
+  it('keeps joining Adamson apart from high school', () => {
+    const adamson = chessTimeline.find((milestone) => /Adamson University varsity/i.test(milestone.title));
+
+    expect(adamson?.year).toBe('2015');
+    expect(adamson?.detail).not.toMatch(/high school.*regional|regional.*high school/i);
   });
 
   it('starts in the school year chess was learned and ends when competing stopped', () => {

@@ -33,7 +33,12 @@ export default function ChessTimeline({ milestones }: ChessTimelineProps) {
     // puts that back.
     <ol className={styles.timeline} role="list" aria-label="Year by year">
       {milestones.map((milestone, index) => (
-        <Milestone key={milestone.year} milestone={milestone} side={index % 2 === 0 ? 'left' : 'right'} />
+        // A year can hold more than one milestone, so the title keeps each apart.
+        <Milestone
+          key={`${milestone.year} ${milestone.title}`}
+          milestone={milestone}
+          side={index % 2 === 0 ? 'left' : 'right'}
+        />
       ))}
     </ol>
   );
