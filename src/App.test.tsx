@@ -50,7 +50,9 @@ describe('App routing', () => {
 
     try {
       renderAt('/chess');
-      await user.click(await screen.findByRole('link', { name: /back to portfolio/i }));
+      // The top bar's and the one closing the story go to the same place.
+      const [back] = await screen.findAllByRole('link', { name: /back to portfolio/i });
+      await user.click(back);
 
       expect(window.location.pathname).toBe('/');
       expect(window.location.hash).toBe('#achievements');

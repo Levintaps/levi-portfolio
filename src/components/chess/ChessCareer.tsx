@@ -59,6 +59,10 @@ export default function ChessCareer() {
               FIDE profile
               <Icon name="external" size={14} />
             </a>
+            <a className={styles.fide} href={chessProfile.chessComUrl} target="_blank" rel="noopener noreferrer">
+              Chess.com profile
+              <Icon name="external" size={14} />
+            </a>
             <span>FIDE ID {chessProfile.fideId}</span>
             <span>NCFP ID {chessProfile.ncfpId}</span>
           </p>
@@ -71,11 +75,18 @@ export default function ChessCareer() {
           <ChessTimeline milestones={chessTimeline} />
         </section>
 
+        {/* The story closes where the visitor came from: back on the
+            portfolio, at the achievements they left it from. */}
         <section className={styles.next}>
-          <p className={styles.nextText}>The same patience now goes into software.</p>
-          <Link className={styles.nextLink} to={{ pathname: '/', hash: '#projects' }}>
-            See the projects
-            <Icon name="arrow" size={16} />
+          <blockquote className={styles.motto}>
+            <p>Calculate before you move. Test before you ship.</p>
+          </blockquote>
+          <p className={styles.nextText}>
+            Thirteen years at the board taught that patience. It now goes into software.
+          </p>
+          <Link className={styles.nextLink} to={{ pathname: '/', hash: '#achievements' }}>
+            <Icon name="arrowLeft" size={16} />
+            Back to portfolio
           </Link>
         </section>
       </main>

@@ -62,8 +62,29 @@ describe('ChessCareer', () => {
     expect(screen.getByRole('button', { name: /pause auto-scroll/i })).toBeInTheDocument();
   });
 
+  it('links to the Chess.com profile in a new tab', () => {
+    renderChess();
+    const link = screen.getByRole('link', { name: /chess\.com profile/i });
+
+    expect(link).toHaveAttribute('href', chessProfile.chessComUrl);
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link.getAttribute('rel')).toContain('noopener');
+  });
+
   it('offers the way back to the portfolio', () => {
     renderChess();
-    expect(screen.getByRole('link', { name: /back to portfolio/i })).toHaveAttribute('href', '/#achievements');
+    const back = screen.getAllByRole('link', { name: /back to portfolio/i });
+
+    expect(back.length).toBeGreaterThan(0);
+    for (const link of back) expect(link).toHaveAttribute('href', '/#achievements');
+  });
+
+  // The story ends where the visitor came from, not somewhere new.
+  it('ends with the way back to the portfolio, not on to the projects', () => {
+    renderChess();
+    const links = within(screen.getByRole('main')).getAllByRole('link');
+
+    expect(screen.queryByRole('link', { name: /see the projects/i })).toBeNull();
+    expect(links.at(-1)).toHaveAccessibleName(/back to portfolio/i);
   });
 });
