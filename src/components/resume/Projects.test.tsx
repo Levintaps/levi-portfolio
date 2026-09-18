@@ -21,6 +21,19 @@ describe('Projects', () => {
     expect(within(track).getByRole('heading', { name: 'AI Notes' })).toBeInTheDocument();
   });
 
+  // Limestone belongs in the full listing only; the carousel keeps its seven.
+  it('lists Limestone Tracker with all the projects but leaves it out of the carousel', async () => {
+    const user = userEvent.setup();
+    render(<Projects />);
+    const track = screen.getByRole('group', { name: /projects/i });
+
+    expect(within(track).queryByRole('heading', { name: 'Limestone Tracker' })).toBeNull();
+
+    await user.click(screen.getByRole('button', { name: /show all/i }));
+    const listing = await screen.findByRole('dialog', { name: /all projects/i });
+    expect(within(listing).getByRole('heading', { name: 'Limestone Tracker' })).toBeInTheDocument();
+  });
+
   it('shows nothing of the rest until the listing is opened', () => {
     render(<Projects />);
     const laterProject = projects[projects.length - 1].name;

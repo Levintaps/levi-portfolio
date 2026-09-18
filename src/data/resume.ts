@@ -186,6 +186,20 @@ export const projects: Project[] = [
     confidential: true,
   },
   {
+    id: 'limestone-tracker',
+    name: 'Limestone Tracker',
+    kind: 'Client project',
+    client: 'Limestone Construction Mngt. Services',
+    period: 'Jul 2026 — Present',
+    summary: 'An expense ledger for a construction management firm, with receivables, payables and reimbursements in one app.',
+    stack: ['React 19', 'Firebase', 'Vercel Serverless', 'Google Drive API', 'Recharts', 'jsPDF', 'Groq API', 'PWA'],
+    highlights: [
+      'Every project expense carries its receipt, compressed in the browser and filed to Google Drive through a serverless function, so no one using the app ever handles Google credentials.',
+      'Billing status and contract value for each project alongside receivables, payables and reimbursements, with completed projects lockable against further edits.',
+      'Profit and loss, cash flow, project comparison and savings reports, each downloadable as a branded PDF, plus AI insights on where the money goes.',
+    ],
+  },
+  {
     id: 'smart-parking',
     name: 'Smart Parking System',
     kind: 'Capstone project',
