@@ -92,7 +92,12 @@ export default function BubbleAquarium({ messages, pin }: BubbleAquariumProps) {
 
   if (messages.length === 0) {
     return (
-      <div ref={setTankElement} className={styles.tank} style={floor} data-empty>
+      <div
+        ref={setTankElement}
+        className={styles.tank}
+        style={{ minBlockSize: `${layout.emptyHeightRem}rem` }}
+        data-empty
+      >
         <div className={styles.decoration} data-decoration aria-hidden="true">
           {AMBIENT.map((index) => (
             <span key={index} className={styles.ambient} data-ambient={index} />

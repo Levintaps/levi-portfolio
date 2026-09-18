@@ -56,6 +56,21 @@ describe('HeroPortrait', () => {
     Object.defineProperty(document, 'hidden', { configurable: true, value: false });
   });
 
+  // The hero lays a phone's small photo beside the address, which only works
+  // for the photo: a badge left running after the window narrows needs its
+  // own wide column. So the photo says which one it is.
+  it('marks the still photo for the hero to lay out', () => {
+    // A narrow screen: nothing matches, so the badge never loads.
+    vi.restoreAllMocks();
+    const { container } = render(<HeroPortrait />);
+    expect(container.querySelector('[data-portrait="still"]')).not.toBeNull();
+  });
+
+  it('leaves the mark off while the badge is running', async () => {
+    await renderBadge();
+    expect(document.querySelector('[data-portrait="still"]')).toBeNull();
+  });
+
   it('runs the badge while the hero is on screen', async () => {
     await renderBadge();
     expect(latest().active).toBe(true);

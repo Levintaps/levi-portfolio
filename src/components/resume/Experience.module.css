@@ -1,7 +1,7 @@
 .section {
   inline-size: min(100% - (var(--gutter) * 2), var(--shell));
   margin-inline: auto;
-  padding-block: var(--space-2xl);
+  padding-block: var(--section-space);
   scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
 }
 

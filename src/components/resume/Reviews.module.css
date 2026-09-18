@@ -1,7 +1,7 @@
 .section {
   inline-size: min(100% - (var(--gutter) * 2), var(--shell));
   margin-inline: auto;
-  padding-block: var(--space-2xl);
+  padding-block: var(--section-space);
   scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
 }
 
@@ -130,6 +130,14 @@
 .thanks {
   color: var(--positive);
   font-weight: 600;
+}
+
+/* Stacked on a phone, the rating half and the message half sit a step
+   closer, the same step as between the parts of any other section. */
+@media (max-width: 47.99rem) {
+  .layout {
+    gap: var(--space-l);
+  }
 }
 
 @media (min-width: 48rem) {

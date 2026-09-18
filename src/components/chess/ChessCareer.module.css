@@ -238,6 +238,31 @@
   line-height: 1.2;
 }
 
+/* Each rhymed line keeps to one line on a phone rather than leaving its last
+   word stranded below; balancing is the fallback where even that is too wide. */
+.motto p {
+  text-wrap: balance;
+}
+
+/* A phone gets the same shorter pauses between parts as the resume. */
+@media (max-width: 47.99rem) {
+  .motto {
+    font-size: var(--step-1);
+  }
+
+  .intro {
+    padding-block: var(--space-xl) var(--space-l);
+  }
+
+  .story {
+    padding-block: var(--space-l);
+  }
+
+  .next {
+    padding-block: var(--space-l) var(--space-xl);
+  }
+}
+
 .motto::before {
   content: '';
   inline-size: 2.5rem;

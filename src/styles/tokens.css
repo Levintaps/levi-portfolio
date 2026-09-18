@@ -22,6 +22,9 @@
 
   --gutter: 1rem;
   --header-height: 3.75rem;
+  /* The space above and below each section of the resume. A phone gets a
+     shorter pause between sections so a screen never shows mostly nothing. */
+  --section-space: 2.75rem;
 
   --radius-s: 4px;
   --radius-m: 10px;
@@ -34,6 +37,12 @@
   --motion-base: 260ms;
   --motion-slow: 520ms;
   --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --section-space: var(--space-2xl);
+  }
 }
 
 :root[data-scheme='light'] {

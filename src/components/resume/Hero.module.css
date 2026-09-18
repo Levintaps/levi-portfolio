@@ -2,7 +2,7 @@
   position: relative;
   inline-size: min(100% - (var(--gutter) * 2), var(--shell));
   margin-inline: auto;
-  padding-block: var(--space-xl) var(--space-2xl);
+  padding-block: var(--space-l) var(--section-space);
   /* Like every other section, clear of the sticky header when linked to, so
      "#top" from the header mark or the footer lands at the very top. */
   scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
@@ -109,7 +109,6 @@
 
 .summary {
   color: var(--ink-muted);
-  hyphens: auto;
 }
 
 /* The stack a recruiter is scanning for, lifted from the muted body colour to
@@ -131,6 +130,26 @@
 .socials {
   display: flex;
   gap: var(--space-xs);
+}
+
+/* Below the two-column layout the photo shrinks to a small portrait with the
+   address and email beside it, so the name comes up on the first screen
+   instead of below a photo the width of the phone. Only the photo: a badge
+   still running after a wide window was narrowed keeps its own column. */
+@media (max-width: 47.99rem) {
+  .hero {
+    gap: var(--space-m);
+  }
+
+  .aside:has([data-portrait='still']) {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-m);
+  }
+
+  .aside:has([data-portrait='still']) .details {
+    max-inline-size: none;
+  }
 }
 
 @media (min-width: 48rem) {
@@ -181,6 +200,7 @@
      alignment only applies once the measure is wide enough to carry it. */
   .summary {
     text-align: justify;
+    hyphens: auto;
   }
 }
 

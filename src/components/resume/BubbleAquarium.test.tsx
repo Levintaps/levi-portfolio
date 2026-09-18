@@ -233,6 +233,18 @@ describe('BubbleAquarium', () => {
     expect(decoration).toHaveAttribute('aria-hidden', 'true');
   });
 
+  // On a phone the tank is the width of the screen and sits alone in its
+  // column, so an empty one is only as tall as its invitation needs.
+  it('keeps an empty tank short on a narrow screen, and tall enough for bubbles once there are messages', () => {
+    matchQueries(['max-width: 47.999rem']);
+    const { rerender } = render(<BubbleAquarium messages={[]} />);
+    const empty = screen.getByText('No messages yet, be the first to leave one.').parentElement!;
+    expect(empty.style.minBlockSize).toBe('10rem');
+
+    rerender(<BubbleAquarium messages={messages(3)} />);
+    expect(tank().parentElement!.style.minBlockSize).toBe('22rem');
+  });
+
   // For anyone who has asked for less motion the tank becomes a plain list:
   // every message, in full, with nothing floating and nothing popping.
   it('lists every message plainly for a visitor who asked for less motion', () => {

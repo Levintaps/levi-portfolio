@@ -112,6 +112,21 @@
   }
 }
 
+/* A phone fits two roles to a line, and a rule left hanging at the end of
+   each line reads as a stray mark. There the four sit in two aligned
+   columns instead, which need no rules between them. */
+@media (max-width: 47.99rem) {
+  .roles {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    column-gap: var(--space-m);
+  }
+
+  .roles li:not(:last-child)::after {
+    content: none;
+  }
+}
+
 @media (min-width: 48rem) {
   .inner {
     grid-template-columns: 1fr auto;

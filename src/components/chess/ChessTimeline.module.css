@@ -6,7 +6,9 @@
   --dot: 0.75rem;
   position: relative;
   display: grid;
-  gap: var(--space-xl);
+  /* Close enough on a phone that the line reads as one run of stories, far
+     enough apart that each dot plainly belongs to its own year. */
+  gap: var(--space-m);
   padding-block: var(--space-m);
   list-style: none;
 }
@@ -53,7 +55,7 @@
 .card {
   display: grid;
   gap: var(--space-2xs);
-  padding: var(--space-m);
+  padding: var(--space-s) var(--space-m);
   border: 1px solid var(--line);
   border-radius: var(--radius-l);
   background: var(--surface);
@@ -82,6 +84,10 @@
 @media (min-width: 48rem) {
   .timeline {
     gap: var(--space-l);
+  }
+
+  .card {
+    padding: var(--space-m);
   }
 
   .timeline::before {

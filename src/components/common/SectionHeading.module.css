@@ -1,7 +1,13 @@
 .heading {
   display: grid;
   gap: var(--space-xs);
-  margin-block-end: var(--space-l);
+  margin-block-end: var(--space-m);
+}
+
+@media (min-width: 40rem) {
+  .heading {
+    margin-block-end: var(--space-l);
+  }
 }
 
 .index {

@@ -11,6 +11,8 @@ export interface TankLayout {
   maxDiameterRem: number;
   /** Matches the tank's min-block-size, which BubbleAquarium sets from it. */
   floorHeightRem: number;
+  /** The least height while there are no messages and only the invitation shows. */
+  emptyHeightRem: number;
 }
 
 export const WIDE_TANK: TankLayout = {
@@ -18,6 +20,8 @@ export const WIDE_TANK: TankLayout = {
   minDiameterRem: 5.25,
   maxDiameterRem: 6.75,
   floorHeightRem: 16,
+  // Beside the rating column the tank stretches to its height anyway.
+  emptyHeightRem: 16,
 };
 
 export const NARROW_TANK: TankLayout = {
@@ -25,6 +29,7 @@ export const NARROW_TANK: TankLayout = {
   minDiameterRem: 5.25,
   maxDiameterRem: 6.5,
   floorHeightRem: 22,
+  emptyHeightRem: 10,
 };
 
 /** The share of the tank's floor area the bubbles may cover between them. */

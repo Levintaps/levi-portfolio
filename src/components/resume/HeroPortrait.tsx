@@ -11,7 +11,9 @@ const Lanyard = lazy(() => import('../lanyard/Lanyard'));
 
 function StaticPortrait() {
   return (
-    <div className={styles.still}>
+    // Marked so the hero knows it holds the photo, which it may shrink beside
+    // the address on a phone, and not the badge, which needs its own column.
+    <div className={styles.still} data-portrait="still">
       <picture>
       <source srcSet={profile.portrait.avif} type="image/avif" />
       <source srcSet={profile.portrait.webp} type="image/webp" />
