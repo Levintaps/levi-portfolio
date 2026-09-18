@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { chessLead, chessProfile, chessStats, chessTimeline } from '../../data/chess';
+import { chessLead, chessProfile, chessRepertoire, chessStats, chessTimeline } from '../../data/chess';
 import { profile } from '../../data/resume';
-import type { ChessStat } from '../../data/types';
+import type { ChessFigure } from '../../data/types';
 import { useAutoScroll } from '../../hooks/useAutoScroll';
 import PageMeta from '../common/PageMeta';
 import ThemeToggle from '../common/ThemeToggle';
@@ -10,7 +10,7 @@ import Footer from '../resume/Footer';
 import ChessTimeline from './ChessTimeline';
 import styles from './ChessCareer.module.css';
 
-function Stats({ stats }: { stats: ChessStat[] }) {
+function Stats({ stats }: { stats: ChessFigure[] }) {
   return (
     <dl className={styles.stats}>
       {stats.map((stat) => (
@@ -60,8 +60,9 @@ export default function ChessCareer() {
           <p className={styles.lead}>{chessLead}</p>
 
           {/* Four figures from rated play across the top; below, the two from
-              online play beside the profiles they can be checked against.
-              Every card is the same width in both rows. */}
+              online play beside the two favourite openings; then the profiles
+              they can all be checked against, the full width. Every card is
+              the same width in every row. */}
           <div className={styles.figures}>
             <div role="group" aria-labelledby="chess-board" className={`${styles.group} ${styles.board}`}>
               <h2 id="chess-board" className={styles.groupTitle}>
@@ -77,7 +78,18 @@ export default function ChessCareer() {
               <Stats stats={chessStats.filter((stat) => stat.group === 'online')} />
             </div>
 
-            <div role="group" aria-labelledby="chess-profiles" className={styles.group}>
+            <div role="group" aria-labelledby="chess-repertoire" className={styles.group}>
+              <h2 id="chess-repertoire" className={styles.groupTitle}>
+                Repertoire
+              </h2>
+              <Stats stats={chessRepertoire} />
+            </div>
+
+            <div
+              role="group"
+              aria-labelledby="chess-profiles"
+              className={`${styles.group} ${styles.profilesGroup}`}
+            >
               <h2 id="chess-profiles" className={styles.groupTitle}>
                 Profiles
               </h2>

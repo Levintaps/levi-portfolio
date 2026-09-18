@@ -1,4 +1,4 @@
-import type { ChessMilestone, ChessStat } from './types';
+import type { ChessFigure, ChessMilestone, ChessStat } from './types';
 
 // The chess page (/chess). Where a figure or an event could be checked, it was:
 // ratings and the National Championship, MCCC and National Open events against
@@ -25,6 +25,13 @@ export const chessStats: ChessStat[] = [
   { label: 'NCFP rating', value: '2181', note: 'Standard, 52nd of non-masters, December 2023', group: 'board' },
   { label: 'Chess.com blitz', value: '2584', note: 'Peak, October 2024', group: 'online' },
   { label: 'Chess.com bullet', value: '2508', note: 'Peak, December 2024', group: 'online' },
+];
+
+// The openings played by choice, one for each side.
+export const chessRepertoire: ChessFigure[] = [
+  { label: 'As White', value: 'English', note: 'English Opening, 1.c4' },
+  // The moves stay together on one line, never split between two.
+  { label: 'As Black', value: 'Caro-Kann', note: 'Caro-Kann Defense, 1.e4\u00a0c6' },
 ];
 
 // One event to a milestone. A year that held several gives each its own step,

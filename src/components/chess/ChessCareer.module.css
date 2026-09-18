@@ -286,14 +286,23 @@
 
 @media (min-width: 48rem) {
   /* Rated play takes the whole first row, four across. The second row splits
-     in half: online play's two cards, then the profiles, each half the width
-     of two cards above. */
+     in half, online play's two cards and the two openings, each half the
+     width of two cards above. The profiles close the block the full width,
+     the links to one side and the IDs to the other. */
   .figures {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .board {
+  .board,
+  .profilesGroup {
     grid-column: 1 / -1;
+  }
+
+  .profiles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .board .stats {

@@ -77,6 +77,16 @@ describe('ChessCareer', () => {
     expect(within(profiles).getByText(/NCFP ID T00342/)).toBeInTheDocument();
   });
 
+  it('names the favourite opening for each side', () => {
+    renderChess();
+    const repertoire = screen.getByRole('group', { name: /repertoire/i });
+
+    expect(within(repertoire).getByText('As White')).toBeInTheDocument();
+    expect(within(repertoire).getByText('English Opening, 1.c4')).toBeInTheDocument();
+    expect(within(repertoire).getByText('As Black')).toBeInTheDocument();
+    expect(within(repertoire).getByText('Caro-Kann Defense, 1.e4 c6')).toBeInTheDocument();
+  });
+
   it('links to the Chess.com profile in a new tab', () => {
     renderChess();
     const link = screen.getByRole('link', { name: /chess\.com profile/i });

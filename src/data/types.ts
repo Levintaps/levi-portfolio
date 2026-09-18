@@ -96,10 +96,14 @@ export interface Achievement {
   detail: string;
 }
 
-export interface ChessStat {
+/** A figure on a card: what it is, the figure itself, and a note under it. */
+export interface ChessFigure {
   label: string;
   value: string;
   note: string;
+}
+
+export interface ChessStat extends ChessFigure {
   /** Won at the board in rated play, or online. */
   group: 'board' | 'online';
 }
