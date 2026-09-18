@@ -91,7 +91,9 @@
 @media (max-width: 39.99rem) {
   .track {
     grid-auto-columns: 86%;
-    gap: var(--space-s);
+    /* As wide as the gutter, so the card before ends exactly at the screen's
+       edge rather than leaving a sliver of itself behind. */
+    gap: var(--gutter);
     margin-inline: calc(var(--gutter) * -1);
     padding-inline: var(--gutter);
     scroll-padding-inline: var(--gutter);
