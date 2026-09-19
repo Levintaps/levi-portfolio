@@ -5,7 +5,7 @@ import styles from './Education.module.css';
 export default function Education() {
   return (
     <section className={styles.section} id="education">
-      <SectionHeading index="04 / Education" title="Education and certifications" />
+      <SectionHeading title="Education and certifications" />
 
       <div className={styles.groups}>
         <div className={styles.group}>

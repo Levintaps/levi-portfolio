@@ -100,9 +100,10 @@ describe('Projects', () => {
 });
 
 describe('Projects placement', () => {
-  it('opens the page, at number one', () => {
+  it('opens on its heading alone, with no number above it', () => {
     render(<Projects />);
-    expect(screen.getByText('01 / Projects')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Selected work' })).toBeInTheDocument();
+    expect(screen.queryByText(/^\d{2} \//)).toBeNull();
   });
 
   // The year of GitHub contributions closes the section, below the carousel.

@@ -141,7 +141,6 @@ export default function Reviews() {
   return (
     <section className={styles.section} id="reviews" ref={ref}>
       <SectionHeading
-        index="06 / Feedback"
         title="What visitors think"
         lead="Ratings are saved and folded into the average. Messages take their turn beside it."
       />
@@ -155,7 +154,7 @@ export default function Reviews() {
               <RatingBreakdownToggle distribution={summary.distribution} count={summary.count}>
                 <div className={styles.overall}>
                   <p className={styles.average}>
-                    {status === 'ready' ? summary.average.toFixed(1) : '—'}
+                    {status === 'ready' ? summary.average.toFixed(1) : '-'}
                   </p>
                   <div className={styles.overallMeta}>
                     <Stars value={summary.average} size={16} />

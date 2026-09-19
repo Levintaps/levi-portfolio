@@ -39,7 +39,7 @@ export default function Projects() {
 
   return (
     <section className={styles.section} id="projects">
-      <SectionHeading index="01 / Projects" title="Selected work" lead={projectsLead} />
+      <SectionHeading title="Selected work" lead={projectsLead} />
 
       <ProjectCarousel
         projects={projects.slice(0, CAROUSEL_SIZE)}

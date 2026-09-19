@@ -181,7 +181,6 @@ export default function Contact() {
   return (
     <section className={styles.section} id="contact">
       <SectionHeading
-        index="07 / Contact"
         title="Get in touch"
         lead="Open to software developer roles and client work."
       />

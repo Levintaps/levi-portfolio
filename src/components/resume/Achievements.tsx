@@ -8,7 +8,6 @@ export default function Achievements() {
   return (
     <section className={styles.section} id="achievements">
       <SectionHeading
-        index="05 / Beyond work"
         title="Competitive record"
         lead={achievementsLead}
       />

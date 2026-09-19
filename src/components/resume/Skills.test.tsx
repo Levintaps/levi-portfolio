@@ -18,7 +18,7 @@ describe('Skills', () => {
   it('keeps the section heading as it was', () => {
     render(<Skills />);
     expect(screen.getByRole('heading', { level: 2, name: 'Technical skills' })).toBeInTheDocument();
-    expect(screen.getByText('03 / Skills')).toBeInTheDocument();
+    expect(screen.queryByText(/^\d{2} \//)).toBeNull();
   });
 
   it('lays the skills out in three rows', () => {

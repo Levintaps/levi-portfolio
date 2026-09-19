@@ -18,7 +18,6 @@ export default function Skills() {
   return (
     <section className={styles.section} id="skills">
       <SectionHeading
-        index="03 / Skills"
         title="Technical skills"
         lead="The stack I reach for first, then everything else I have worked in."
       />
