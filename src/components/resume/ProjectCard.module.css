@@ -148,3 +148,10 @@
   white-space: nowrap;
   inset-inline-start: 0;
 }
+
+/* Without motion the card still answers the pointer, with its border. */
+@media (prefers-reduced-motion: reduce) {
+  .card:hover {
+    transform: none;
+  }
+}

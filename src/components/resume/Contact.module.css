@@ -244,6 +244,10 @@ a.detailValue:focus-visible {
    like any other; only the message under it says what to fix. */
 .control:focus-within input,
 .control:focus-within textarea {
+  /* Invisible here, but drawn in the system colour where forced colours
+     (Windows High Contrast) strip the box-shadow ring below. */
+  outline: 2px solid transparent;
+  outline-offset: 1px;
   border-color: var(--accent);
   box-shadow:
     0 0 0 1px var(--accent),

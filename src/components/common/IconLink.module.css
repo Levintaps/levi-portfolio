@@ -16,3 +16,11 @@
   border-color: var(--accent);
   transform: translateY(-2px);
 }
+
+/* Without motion the link still answers the pointer, in colour alone. */
+@media (prefers-reduced-motion: reduce) {
+  .link,
+  .link:hover {
+    transform: none;
+  }
+}

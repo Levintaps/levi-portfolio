@@ -56,16 +56,11 @@ ol[class] {
   outline-offset: 3px;
 }
 
+/* Each component says what a visitor who asks for less motion gets instead:
+   usually the same change of state without the travel, never a frozen
+   spinner. Only the page's own smooth scrolling is switched off here. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
   }
 }

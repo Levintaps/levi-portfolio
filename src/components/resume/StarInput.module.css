@@ -58,3 +58,10 @@
   white-space: nowrap;
   inset-inline-start: 0;
 }
+
+/* Without motion a star still answers the pointer, in colour alone. */
+@media (prefers-reduced-motion: reduce) {
+  .star:hover {
+    transform: none;
+  }
+}

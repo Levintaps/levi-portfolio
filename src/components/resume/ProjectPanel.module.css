@@ -180,3 +180,10 @@
     padding: var(--space-l);
   }
 }
+
+/* Without motion the panel still arrives, as a fade with no rise. */
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation-name: fade;
+  }
+}

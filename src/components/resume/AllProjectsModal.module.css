@@ -106,3 +106,12 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* Without motion the listing still arrives, as a fade with no rise, so the
+   change of view is not lost. */
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .item {
+    animation-name: fade;
+  }
+}
