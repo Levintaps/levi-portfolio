@@ -53,7 +53,6 @@ export default function ChessCareer() {
 
       <main id="main" className={styles.main}>
         <section id="top" className={styles.intro} aria-labelledby="chess-title">
-          <p className={styles.eyebrow}>Beyond work</p>
           <h1 id="chess-title" className={styles.title}>
             Chess career
           </h1>

@@ -54,6 +54,12 @@ p {
   color: var(--accent-ink);
 }
 
+/* The text cursor in a field takes the accent, like the selection above. */
+input,
+textarea {
+  caret-color: var(--accent);
+}
+
 /* The theme change (src/theme/revealScheme.ts, with the reveals themselves in
    src/theme/reveals.ts): the browser photographs the page either side of the
    change and one of the reveals moves or uncovers the photographs. The
