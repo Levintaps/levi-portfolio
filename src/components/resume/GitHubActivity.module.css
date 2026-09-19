@@ -1,0 +1,200 @@
+/* The closing block of Projects: a year of contributions on a card like the
+   rest of the site's. */
+.activity {
+  position: relative;
+  display: grid;
+  gap: var(--space-s);
+  margin-block-start: var(--space-l);
+  padding: var(--space-m);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 var(--space-m);
+}
+
+/* Holds its line while the year loads, so nothing below moves when it lands. */
+.count {
+  min-block-size: 1.5em;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.profile {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-block-size: 2.75rem;
+  font-size: var(--step--1);
+  color: var(--ink-muted);
+  text-decoration: none;
+  transition: color var(--motion-fast) var(--ease);
+}
+
+.profile:hover {
+  color: var(--accent);
+}
+
+.scroller {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* On a phone every day keeps a fixed square and the year scrolls sideways,
+   under the weekday names, which stay put. The months' row keeps its height
+   while the year loads. */
+.grid {
+  --cell: 11px;
+  display: grid;
+  grid-template-columns: auto repeat(var(--weeks), var(--cell));
+  grid-template-rows: 1.25rem repeat(7, var(--cell));
+  gap: 3px;
+  inline-size: max-content;
+}
+
+.month,
+.weekdays,
+.legend {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--ink-faint);
+}
+
+.month {
+  grid-row: 1;
+  white-space: nowrap;
+}
+
+/* The names share the grid's rows through subgrid, so each sits level with
+   its day wherever the squares' size comes from. */
+.weekdays {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  grid-column: 1;
+  grid-row: 1 / -1;
+  display: grid;
+  grid-template-rows: subgrid;
+  padding-inline-end: var(--space-xs);
+  background: var(--surface);
+}
+
+.weekdays > span {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+
+/* Once the year has moved beneath them, the names fade into it instead of
+   ending on a hard edge. */
+.weekdays::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 100%;
+  inline-size: var(--space-s);
+  background: linear-gradient(to right, var(--surface), transparent);
+  opacity: 0;
+}
+
+.scroller[data-scrolled] .weekdays::after {
+  opacity: 1;
+}
+
+.cell,
+.swatch {
+  border-radius: 2px;
+  background: var(--level);
+}
+
+.swatch {
+  inline-size: 11px;
+  block-size: 11px;
+}
+
+:is(.cell, .swatch)[data-level='0'] {
+  --level: var(--surface-sunken);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+:is(.cell, .swatch)[data-level='1'] {
+  --level: color-mix(in srgb, var(--accent) 30%, var(--surface));
+}
+
+:is(.cell, .swatch)[data-level='2'] {
+  --level: color-mix(in srgb, var(--accent) 55%, var(--surface));
+}
+
+:is(.cell, .swatch)[data-level='3'] {
+  --level: color-mix(in srgb, var(--accent) 78%, var(--surface));
+}
+
+:is(.cell, .swatch)[data-level='4'] {
+  --level: var(--accent);
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+}
+
+.legend > :first-child {
+  margin-inline-end: var(--space-2xs);
+}
+
+.legend > :last-child {
+  margin-inline-start: var(--space-2xs);
+}
+
+/* One small label above the day under the pointer or finger. */
+.tooltip {
+  position: absolute;
+  z-index: 2;
+  translate: -50% calc(-100% - 6px);
+  padding: 0.3rem 0.55rem;
+  border-radius: var(--radius-s);
+  background: var(--ink);
+  color: var(--ground);
+  font-size: var(--step--2);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--card-shadow);
+}
+
+/* Wider, the year fits the card: the weeks share its width and every day is
+   as tall as it is wide. */
+@media (min-width: 40rem) {
+  .scroller {
+    overflow: visible;
+  }
+
+  .grid {
+    grid-template-columns: auto repeat(var(--weeks), minmax(0, 1fr));
+    grid-template-rows: 1.25rem repeat(7, auto);
+    inline-size: auto;
+  }
+
+  .cell {
+    aspect-ratio: 1;
+  }
+
+  .weekdays {
+    position: static;
+  }
+
+  .weekdays::after {
+    display: none;
+  }
+}
