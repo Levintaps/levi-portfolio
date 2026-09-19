@@ -87,6 +87,9 @@
   grid-template-rows: subgrid;
   padding-inline-end: var(--space-xs);
   background: var(--surface);
+  /* Covers the sliver a stuck column can leave at the scroller's edge when
+     its position rounds to a fraction of a pixel. */
+  box-shadow: -4px 0 0 var(--surface);
 }
 
 .weekdays > span {
