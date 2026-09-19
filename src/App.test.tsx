@@ -7,6 +7,12 @@ function renderAt(path: string) {
   return render(<App />);
 }
 
+// /chess is split into its own chunk and loaded on first visit. In a test that
+// means compiling it on the spot, which takes about half a second alone and
+// can pass a second once the resume has been rendered a few times first, so
+// the wait for it is longer than the default.
+const LAZY_ROUTE = { timeout: 5000 };
+
 describe('App routing', () => {
   it('renders the resume view at the root path', () => {
     renderAt('/');
@@ -37,7 +43,7 @@ describe('App routing', () => {
 
   it('opens the chess career at /chess', async () => {
     renderAt('/chess');
-    expect(await screen.findByRole('heading', { name: /chess career/i, level: 1 })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /chess career/i, level: 1 }, LAZY_ROUTE)).toBeInTheDocument();
   });
 
   // Back lands on the achievements, where the visitor left for the chess page,
@@ -51,7 +57,7 @@ describe('App routing', () => {
     try {
       renderAt('/chess');
       // The top bar's and the one closing the story go to the same place.
-      const [back] = await screen.findAllByRole('link', { name: /back to portfolio/i });
+      const [back] = await screen.findAllByRole('link', { name: /back to portfolio/i }, LAZY_ROUTE);
       await user.click(back);
 
       expect(window.location.pathname).toBe('/');
