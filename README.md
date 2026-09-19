@@ -15,7 +15,7 @@ A React and Vite portfolio with two views driven by one content source.
 
 ```bash
 npm install
-cp .env.example .env.local   # fill in the Firebase and EmailJS values
+cp .env.example .env.local   # fill in the Firebase, EmailJS and GitHub values
 npm run dev
 ```
 
@@ -34,7 +34,7 @@ both views update. Replace the CV by overwriting
 
 ### Projects
 
-The carousel shows the first five entries of the `projects` array, in file
+The carousel shows the first seven entries of the `projects` array, in file
 order, so reordering that array is how the running order is set. Everything
 else appears under Show all.
 
@@ -73,6 +73,24 @@ Until that command has been run, the rules in the repository are a local
 draft only — the rules actually enforced by Firestore are whatever was last
 deployed from the console or a previous deploy. Confirm the live rules in the
 Firebase console before relying on them.
+
+## GitHub contributions
+
+The graph at the end of Projects comes from `api/github-contributions.ts`, a
+Vercel function that asks GitHub's GraphQL API and lets the edge keep the
+answer for six hours. It needs two things:
+
+- `GITHUB_TOKEN`, a classic GitHub token with **no scopes**, since it only
+  reads public data.
+  - Set it in Vercel for Production, Preview and Development.
+  - Set it in `.env` for `npm run dev`, where a small plugin in
+    `vite.config.ts` serves the same route.
+  - Never give it a `VITE_` prefix, which would put it in the page.
+- "Private contributions" turned on in GitHub's contribution settings, so the
+  count includes work in private repositories. Only the counts are shared,
+  never the repository names.
+
+Without the token, or if GitHub fails, the block does not appear.
 
 ## Production domain
 
