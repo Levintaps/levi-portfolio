@@ -8,6 +8,3 @@
   color: var(--accent);
 }
 
-.star[data-active='true'] svg {
-  fill: currentColor;
-}

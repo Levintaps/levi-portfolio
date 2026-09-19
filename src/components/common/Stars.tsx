@@ -19,7 +19,7 @@ export default function Stars({ value, size = 18 }: StarsProps) {
     <span className={styles.stars} aria-hidden="true">
       {positions.map((position) => (
         <span key={position} className={styles.star} data-active={position <= filled}>
-          <Icon name="star" size={size} />
+          <Icon name="star" size={size} filled={position <= filled} />
         </span>
       ))}
     </span>

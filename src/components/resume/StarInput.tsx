@@ -27,7 +27,7 @@ export default function StarInput({ value, onChange, disabled = false }: StarInp
             <span className={styles.srOnly}>
               {option} {option === 1 ? 'star' : 'stars'}
             </span>
-            <Icon name="star" size={26} />
+            <Icon name="star" size={26} filled={option <= value} />
           </label>
         ))}
       </div>
