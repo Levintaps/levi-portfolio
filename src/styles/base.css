@@ -29,6 +29,13 @@ body {
     color var(--motion-base) var(--ease);
 }
 
+/* Placeholders are read, so they take the faint ink, which meets the 4.5:1
+   of body text on a field in both schemes, not the browser's lighter grey. */
+::placeholder {
+  color: var(--ink-faint);
+  opacity: 1;
+}
+
 h1,
 h2,
 h3 {

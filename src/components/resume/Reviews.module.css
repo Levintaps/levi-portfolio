@@ -95,7 +95,7 @@
 .input {
   padding: var(--space-xs) var(--space-s);
   min-block-size: 2.75rem;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--field-border);
   border-radius: var(--radius-m);
   background: var(--surface);
 }

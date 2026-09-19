@@ -191,7 +191,7 @@ a.detailValue:focus-visible {
   inline-size: 100%;
   block-size: var(--height);
   padding: 0 var(--pad-x) 0 var(--text-start);
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--field-border);
   border-radius: var(--radius-m);
   background: var(--surface);
   color: var(--ink);
