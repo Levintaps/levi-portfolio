@@ -8,7 +8,7 @@ export default function Achievements() {
   return (
     <section className={styles.section} id="achievements">
       <SectionHeading
-        title="Competitive record"
+        title="Achievements"
         lead={achievementsLead}
       />
       <div className={styles.record}>

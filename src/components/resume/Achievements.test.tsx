@@ -12,6 +12,13 @@ function renderAchievements() {
 }
 
 describe('Achievements', () => {
+  // Chess is the first entry, not the only kind there will be, so the heading
+  // names the section broadly enough for whatever comes next.
+  it('names the section plainly, for chess and whatever else is added', () => {
+    renderAchievements();
+    expect(screen.getByRole('heading', { level: 2, name: 'Achievements' })).toBeInTheDocument();
+  });
+
   it('renders its section lead from the resume data', () => {
     renderAchievements();
     expect(screen.getByText(achievementsLead)).toBeInTheDocument();
