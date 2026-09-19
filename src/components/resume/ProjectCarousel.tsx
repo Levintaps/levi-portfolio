@@ -1,7 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { Project } from '../../data/types';
 import { useInView } from '../../hooks/useInView';
-import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { Icon } from '../common/icons';
 import ProjectCard from './ProjectCard';
 import styles from './ProjectCarousel.module.css';
@@ -13,11 +12,7 @@ interface ProjectCarouselProps {
   action?: ReactNode;
 }
 
-const PIXELS_PER_SECOND = 26;
-
-/** Where the track shows one card at a time; matches the stylesheet. */
-const PHONE = '(max-width: 39.99rem)';
-/** On a phone, how long a card rests before the next one slides in. */
+/** How long a card rests before the next one slides in. */
 const REST_MS = 4500;
 
 /** The index of the slide whose start is nearest the scroll position. */
@@ -30,9 +25,9 @@ function nearest(starts: number[], scrollLeft: number): number {
 }
 
 /**
- * A phone shows one card at a time, and a card drifting past is never shown
- * whole. So there the track rests on each card and then slides to the next,
- * and a visitor's own swipe restarts the rest.
+ * A card drifting past is never shown whole, so the track rests on whole cards
+ * and then slides on by one, and a visitor's own scroll or swipe restarts the
+ * rest. The skills marquee stays the page's one strip that never stops.
  */
 function stepThrough(track: HTMLDivElement, count: number): () => void {
   let timer = 0;
@@ -74,7 +69,6 @@ export default function ProjectCarousel({ projects, onOpen, action }: ProjectCar
   const [paused, setPaused] = useState(false);
   // Scrolled away, the track rests: nobody sees it move.
   const onScreen = useInView(track);
-  const phone = useMediaQuery(PHONE);
 
   useEffect(() => {
     if (!track) return;
@@ -82,36 +76,8 @@ export default function ProjectCarousel({ projects, onOpen, action }: ProjectCar
     const still = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (paused || still.matches || !onScreen) return;
 
-    if (phone) return stepThrough(track, projects.length);
-
-    let frame = 0;
-    let last = performance.now();
-    // scrollLeft reports whole pixels, so a sub-pixel step would round away to
-    // nothing every frame. The position is carried here instead.
-    let position = track.scrollLeft;
-    let applied = position;
-
-    const step = (now: number) => {
-      const elapsed = now - last;
-      last = now;
-
-      if (Math.abs(track.scrollLeft - applied) > 2) position = track.scrollLeft;
-
-      // The slides are rendered twice, so rewinding by half the scrollable
-      // width lands on the identical card and the loop never shows a seam.
-      const half = track.scrollWidth / 2;
-      position += (PIXELS_PER_SECOND * elapsed) / 1000;
-      if (half > 0 && position >= half) position -= half;
-
-      track.scrollLeft = position;
-      applied = track.scrollLeft;
-
-      frame = requestAnimationFrame(step);
-    };
-
-    frame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(frame);
-  }, [track, paused, onScreen, phone, projects.length]);
+    return stepThrough(track, projects.length);
+  }, [track, paused, onScreen, projects.length]);
 
   function nudge(direction: 1 | -1) {
     if (!track) return;
