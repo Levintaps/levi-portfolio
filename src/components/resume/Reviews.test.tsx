@@ -105,7 +105,7 @@ describe('Reviews', () => {
     await screen.findByText('4.5');
 
     await user.type(screen.getByLabelText(/your message/i), 'Great case studies.');
-    await user.click(screen.getByRole('button', { name: /send message/i }));
+    await user.click(screen.getByRole('button', { name: /post message/i }));
 
     await waitFor(() => expect(submitMessage).toHaveBeenCalledWith('Great case studies.'));
     expect(submitRating).not.toHaveBeenCalled();
@@ -113,12 +113,23 @@ describe('Reviews', () => {
     expect(screen.getByRole('button', { name: /submit rating/i })).toBeInTheDocument();
   });
 
+  // The contact form below sends a private email with "Send message"; this
+  // one posts a public note to the tank, so it says so in its own words.
+  it('posts a message under a name of its own, and says what the section is for', async () => {
+    render(<Reviews />);
+    await screen.findByText('4.5');
+
+    expect(screen.getByRole('button', { name: 'Post message' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /send message/i })).toBeNull();
+    expect(screen.getByText('Rate this portfolio, or leave a short message for other visitors to read.')).toBeInTheDocument();
+  });
+
   it('refuses to send an empty message', async () => {
     const user = userEvent.setup();
     render(<Reviews />);
     await screen.findByText('4.5');
 
-    await user.click(screen.getByRole('button', { name: /send message/i }));
+    await user.click(screen.getByRole('button', { name: /post message/i }));
 
     expect(submitMessage).not.toHaveBeenCalled();
     expect(screen.getByRole('alert')).toHaveTextContent(/write something/i);

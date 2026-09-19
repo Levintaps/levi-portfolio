@@ -142,7 +142,7 @@ export default function Reviews() {
     <section className={styles.section} id="reviews" ref={ref}>
       <SectionHeading
         title="What visitors think"
-        lead="Ratings are saved and folded into the average. Messages take their turn beside it."
+        lead="Rate this portfolio, or leave a short message for other visitors to read."
       />
 
       <div className={styles.layout}>
@@ -229,7 +229,7 @@ export default function Reviews() {
                   disabled={messageSending}
                 />
                 <button className={styles.send} type="submit" disabled={messageSending}>
-                  {messageSending ? 'Sending' : 'Send message'}
+                  {messageSending ? 'Posting' : 'Post message'}
                 </button>
               </div>
 
