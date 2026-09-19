@@ -4,6 +4,7 @@ import type { Project } from '../../data/types';
 import SectionHeading from '../common/SectionHeading';
 import { Icon } from '../common/icons';
 import AllProjectsModal from './AllProjectsModal';
+import GitHubActivity from './GitHubActivity';
 import ProjectCarousel from './ProjectCarousel';
 import ProjectPanel from './ProjectPanel';
 import styles from './Projects.module.css';
@@ -50,6 +51,8 @@ export default function Projects() {
           </button>
         }
       />
+
+      <GitHubActivity />
 
       {listing ? (
         <AllProjectsModal projects={projects} onOpen={openProject} onClose={closeListing} />

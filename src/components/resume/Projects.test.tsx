@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Projects, { CAROUSEL_SIZE } from './Projects';
 import { projects } from '../../data/resume';
+import { calendarOf } from '../../test/contributions';
 
 describe('Projects', () => {
   it('carries only the first few projects in the carousel', () => {
@@ -102,5 +103,18 @@ describe('Projects placement', () => {
   it('opens the page, at number one', () => {
     render(<Projects />);
     expect(screen.getByText('01 / Projects')).toBeInTheDocument();
+  });
+
+  // The year of GitHub contributions closes the section, below the carousel.
+  it('closes with the year of GitHub contributions', async () => {
+    const calendar = calendarOf('2025-09-14', 53, { '2026-08-30': 34 });
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => calendar }) as Response));
+    try {
+      render(<Projects />);
+      expect(await screen.findByText('34 contributions in the last year')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /levintaps on github/i })).toBeInTheDocument();
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });
