@@ -151,7 +151,7 @@ export const projects: Project[] = [
     id: 'clientflow',
     name: 'ClientFlow',
     kind: 'Client project',
-    period: 'Apr 2026 — May 2026',
+    period: 'Apr 2026 - May 2026',
     summary: 'A client and team workspace for an SEO agency, holding the deliverables, attendance and payroll of every account in one place.',
     stack: ['JavaScript', 'Firebase', 'Supabase', 'Groq API', 'PWA'],
     highlights: [
@@ -165,7 +165,7 @@ export const projects: Project[] = [
     id: 'ai-notes',
     name: 'AI Notes',
     kind: 'Personal project',
-    period: 'Jul 2026 — Present',
+    period: 'Jul 2026 - Present',
     summary: 'A free planning app where notes, calendar, habits and trackers all sit under one AI companion.',
     stack: ['React 19', 'TypeScript', 'Firebase', 'Zustand', 'Tailwind CSS', 'Groq API', 'PWA', 'Cloudinary'],
     highlights: [
@@ -190,7 +190,7 @@ export const projects: Project[] = [
     name: 'Limestone Tracker',
     kind: 'Client project',
     client: 'Limestone Construction Mngt. Services',
-    period: 'Jul 2026 — Present',
+    period: 'Jul 2026 - Present',
     summary: 'An expense ledger for a construction management firm, with receivables, payables and reimbursements in one app.',
     stack: ['React 19', 'Firebase', 'Vercel Serverless', 'Google Drive API', 'Recharts', 'jsPDF', 'Groq API', 'PWA'],
     highlights: [
@@ -203,7 +203,7 @@ export const projects: Project[] = [
     id: 'smart-parking',
     name: 'Smart Parking System',
     kind: 'Capstone project',
-    period: 'Jan 2025 — Dec 2025',
+    period: 'Jan 2025 - Dec 2025',
     summary: 'An IoT-enabled parking platform with a web admin panel and a mobile-responsive client app.',
     stack: ['Java', 'Spring Boot', 'MySQL', 'REST API', 'IoT'],
     highlights: [
@@ -217,7 +217,7 @@ export const projects: Project[] = [
     name: 'OJT Attendance Management System',
     kind: 'Personal project',
     client: 'Concentrix',
-    period: 'Aug 2025 — Nov 2025',
+    period: 'Aug 2025 - Nov 2025',
     summary: 'A full-stack replacement for manual intern attendance tracking, now used by real interns and IT staff.',
     stack: ['Java', 'Spring Boot', 'MySQL', 'REST API'],
     highlights: [
@@ -319,7 +319,7 @@ export const education: EducationEntry[] = [
   {
     qualification: 'BS Information Technology',
     institution: 'ICCT Colleges Foundation, Inc.',
-    period: 'Jan 2022 — Dec 2025',
+    period: 'Jan 2022 - Dec 2025',
     detail: 'Capstone: Smart Parking System, an IoT-enabled parking platform I led end to end.',
   },
 ];

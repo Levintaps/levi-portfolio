@@ -7,7 +7,7 @@ import type { ChessFigure, ChessMilestone, ChessStat } from './types';
 // against the MERALCO Chess Club's published standings; the NCFP rating and
 // ranking against the December 2023 release as listed on ChessHermit; the
 // online figures against Chess.com's public record for the account. School
-// years are counted from Grade 3 in 2007–2008.
+// years are counted from Grade 3 in 2007-2008.
 export const chessProfile = {
   fideId: '5230411',
   fideUrl: 'https://ratings.fide.com/profile/5230411',
@@ -37,12 +37,12 @@ export const chessRepertoire: ChessFigure[] = [
 // in the order they happened.
 export const chessTimeline: ChessMilestone[] = [
   {
-    year: '2007–2008',
+    year: '2007-2008',
     title: 'The first move',
     detail: 'Learned the game in Grade 3.',
   },
   {
-    year: '2010–2011',
+    year: '2010-2011',
     title: 'School league',
     detail: 'Started competing for the school in Grade 6 and went on to reach the regional level.',
   },

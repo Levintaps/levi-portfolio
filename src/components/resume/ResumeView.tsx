@@ -17,7 +17,7 @@ export default function ResumeView() {
   return (
     <>
       <PageMeta
-        title={`${profile.name} — ${profile.title}`}
+        title={`${profile.name} | ${profile.title}`}
         description={profile.summary}
         view="resume"
       />

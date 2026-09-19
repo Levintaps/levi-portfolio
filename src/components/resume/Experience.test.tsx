@@ -11,13 +11,14 @@ describe('Experience', () => {
     for (const entry of experience) {
       expect(screen.getByText(entry.role)).toBeInTheDocument();
       expect(screen.getByText(entry.company)).toBeInTheDocument();
-      expect(screen.getByText(`${entry.start} — ${entry.end}`)).toBeInTheDocument();
+      expect(screen.getByText(`${entry.start} - ${entry.end}`)).toBeInTheDocument();
     }
   });
 
-  it('follows the projects, at number two', () => {
+  it('opens on its heading alone, with no number above it', () => {
     render(<Experience />);
-    expect(screen.getByText('02 / Experience')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Inside a corporate IT team' })).toBeInTheDocument();
+    expect(screen.queryByText(/^\d{2} \//)).toBeNull();
   });
 
   it('names the company and the kind of role on one line', () => {

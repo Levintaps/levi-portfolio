@@ -5,11 +5,11 @@ import styles from './Experience.module.css';
 export default function Experience() {
   return (
     <section className={styles.section} id="experience">
-      <SectionHeading index="02 / Experience" title="Inside a corporate IT team" />
+      <SectionHeading title="Inside a corporate IT team" />
       <div className={styles.entries}>
         {experience.map((entry) => (
           <article key={`${entry.company}-${entry.role}`} className={styles.entry}>
-            <p className={styles.period}>{`${entry.start} — ${entry.end}`}</p>
+            <p className={styles.period}>{`${entry.start} - ${entry.end}`}</p>
             <div className={styles.body}>
               <h3 className={styles.role}>{entry.role}</h3>
               <p className={styles.at}>

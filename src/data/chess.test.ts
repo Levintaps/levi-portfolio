@@ -26,7 +26,7 @@ describe('chess data', () => {
   });
 
   it('starts in the school year chess was learned and ends when competing stopped', () => {
-    expect(chessTimeline[0].year).toBe('2007–2008');
+    expect(chessTimeline[0].year).toBe('2007-2008');
     expect(chessTimeline[chessTimeline.length - 1].year).toBe('2020');
   });
 

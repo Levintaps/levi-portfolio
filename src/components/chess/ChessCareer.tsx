@@ -34,7 +34,7 @@ export default function ChessCareer() {
 
   return (
     <>
-      <PageMeta title={`Chess career — ${profile.name}`} description={chessLead} view="resume" />
+      <PageMeta title={`Chess career | ${profile.name}`} description={chessLead} view="resume" />
 
       <header className={styles.bar}>
         <div className={styles.inner}>
