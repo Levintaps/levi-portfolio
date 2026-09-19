@@ -57,10 +57,8 @@
 }
 
 .kind {
-  font-family: var(--font-mono);
   font-size: var(--step--1);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 500;
   color: var(--accent);
 }
 
