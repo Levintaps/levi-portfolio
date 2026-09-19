@@ -67,6 +67,19 @@
   color: var(--accent);
 }
 
+/* The client's address is small type; a finger gets a larger area to hit. */
+@media (pointer: coarse) {
+  .client a {
+    position: relative;
+  }
+
+  .client a::after {
+    content: '';
+    position: absolute;
+    inset: -0.85rem -0.25rem;
+  }
+}
+
 .summary {
   margin-block-start: var(--space-xs);
   color: var(--ink-muted);

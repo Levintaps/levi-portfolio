@@ -9,6 +9,7 @@
   --card-pad: 1rem;
 
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-l);
 }
 
@@ -24,6 +25,7 @@
 
 .details {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-l);
   align-content: start;
 }
@@ -42,8 +44,10 @@
   gap: var(--space-xs);
 }
 
-/* A small square holding only an icon: copy, then a check once it has. */
+/* A small square holding only an icon: copy, then a check once it has. On a
+   touch screen it answers to a 44px area around its 32px face. */
 .copy {
+  position: relative;
   display: inline-grid;
   place-items: center;
   flex: none;
@@ -62,6 +66,14 @@
 .copy:hover {
   color: var(--accent);
   border-color: var(--accent);
+}
+
+@media (pointer: coarse) {
+  .copy::before {
+    content: '';
+    position: absolute;
+    inset: -7px;
+  }
 }
 
 .copy[data-copied],
@@ -99,6 +111,7 @@
 
 .socials {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-xs);
   padding-block-start: var(--space-2xs);
 }
@@ -140,6 +153,7 @@ a.detailValue:focus-visible {
 .form {
   position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-m);
   padding: var(--card-pad);
   border: 1px solid var(--line);
@@ -152,6 +166,7 @@ a.detailValue:focus-visible {
    width of the column reads as a wall rather than a form. */
 .pair {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-m);
 }
 
@@ -170,6 +185,7 @@ a.detailValue:focus-visible {
 
 .field {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.375rem;
 }
 
@@ -349,6 +365,8 @@ a.detailValue:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
+  /* One line at every ordinary size; only very large text wraps it. */
+  max-inline-size: 100%;
   padding: var(--space-s) var(--space-l);
   min-block-size: 2.75rem;
   border-radius: var(--radius-m);

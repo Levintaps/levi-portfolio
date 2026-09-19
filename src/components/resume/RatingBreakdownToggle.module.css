@@ -1,9 +1,13 @@
 .root {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
 }
 
+/* The average and its toggle share a line until very large text leaves no
+   room, when the toggle wraps under the average instead of off the card. */
 .head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-s);

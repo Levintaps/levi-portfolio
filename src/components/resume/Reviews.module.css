@@ -5,13 +5,17 @@
   scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
 }
 
+/* One column exactly as wide as the section on a phone; an auto column would
+   grow past the screen with very large text. */
 .layout {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-xl);
 }
 
 .ratingSide {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-m);
   align-content: start;
 }
@@ -35,6 +39,7 @@
 
 .overall {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-s);
 }
@@ -69,6 +74,7 @@
 
 .fields {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-xs);
 }
 
@@ -79,6 +85,7 @@
 
 .messageForm {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-xs);
 }
 
@@ -89,7 +96,8 @@
 }
 
 .row .input {
-  flex: 1 1 14rem;
+  flex: 1 1 min(14rem, 100%);
+  min-inline-size: 0;
 }
 
 .input {

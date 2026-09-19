@@ -17,10 +17,14 @@
   block-size: var(--header-height);
 }
 
+/* Padded out to a 44px target and pulled back by the same amount, so the
+   mark still starts where the page does. */
 .mark {
   display: inline-flex;
   align-items: center;
   min-block-size: 2.75rem;
+  padding-inline: var(--space-xs);
+  margin-inline: calc(var(--space-xs) * -1);
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: 0.06em;

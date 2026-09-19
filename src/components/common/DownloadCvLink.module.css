@@ -14,7 +14,10 @@
   color: var(--accent-ink);
   font-weight: 600;
   text-decoration: none;
-  white-space: nowrap;
+  /* One line at every ordinary size; only text enlarged far past the column
+     makes it wrap, rather than run off the screen. */
+  max-inline-size: 100%;
+  text-align: center;
   transition: transform var(--motion-fast) var(--ease),
     box-shadow var(--motion-fast) var(--ease);
 }

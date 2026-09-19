@@ -7,12 +7,16 @@
   inline-size: min(100% - (var(--gutter) * 2), var(--shell));
   margin-inline: auto;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-m);
   justify-items: start;
 }
 
 .identity {
   display: grid;
+  /* As wide as its column, so the roles below can count how many columns
+     of theirs fit. */
+  justify-self: stretch;
   gap: var(--space-2xs);
 }
 
@@ -118,7 +122,8 @@
 @media (max-width: 47.99rem) {
   .roles {
     display: grid;
-    grid-template-columns: repeat(2, max-content);
+    /* Two even columns while two fit, one when text is set large. */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 8rem), 1fr));
     column-gap: var(--space-m);
   }
 

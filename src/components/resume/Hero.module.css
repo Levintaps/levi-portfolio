@@ -7,6 +7,10 @@
      "#top" from the header mark or the footer lands at the very top. */
   scroll-margin-block-start: calc(var(--header-height) + var(--space-s));
   display: grid;
+  /* A single column exactly as wide as the page: an auto column would grow
+     to its widest unbreakable line, which with very large text is wider than
+     the screen, and the overflow would be clipped out of sight. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-l);
   align-items: start;
 }
@@ -39,8 +43,23 @@
   color: var(--accent);
 }
 
+/* On a touch screen the address keeps its small type but answers to a
+   finger-sized area around it. */
+@media (pointer: coarse) {
+  .detail a {
+    position: relative;
+  }
+
+  .detail a::after {
+    content: '';
+    position: absolute;
+    inset: -1rem -0.25rem;
+  }
+}
+
 .text {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-s);
   align-content: start;
 }
@@ -50,8 +69,10 @@
   letter-spacing: -0.035em;
 }
 
-/* One line, always. The line holds its height whether it is showing a whole
-   role or nothing between two of them, so the tagline below never moves. */
+/* One line wherever the longest role fits. The line holds its height whether
+   it is showing a whole role or nothing between two of them, so the tagline
+   below never moves. Where it cannot fit, as with a phone's text set very
+   large, it wraps rather than pushing the whole hero past the screen's edge. */
 .roles {
   display: flex;
   align-items: center;
@@ -60,13 +81,12 @@
   font-size: var(--step--1);
   letter-spacing: 0.02em;
   color: var(--accent);
-  white-space: nowrap;
 }
 
 .typed {
   display: inline-flex;
   align-items: center;
-  min-inline-size: calc(var(--longest, 24ch) + 2ch);
+  min-inline-size: min(calc(var(--longest, 24ch) + 2ch), 100%);
 }
 
 .caret {
@@ -129,6 +149,7 @@
 
 .socials {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-xs);
 }
 
@@ -141,13 +162,22 @@
     gap: var(--space-m);
   }
 
+  /* The address sits beside the photo while there is room for it, and drops
+     below the photo once text is set large enough that there is not. */
   .aside:has([data-portrait='still']) {
-    grid-template-columns: 6.5rem minmax(0, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-m);
   }
 
+  .aside:has([data-portrait='still']) > :first-child {
+    flex: 0 0 6.5rem;
+  }
+
   .aside:has([data-portrait='still']) .details {
+    flex: 1 1 10rem;
+    min-inline-size: 0;
     max-inline-size: none;
   }
 }
