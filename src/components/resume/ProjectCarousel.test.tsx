@@ -58,6 +58,34 @@ describe('ProjectCarousel', () => {
     expect(track()).toHaveAttribute('data-paused', 'false');
   });
 
+  // Scrolled away, nobody sees it move, so it asks the screen for no frames.
+  it('stops moving itself while scrolled out of view, and starts again after', () => {
+    const pending = new Map<number, FrameRequestCallback>();
+    let next = 1;
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      pending.set(next, callback);
+      return next++;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation((id) => {
+      pending.delete(id);
+    });
+    const viewport = stubIntersectionObserver();
+
+    try {
+      render(<ProjectCarousel projects={three} onOpen={() => {}} />);
+      expect(pending.size).toBe(1);
+
+      viewport.setVisible(track(), false);
+      expect(pending.size).toBe(0);
+
+      viewport.setVisible(track(), true);
+      expect(pending.size).toBe(1);
+    } finally {
+      vi.unstubAllGlobals();
+      vi.restoreAllMocks();
+    }
+  });
+
   it('pauses while something inside it holds focus', async () => {
     const user = userEvent.setup();
     render(<ProjectCarousel projects={three} onOpen={() => {}} />);
@@ -72,11 +100,25 @@ describe('ProjectCarousel', () => {
     expect(screen.getByRole('button', { name: /next project/i })).toBeInTheDocument();
   });
 
-  // Every width rests on whole cards and slides one card at a time; the
-  // skills marquee is the page's one strip that never stops. The test screen
-  // matches no media query, so these run as a wide screen would.
-  describe('stepping from card to card', () => {
+  describe('on a phone', () => {
     const SLIDE = 300;
+
+    // One card to a screen: the phone query matches, nothing else does.
+    function asPhone() {
+      vi.spyOn(window, 'matchMedia').mockImplementation(
+        (query: string) =>
+          ({
+            matches: query.includes('max-width: 39.99rem'),
+            media: query,
+            onchange: null,
+            addListener: () => {},
+            removeListener: () => {},
+            addEventListener: () => {},
+            removeEventListener: () => {},
+            dispatchEvent: () => false,
+          }) as unknown as MediaQueryList,
+      );
+    }
 
     // jsdom lays nothing out, so each slide is placed one card width apart and
     // the track is given a scroll position it can report back.
@@ -93,6 +135,7 @@ describe('ProjectCarousel', () => {
 
     beforeEach(() => {
       vi.useFakeTimers();
+      asPhone();
     });
 
     afterEach(() => {
@@ -136,22 +179,6 @@ describe('ProjectCarousel', () => {
 
       act(() => vi.advanceTimersByTime(1500));
       expect(scrollTo).toHaveBeenCalledTimes(1);
-    });
-
-    // Scrolled away, nobody sees it move, so it waits for nothing.
-    it('stops stepping while scrolled out of view, and starts again after', () => {
-      const viewport = stubIntersectionObserver();
-      render(<ProjectCarousel projects={three} onOpen={() => {}} />);
-      const scrollTo = layOut(0);
-
-      viewport.setVisible(track(), false);
-      act(() => vi.advanceTimersByTime(10000));
-      expect(scrollTo).not.toHaveBeenCalled();
-
-      viewport.setVisible(track(), true);
-      act(() => vi.advanceTimersByTime(4500));
-      expect(scrollTo).toHaveBeenCalledWith({ left: SLIDE, behavior: 'smooth' });
-      vi.unstubAllGlobals();
     });
 
     it('stays put while the pointer or focus is on it', () => {

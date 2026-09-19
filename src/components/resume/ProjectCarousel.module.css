@@ -1,19 +1,32 @@
 .carousel {
+  --fade: var(--space-l);
   display: grid;
   gap: var(--space-s);
   min-inline-size: 0;
 }
 
-/* The track rests on whole cards at every width, so every stop lines up with
-   the text above it and no card is ever shown cut or faded. */
 .track {
   display: grid;
   min-inline-size: 0;
+  /* Cards dissolve at the two edges rather than being cut off mid-slide. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade),
+    #000 calc(100% - var(--fade)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade),
+    #000 calc(100% - var(--fade)),
+    transparent
+  );
   grid-auto-flow: column;
   grid-auto-columns: 100%;
   gap: var(--space-m);
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
   scrollbar-width: none;
   padding-block-end: var(--space-2xs);
 }
@@ -30,7 +43,6 @@
 
 .slide {
   display: flex;
-  scroll-snap-align: start;
 }
 
 .slide > * {
@@ -75,7 +87,8 @@
 }
 
 /* A phone holds one card at a time. The track runs out to the screen's edges
-   so the next card peeks in from the right. */
+   so the next card peeks in from the right instead of dissolving, and every
+   stop is a whole card lined up with the text above it. */
 @media (max-width: 39.99rem) {
   .track {
     grid-auto-columns: 86%;
@@ -85,6 +98,13 @@
     margin-inline: calc(var(--gutter) * -1);
     padding-inline: var(--gutter);
     scroll-padding-inline: var(--gutter);
+    scroll-snap-type: x mandatory;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .slide {
+    scroll-snap-align: start;
   }
 }
 
@@ -100,6 +120,10 @@
 }
 
 @media (min-width: 64rem) {
+  .carousel {
+    --fade: var(--space-2xl);
+  }
+
   .track {
     grid-auto-columns: calc((100% - var(--space-m) * 2) / 3);
   }
