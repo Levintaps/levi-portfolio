@@ -9,7 +9,7 @@ import ProjectCarousel from './ProjectCarousel';
 import ProjectPanel from './ProjectPanel';
 import styles from './Projects.module.css';
 
-export const CAROUSEL_SIZE = 7;
+export const CAROUSEL_SIZE = 8;
 
 export default function Projects() {
   const [open, setOpen] = useState<Project | null>(null);

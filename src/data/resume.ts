@@ -176,6 +176,25 @@ export const projects: Project[] = [
     demoUrl: 'https://aistickynotes.vercel.app',
   },
   {
+    id: 'streamcaption',
+    name: 'StreamCaption',
+    kind: 'Personal project',
+    period: 'Sep 2026',
+    summary: 'Lets a mobile game streamer talk to a TikTok live without being heard: hold a floating mic, speak, and the words appear on screen for viewers to read.',
+    stack: ['Expo', 'React Native', 'TypeScript', 'Kotlin', 'Expo Modules API', 'Android SpeechRecognizer'],
+    highlights: [
+      'A floating mic bubble and a caption drawn over any game by a native foreground service, so captions keep working even when Android closes the app mid-match, and a tap on the caption still reaches the game beneath it.',
+      'Speech recognition in Taglish or English that keeps listening for as long as the bubble is held, with whole-word fixes for the Mobile Legends heroes and items it mishears ("go shun" becomes Gusion).',
+      "Recognises the phone maker's game mode, from Xiaomi's Game Turbo to Samsung's Game Booster, and shows the exact steps when it cuts the speech service off mid-game.",
+      'Rebuilt from an earlier Flutter version in Expo, with the overlay written as a custom Kotlin module.',
+    ],
+    download: {
+      url: 'https://github.com/Levintaps/levi-portfolio/releases/download/streamcaption-v1.0.0/StreamCaption-1.0.0.apk',
+      label: 'Download APK',
+      detail: 'Android 7.0 or newer, 56 MB. Android asks once to allow installs from your browser.',
+    },
+  },
+  {
     id: 'startup-stealth',
     name: 'In stealth',
     kind: 'Startup project',

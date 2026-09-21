@@ -22,7 +22,16 @@ describe('Projects', () => {
     expect(within(track).getByRole('heading', { name: 'AI Notes' })).toBeInTheDocument();
   });
 
-  // Limestone belongs in the full listing only; the carousel keeps its seven.
+  // StreamCaption joins them without pushing the stealth card out of view.
+  it('features StreamCaption in the carousel beside the stealth startup', () => {
+    render(<Projects />);
+    const track = screen.getByRole('group', { name: /projects/i });
+
+    expect(within(track).getByRole('heading', { name: 'StreamCaption' })).toBeInTheDocument();
+    expect(within(track).getByRole('heading', { name: 'In stealth' })).toBeInTheDocument();
+  });
+
+  // Limestone belongs in the full listing only; the carousel keeps its eight.
   it('lists Limestone Tracker with all the projects but leaves it out of the carousel', async () => {
     const user = userEvent.setup();
     render(<Projects />);

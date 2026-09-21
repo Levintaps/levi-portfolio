@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useDialog } from '../../hooks/useDialog';
 import { confidentialNote } from '../../data/resume';
 import { demoNoteFor, repoNoteFor } from '../common/projectNotes';
@@ -14,6 +14,7 @@ interface ProjectPanelProps {
 export default function ProjectPanel({ project, onClose }: ProjectPanelProps) {
   const dialogRef = useDialog<HTMLDivElement>(onClose);
   const [shownNote, setShownNote] = useState<'demo' | 'repo' | null>(null);
+  const downloadDetailId = useId();
 
   const note =
     shownNote === 'demo'
@@ -72,7 +73,16 @@ export default function ProjectPanel({ project, onClose }: ProjectPanelProps) {
             </ul>
 
             <div className={styles.actions}>
-              {project.demoUrl ? (
+              {project.download ? (
+                <a
+                  className={styles.action}
+                  href={project.download.url}
+                  aria-describedby={downloadDetailId}
+                >
+                  {project.download.label}
+                  <Icon name="download" size={16} />
+                </a>
+              ) : project.demoUrl ? (
                 <a
                   className={styles.action}
                   href={project.demoUrl}
@@ -114,6 +124,12 @@ export default function ProjectPanel({ project, onClose }: ProjectPanelProps) {
                 </button>
               )}
             </div>
+
+            {project.download ? (
+              <p className={styles.detail} id={downloadDetailId}>
+                {project.download.detail}
+              </p>
+            ) : null}
 
             {note ? (
               <p className={styles.note} role="status">

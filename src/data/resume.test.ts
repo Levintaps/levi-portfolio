@@ -43,18 +43,31 @@ describe('resume data', () => {
       expect(project.repoUrl).toBeUndefined();
       expect(project.screenshot).toBeUndefined();
       expect(project.client).toBeUndefined();
+      expect(project.download).toBeUndefined();
     }
   });
 
   it('only ever stores absolute https links', () => {
     const links = [
       ...profile.socials.map((social) => social.href),
-      ...projects.flatMap((project) => [project.demoUrl, project.repoUrl]),
+      ...projects.flatMap((project) => [project.demoUrl, project.repoUrl, project.download?.url]),
     ].filter((href): href is string => typeof href === 'string' && href.startsWith('http'));
 
     for (const href of links) {
       expect(href.startsWith('https://')).toBe(true);
     }
+  });
+
+  // The APK sits on the portfolio repository's releases, not in the site, so a
+  // new version never grows the repository or the deploy.
+  it('offers StreamCaption as an Android app to install, from a GitHub release', () => {
+    const app = projects.find((project) => project.id === 'streamcaption');
+
+    expect(app?.kind).toBe('Personal project');
+    expect(app?.download?.url).toMatch(
+      /^https:\/\/github\.com\/Levintaps\/levi-portfolio\/releases\/download\/streamcaption-v(\d+\.\d+\.\d+)\/StreamCaption-\1\.apk$/,
+    );
+    expect(app?.download?.detail).toMatch(/^Android 7\.0 or newer, \d+ MB\./);
   });
 
   it('opens with the client work, since the carousel takes the first five in order', () => {

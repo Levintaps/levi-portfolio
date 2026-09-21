@@ -101,6 +101,44 @@ describe('ProjectPanel', () => {
     expect(await screen.findByText('Runs inside the client office only.')).toBeInTheDocument();
   });
 
+  // An Android app has no web demo to visit: the app itself is the demo, so
+  // the panel hands over the installable file in its place.
+  describe('for an app to install', () => {
+    const app: Project = {
+      ...base,
+      kind: 'Personal project',
+      download: {
+        url: 'https://github.com/x/y/releases/download/app-v1.0.0/App-1.0.0.apk',
+        label: 'Download APK',
+        detail: 'Android 7.0 or newer, 30 MB.',
+      },
+    };
+
+    it('offers the file where the demo would be', () => {
+      render(<ProjectPanel project={app} onClose={() => {}} />);
+
+      expect(screen.getByRole('link', { name: 'Download APK' })).toHaveAttribute(
+        'href',
+        app.download!.url,
+      );
+      expect(screen.queryByRole('button', { name: /visit demo/i })).toBeNull();
+      expect(screen.queryByRole('link', { name: /visit demo/i })).toBeNull();
+    });
+
+    it('says what the file needs before anyone downloads it', () => {
+      render(<ProjectPanel project={app} onClose={() => {}} />);
+      const link = screen.getByRole('link', { name: 'Download APK' });
+
+      expect(screen.getByText(app.download!.detail)).toBeInTheDocument();
+      expect(link).toHaveAccessibleDescription(app.download!.detail);
+    });
+
+    it('still accounts for the source code', () => {
+      render(<ProjectPanel project={app} onClose={() => {}} />);
+      expect(screen.getByRole('button', { name: /source code/i })).toBeInTheDocument();
+    });
+  });
+
   it('closes on the close control and on Escape', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();

@@ -63,6 +63,13 @@ export interface Project {
   repoUrl?: string;
   demoNote?: string;
   repoNote?: string;
+  /** An app to install in place of a demo to visit. */
+  download?: {
+    url: string;
+    label: string;
+    /** What the file needs and weighs, read before anyone downloads it. */
+    detail: string;
+  };
   confidential?: boolean;
   screenshot?: {
     avif: string;
