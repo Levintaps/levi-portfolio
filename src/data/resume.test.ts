@@ -83,7 +83,8 @@ describe('resume data', () => {
     for (const course of courses) {
       expect(course.name.length).toBeGreaterThan(0);
       expect(course.issuer.length).toBeGreaterThan(0);
-      expect(course.completed).toMatch(/^[A-Z][a-z]{2} \d{4}$/);
+      // A date is given only where it is known, never reconstructed.
+      if (course.completed) expect(course.completed).toMatch(/^[A-Z][a-z]{2} \d{4}$/);
 
       // The picture is what a visitor sees, so it carries a description of
       // its own, and the file it was made from stays beside it.

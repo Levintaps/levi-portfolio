@@ -374,6 +374,16 @@ export const courses: Course[] = [
       alt: 'AWS Training and Certification completion certificate for AWS Cloud Practitioner Essentials, awarded to Jayson Levin Tapia, completed September 24, 2026.',
     },
   },
+  // These two issue no certificate, and the month they were finished is no
+  // longer known, so they are listed plainly rather than dated by guesswork.
+  {
+    name: 'API Security Fundamentals',
+    issuer: 'APIsec University',
+  },
+  {
+    name: 'OWASP API Security Top 10 and Beyond!',
+    issuer: 'APIsec University',
+  },
 ];
 
 // One card on the homepage. The tournament wins, the UAAP medal and the rest

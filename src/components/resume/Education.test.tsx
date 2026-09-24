@@ -18,14 +18,28 @@ describe('Education', () => {
     expect(within(certs).queryByText(courses[0].name)).toBeNull();
   });
 
-  it('gives each course its issuer and the date it was finished', () => {
+  it('gives each course its issuer, and its date where there is one', () => {
     render(<Education />);
     const training = screen.getByRole('list', { name: /courses and training/i });
 
     for (const course of courses) {
       expect(within(training).getAllByText(course.issuer).length).toBeGreaterThan(0);
-      expect(within(training).getAllByText(course.completed).length).toBeGreaterThan(0);
+      if (course.completed) {
+        expect(within(training).getAllByText(course.completed).length).toBeGreaterThan(0);
+      }
     }
+  });
+
+  // A remembered month would be a guess, and a guess on a portfolio is a small
+  // lie, so a course whose date is gone simply carries none.
+  it('leaves out the date rather than guessing at one', () => {
+    render(<Education />);
+    const undated = courses.find((course) => !course.completed);
+    expect(undated, 'expected a course with no date').toBeDefined();
+
+    const entry = screen.getByText(undated!.name).closest('li')!;
+    expect(within(entry).getByText(undated!.issuer)).toBeInTheDocument();
+    expect(entry.textContent).toBe(`${undated!.name}${undated!.issuer}`);
   });
 
   // Asking for a download to see a certificate is work the visitor should not

@@ -57,7 +57,7 @@ export default function Education() {
           <ul className={styles.certs} aria-labelledby="education-courses">
             {courses.map((course) => (
               <li key={course.name} className={styles.entry}>
-                <p className={styles.period}>{course.completed}</p>
+                {course.completed ? <p className={styles.period}>{course.completed}</p> : null}
                 <p className={styles.qualification}>{course.name}</p>
                 <p className={styles.institution}>{course.issuer}</p>
 

@@ -111,8 +111,8 @@ export interface CertificateImage {
 export interface Course {
   name: string;
   issuer: string;
-  /** Month and year, as "Sep 2026". */
-  completed: string;
+  /** Month and year, as "Sep 2026", left out where it is no longer known. */
+  completed?: string;
   /**
    * The proof, shown on the page rather than handed over as a download. The
    * images are made from the PDF by scripts/certificate-images.py.
