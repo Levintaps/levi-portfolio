@@ -1,6 +1,7 @@
 import type {
   Achievement,
   Certification,
+  Course,
   EducationEntry,
   ExperienceEntry,
   Profile,
@@ -345,6 +346,17 @@ export const education: EducationEntry[] = [
 
 export const certifications: Certification[] = [
   { name: 'Java Programming NC III', issuer: 'TESDA Manila' },
+];
+
+// Kept apart from the certifications above: these are courses finished, and
+// the certificate each one issues records attendance, not an exam passed.
+export const courses: Course[] = [
+  {
+    name: 'AWS Cloud Practitioner Essentials',
+    issuer: 'AWS Training and Certification',
+    completed: 'Sep 2026',
+    certificate: '/certificates/aws-cloud-practitioner-essentials.pdf',
+  },
 ];
 
 // One card on the homepage. The tournament wins, the UAAP medal and the rest

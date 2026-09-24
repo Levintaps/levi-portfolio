@@ -4,6 +4,7 @@ import {
   supportingSkillGroups,
   achievementsLead,
   certifications,
+  courses,
   education,
   experience,
   profile,
@@ -71,6 +72,22 @@ describe('resume data', () => {
       'https://github.com/Levintaps/levi-portfolio/releases/latest/download/StreamCaption.apk',
     );
     expect(app?.download?.detail).toMatch(/^Android 7\.0 or newer, about \d+ MB\./);
+  });
+
+  // AWS Cloud Practitioner Essentials is a course, not the exam behind the
+  // certification of a similar name, so courses are held to their own shape:
+  // dated, credited to whoever ran them, and linked to the certificate itself.
+  it('dates every course and credits whoever ran it', () => {
+    expect(courses.length).toBeGreaterThan(0);
+
+    for (const course of courses) {
+      expect(course.name.length).toBeGreaterThan(0);
+      expect(course.issuer.length).toBeGreaterThan(0);
+      expect(course.completed).toMatch(/^[A-Z][a-z]{2} \d{4}$/);
+      if (course.certificate) {
+        expect(course.certificate).toMatch(/^\/certificates\/[a-z0-9-]+\.pdf$/);
+      }
+    }
   });
 
   it('opens with the client work, since the carousel takes the first five in order', () => {

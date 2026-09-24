@@ -65,6 +65,9 @@ describe('Education', () => {
     }
   });
 
+  // The AWS course was finished in September 2026, but a completion certificate
+  // is not the exam behind AWS Certified Cloud Practitioner, so it belongs with
+  // the courses and must never be read off this list as a certification.
   it('claims no credential that is not in the data', () => {
     render(<Education />);
     const list = screen.getByRole('list', { name: /certifications/i });
@@ -72,7 +75,7 @@ describe('Education', () => {
       .getAllByRole('listitem')
       .map((item) => item.textContent ?? '');
     expect(claimed).toHaveLength(certifications.length);
-    expect(screen.queryByText(/AWS|Cloud Practitioner/i)).toBeNull();
+    expect(claimed.join(' ')).not.toMatch(/AWS|Cloud Practitioner|Certified/i);
   });
 });
 

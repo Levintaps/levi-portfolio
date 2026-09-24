@@ -59,13 +59,60 @@
   gap: var(--space-s);
 }
 
+/* The certificate itself is the proof, so its name is the way in, with the
+   file type set beside it rather than left to be guessed. */
+.certificate {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  color: inherit;
+  text-decoration: none;
+}
+
+.certificate:hover {
+  color: var(--accent);
+}
+
+.pdf {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 0.1rem var(--space-2xs);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-s);
+  color: var(--ink-faint);
+}
+
+.certificate:hover .pdf {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.srOnly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  inset-inline-start: 0;
+}
+
 @media (min-width: 48rem) {
   .groups {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-l) var(--space-xl);
   }
 
   .section {
     padding-block: var(--space-3xl);
+  }
+}
+
+/* Three groups sit in a row only where each still has room to read. */
+@media (min-width: 64rem) {
+  .groups {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

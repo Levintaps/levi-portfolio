@@ -98,6 +98,16 @@ export interface Certification {
   issuer: string;
 }
 
+/** Training finished, which a completion certificate records but no exam backs. */
+export interface Course {
+  name: string;
+  issuer: string;
+  /** Month and year, as "Sep 2026". */
+  completed: string;
+  /** A file under public/certificates, if the course issued one. */
+  certificate?: string;
+}
+
 export interface Achievement {
   title: string;
   detail: string;
