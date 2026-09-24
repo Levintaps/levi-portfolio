@@ -1,8 +1,24 @@
+import { useRef, useState } from 'react';
 import { certifications, courses, education } from '../../data/resume';
+import type { Course } from '../../data/types';
 import SectionHeading from '../common/SectionHeading';
+import CertificatePanel from './CertificatePanel';
 import styles from './Education.module.css';
 
 export default function Education() {
+  const [open, setOpen] = useState<Course | null>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
+
+  function openCertificate(course: Course) {
+    openerRef.current = document.activeElement as HTMLElement | null;
+    setOpen(course);
+  }
+
+  function closeCertificate() {
+    setOpen(null);
+    openerRef.current?.focus();
+  }
+
   return (
     <section className={styles.section} id="education">
       <SectionHeading title="Education and certifications" />
@@ -42,30 +58,40 @@ export default function Education() {
             {courses.map((course) => (
               <li key={course.name} className={styles.entry}>
                 <p className={styles.period}>{course.completed}</p>
-                <p className={styles.qualification}>
-                  {course.certificate ? (
-                    <a
-                      className={styles.certificate}
-                      href={course.certificate}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      {course.name}
-                      <span className={styles.srOnly}> certificate, PDF</span>
-                      <span className={styles.pdf} aria-hidden="true">
-                        PDF
-                      </span>
-                    </a>
-                  ) : (
-                    course.name
-                  )}
-                </p>
+                <p className={styles.qualification}>{course.name}</p>
                 <p className={styles.institution}>{course.issuer}</p>
+
+                {/* The proof is a picture on the page: the visitor sees it
+                    without fetching a file and opening it somewhere else. */}
+                {course.certificate ? (
+                  <button
+                    className={styles.proof}
+                    type="button"
+                    onClick={() => openCertificate(course)}
+                  >
+                    <picture>
+                      <source srcSet={course.certificate.thumbnail.avif} type="image/avif" />
+                      <source srcSet={course.certificate.thumbnail.webp} type="image/webp" />
+                      <img
+                        className={styles.thumbnail}
+                        src={course.certificate.thumbnail.fallback}
+                        alt=""
+                        width={course.certificate.thumbnail.width}
+                        height={course.certificate.thumbnail.height}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </picture>
+                    <span className={styles.srOnly}>{`See the ${course.name} certificate`}</span>
+                  </button>
+                ) : null}
               </li>
             ))}
           </ul>
         </div>
       </div>
+
+      {open ? <CertificatePanel course={open} onClose={closeCertificate} /> : null}
     </section>
   );
 }

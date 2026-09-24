@@ -98,14 +98,31 @@ export interface Certification {
   issuer: string;
 }
 
+/** A picture of a certificate, in the formats a browser can choose between. */
+export interface CertificateImage {
+  avif: string;
+  webp: string;
+  fallback: string;
+  width: number;
+  height: number;
+}
+
 /** Training finished, which a completion certificate records but no exam backs. */
 export interface Course {
   name: string;
   issuer: string;
   /** Month and year, as "Sep 2026". */
   completed: string;
-  /** A file under public/certificates, if the course issued one. */
-  certificate?: string;
+  /**
+   * The proof, shown on the page rather than handed over as a download. The
+   * images are made from the PDF by scripts/certificate-images.py.
+   */
+  certificate?: {
+    thumbnail: CertificateImage;
+    preview: CertificateImage;
+    pdf: string;
+    alt: string;
+  };
 }
 
 export interface Achievement {

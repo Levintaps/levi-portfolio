@@ -355,7 +355,24 @@ export const courses: Course[] = [
     name: 'AWS Cloud Practitioner Essentials',
     issuer: 'AWS Training and Certification',
     completed: 'Sep 2026',
-    certificate: '/certificates/aws-cloud-practitioner-essentials.pdf',
+    certificate: {
+      thumbnail: {
+        avif: '/certificates/aws-cloud-practitioner-essentials-thumb.avif',
+        webp: '/certificates/aws-cloud-practitioner-essentials-thumb.webp',
+        fallback: '/certificates/aws-cloud-practitioner-essentials-thumb.jpg',
+        width: 480,
+        height: 371,
+      },
+      preview: {
+        avif: '/certificates/aws-cloud-practitioner-essentials.avif',
+        webp: '/certificates/aws-cloud-practitioner-essentials.webp',
+        fallback: '/certificates/aws-cloud-practitioner-essentials.jpg',
+        width: 1600,
+        height: 1237,
+      },
+      pdf: '/certificates/aws-cloud-practitioner-essentials.pdf',
+      alt: 'AWS Training and Certification completion certificate for AWS Cloud Practitioner Essentials, awarded to Jayson Levin Tapia, completed September 24, 2026.',
+    },
   },
 ];
 

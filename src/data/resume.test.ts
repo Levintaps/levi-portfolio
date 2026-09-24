@@ -84,8 +84,20 @@ describe('resume data', () => {
       expect(course.name.length).toBeGreaterThan(0);
       expect(course.issuer.length).toBeGreaterThan(0);
       expect(course.completed).toMatch(/^[A-Z][a-z]{2} \d{4}$/);
+
+      // The picture is what a visitor sees, so it carries a description of
+      // its own, and the file it was made from stays beside it.
       if (course.certificate) {
-        expect(course.certificate).toMatch(/^\/certificates\/[a-z0-9-]+\.pdf$/);
+        const { thumbnail, preview, pdf, alt } = course.certificate;
+        expect(alt.length).toBeGreaterThan(20);
+        expect(pdf).toMatch(/^\/certificates\/[a-z0-9-]+\.pdf$/);
+        for (const image of [thumbnail, preview]) {
+          expect(image.avif).toMatch(/^\/certificates\/[a-z0-9-]+\.avif$/);
+          expect(image.webp).toMatch(/^\/certificates\/[a-z0-9-]+\.webp$/);
+          expect(image.fallback).toMatch(/^\/certificates\/[a-z0-9-]+\.jpg$/);
+          expect(image.width).toBeGreaterThan(0);
+          expect(image.height).toBeGreaterThan(0);
+        }
       }
     }
   });

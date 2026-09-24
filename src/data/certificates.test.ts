@@ -6,11 +6,23 @@ import { courses } from './resume';
 // A link to a missing certificate would show up only as a 404 in the browser,
 // long after the deploy, so the files themselves are checked here.
 describe('certificate files', () => {
-  it('ships every certificate a course links to', () => {
+  it('ships every file a certificate is shown from', () => {
     for (const course of courses) {
       if (!course.certificate) continue;
-      const file = resolve('public', course.certificate.replace(/^\//, ''));
-      expect(existsSync(file), `missing ${course.certificate}`).toBe(true);
+      const { thumbnail, preview, pdf } = course.certificate;
+      const paths = [
+        thumbnail.avif,
+        thumbnail.webp,
+        thumbnail.fallback,
+        preview.avif,
+        preview.webp,
+        preview.fallback,
+        pdf,
+      ];
+
+      for (const path of paths) {
+        expect(existsSync(resolve('public', path.replace(/^\//, ''))), `missing ${path}`).toBe(true);
+      }
     }
   });
 });

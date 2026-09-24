@@ -59,34 +59,37 @@
   gap: var(--space-s);
 }
 
-/* The certificate itself is the proof, so its name is the way in, with the
-   file type set beside it rather than left to be guessed. */
-.certificate {
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--space-xs);
-  color: inherit;
-  text-decoration: none;
+/* The certificate, small enough to sit under the course without taking the
+   section over, and large enough to be read as what it is. */
+.proof {
+  display: block;
+  inline-size: min(100%, 13rem);
+  margin-block-start: var(--space-2xs);
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: #ffffff;
+  transition:
+    border-color var(--motion-fast) var(--ease),
+    transform var(--motion-fast) var(--ease);
 }
 
-.certificate:hover {
-  color: var(--accent);
-}
-
-.pdf {
-  font-family: var(--font-mono);
-  font-size: var(--step--2);
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  padding: 0.1rem var(--space-2xs);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-s);
-  color: var(--ink-faint);
-}
-
-.certificate:hover .pdf {
+.proof:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proof:hover {
+    transform: none;
+  }
+}
+
+.thumbnail {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
 }
 
 .srOnly {
