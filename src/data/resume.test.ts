@@ -59,15 +59,18 @@ describe('resume data', () => {
   });
 
   // The APK sits on the portfolio repository's releases, not in the site, so a
-  // new version never grows the repository or the deploy.
-  it('offers StreamCaption as an Android app to install, from a GitHub release', () => {
+  // new version never grows the repository or the deploy. The link names no
+  // version: a versioned one broke the moment a new APK replaced the old file,
+  // while the latest release always answers, so only the size can go stale and
+  // it is given as an approximation.
+  it('offers StreamCaption as an Android app to install, from the latest release', () => {
     const app = projects.find((project) => project.id === 'streamcaption');
 
     expect(app?.kind).toBe('Personal project');
-    expect(app?.download?.url).toMatch(
-      /^https:\/\/github\.com\/Levintaps\/levi-portfolio\/releases\/download\/streamcaption-v(\d+\.\d+\.\d+)\/StreamCaption-\1\.apk$/,
+    expect(app?.download?.url).toBe(
+      'https://github.com/Levintaps/levi-portfolio/releases/latest/download/StreamCaption.apk',
     );
-    expect(app?.download?.detail).toMatch(/^Android 7\.0 or newer, \d+ MB\./);
+    expect(app?.download?.detail).toMatch(/^Android 7\.0 or newer, about \d+ MB\./);
   });
 
   it('opens with the client work, since the carousel takes the first five in order', () => {
