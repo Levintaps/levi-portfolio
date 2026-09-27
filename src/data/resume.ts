@@ -190,9 +190,9 @@ export const projects: Project[] = [
       'Rebuilt from an earlier Flutter version in Expo, with the overlay written as a custom Kotlin module.',
     ],
     download: {
-      url: 'https://github.com/Levintaps/levi-portfolio/releases/latest/download/StreamCaption.apk',
+      url: '/api/streamcaption-apk',
       label: 'Download APK',
-      detail: 'Android 7.0 or newer, about 67 MB. Android asks once to allow installs from your browser.',
+      detail: 'Android 7.0 or newer, about 76 MB. Android asks once to allow installs from your browser.',
     },
   },
   {
